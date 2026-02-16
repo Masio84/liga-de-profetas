@@ -16,8 +16,8 @@ router.get("/", async (req, res) => {
         const { rows: jornadas } = await db.query(`
             SELECT
                 round as numero,
-                MIN("startTime") as "fechaInicio",
-                MAX("startTime") as "fechaFin"
+                MIN(start_time) as "fechaInicio",
+                MAX(start_time) as "fechaFin"
             FROM matches
             GROUP BY round
             ORDER BY round DESC
@@ -67,7 +67,7 @@ router.get("/:numero/matches", async (req, res) => {
             SELECT *
             FROM matches
             WHERE round = $1
-            ORDER BY "startTime" ASC
+            ORDER BY start_time ASC
         `, [numero]);
 
         res.json({
