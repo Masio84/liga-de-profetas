@@ -64,7 +64,17 @@ router.get("/:numero/matches", async (req, res) => {
 
     try {
         const { rows } = await db.query(`
-            SELECT *
+            SELECT 
+                id,
+                home_team as "homeTeam",
+                away_team as "awayTeam",
+                start_time as "startTime",
+                round,
+                resultado,
+                status,
+                fotmob_match_id as "fotmobMatchId",
+                home_team_id as "homeTeamId",
+                away_team_id as "awayTeamId"
             FROM matches
             WHERE round = $1
             ORDER BY start_time ASC
@@ -112,9 +122,9 @@ router.get("/:numero/pozo", async (req, res) => {
         // En el código original: import { calcularPremios } from "../utils/premios.js";
 
         const premios = {
-            primerLugar: pozo * 0.7 * 0.8,
-            segundoLugar: pozo * 0.7 * 0.2,
-            admin: pozo * 0.3
+            premioPrimero: pozo * 0.7 * 0.8,
+            premioSegundo: pozo * 0.7 * 0.2,
+            comisionAdmin: pozo * 0.3
         };
 
         res.json({
