@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador | Liga de Profetas</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #e2e8f0;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+
+        .admin-header {
+            background: rgba(15, 23, 42, 0.95);
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 212, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-title {
+            color: #00d4ff;
+            margin: 0;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 1024px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-card {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 10px;
+        }
+
+        .panel-title {
+            color: #00d4ff;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: rgba(0, 212, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #fff;
+            margin: 5px 0;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+
+        .btn-action {
+            background: linear-gradient(135deg, #00d4ff 0%, #0096ff 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        .participacion-item {
+            background: #0f172a;
+            border-left: 4px solid #334155;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 0 6px 6px 0;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .participacion-info {
+            font-size: 14px;
+        }
+
+        .participacion-meta {
+            display: flex;
+            gap: 15px;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-validada {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-pendiente {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .status-desactivada {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-mini {
+            padding: 6px 12px;
+            font-size: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: 1px solid transparent;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .btn-success {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border-color: rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-success:hover {
+            background: rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .btn-warning:hover {
+            background: rgba(245, 158, 11, 0.2);
+        }
+
+        .token-reset-btn {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #64748b;
+            padding: 5px 10px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .token-reset-btn:hover {
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            margin-left: 20px;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover {
+            color: #00d4ff;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="admin-header">
+        <div class="admin-title">
+            <img src="assets/logo.png" height="30" alt="Logo">
+            Panel de Control
+        </div>
+        <div style="display: flex; align-items: center;">
+            <a href="/" class="nav-link">Ver Sitio</a>
+            <button onclick="resetearToken()" class="token-reset-btn" style="margin-left: 20px;">
+                🔒 Reset Token
+            </button>
+        </div>
+    </header>
+
+    <div class="admin-container">
+
+        <!-- SIDEBAR / INFO -->
+        <div class="admin-sidebar">
+
+            <!-- SYNC STATUS -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3 class="panel-title">Sincronización</h3>
+                </div>
+                <div id="syncEstado" style="font-size: 13px; color: #94a3b8; margin-bottom: 15px;">
+                    Cargando estado...
+                </div>
+                <button class="btn-action" onclick="syncResultados()">
+                    🔄 Sincronizar Ahora
+                </button>
+            </div>
+
+            <!-- CURRENT POZO -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3 class="panel-title">Bolsa Actual</h3>
+                </div>
+                <div id="pozoActual" style="text-align: center;">
+                    Cargando...
+                </div>
+            </div>
+
+            <!-- PAST RESULTS -->
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3 class="panel-title">Historial de Jornadas</h3>
+                </div>
+                <div id="adminResultados" style="max-height: 400px; overflow-y: auto;">
+                    <!-- Filled by JS -->
+                </div>
+            </div>
+
+        </div>
+
+        <!-- MAIN CONTENT -->
+        <div class="admin-main">
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <h3 class="panel-title">Gestión de Participaciones</h3>
+                    <div style="display: flex; gap: 10px;">
+                        <span class="status-badge status-pendiente">Pendientes</span>
+                        <span class="status-badge status-validada">Validadas</span>
+                    </div>
+                </div>
+
+                <div id="adminParticipaciones">
+                    <div style="text-align: center; padding: 40px; color: #64748b;">
+                        Cargando participaciones...
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Same heavy lifting logic -->
+    <script src="admin.js"></script>
+
+    <!-- Overwrite specific render functions to match new design -->
+    <script>
+        // Override the render function in admin.js to use new HTML structure
+        const originalCargarParticipaciones = cargarParticipacionesAdmin;
+
+        cargarParticipacionesAdmin = async function () {
+            try {
+                const res = await fetchAuth(API + "/participaciones");
+                if (!res.ok) throw new Error(`Error ${res.status}`);
+                const data = await res.json();
+
+                if (!data.participaciones || data.participaciones.length === 0) {
+                    document.getElementById("adminParticipaciones").innerHTML =
+                        "<div style='text-align:center; padding:20px; color:#64748b'>No hay participaciones registradas</div>";
+                    return;
+                }
+
+                // Sort: Pendientes first
+                const sorted = data.participaciones.sort((a, b) => {
+                    if (a.validada === 0 && b.validada === 1) return -1;
+                    if (a.validada === 1 && b.validada === 0) return 1;
+                    return b.id - a.id;
+                });
+
+                let html = "";
+                sorted.forEach(p => {
+                    let statusClass = "";
+                    let statusText = "";
+                    let actions = "";
+                    let borderColor = "#334155";
+
+                    if (p.activa === 0) {
+                        statusClass = "status-desactivada";
+                        statusText = "Desactivada";
+                        borderColor = "#ef4444";
+                        actions = `<button class="btn-mini btn-success" onclick="reactivarParticipacion(${p.id})">Reactivar</button>`;
+                    } else if (p.validada === 0) {
+                        statusClass = "status-pendiente";
+                        statusText = "Pendiente de Pago";
+                        borderColor = "#f59e0b";
+                        actions = `
+                            <button class="btn-mini btn-success" onclick="validarParticipacion(${p.id})">✅ Validar Pago</button>
+                            <button class="btn-mini btn-danger" onclick="desactivarParticipacion(${p.id})">❌ Rechazar</button>
+                        `;
+                    } else {
+                        statusClass = "status-validada";
+                        statusText = "Pagado y Validado";
+                        borderColor = "#22c55e";
+                        actions = `
+                            <button class="btn-mini btn-warning" onclick="invalidarParticipacion(${p.id})">Invalidar</button>
+                            <button class="btn-mini btn-danger" onclick="desactivarParticipacion(${p.id})">Desactivar</button>
+                        `;
+                    }
+
+                    html += `
+                    <div class="participacion-item" style="border-left-color: ${borderColor}">
+                        <div class="participacion-info">
+                            <div style="font-weight: bold; font-size: 16px; color: #fff;">
+                                ${p.usuario}
+                            </div>
+                            <div class="participacion-meta">
+                                <span>📅 Jornada ${p.jornada}</span>
+                                <span>💰 $${p.monto}</span>
+                                <span>🆔 Ref: <strong style="color: #00d4ff">${p.referenciaPago || "N/A"}</strong></span>
+                            </div>
+                        </div>
+                        <div style="text-align: right">
+                            <div style="margin-bottom: 8px;">
+                                <span class="status-badge ${statusClass}">${statusText}</span>
+                            </div>
+                            <div>${actions}</div>
+                        </div>
+                    </div>
+                    `;
+                });
+
+                document.getElementById("adminParticipaciones").innerHTML = html;
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById("adminParticipaciones").innerHTML =
+                    "<div style='color: #ef4444'>Error cargando datos</div>";
+            }
+        };
+
+        // Initialize with new render
+        initAdmin();
+    </script>
+</body>
+
+</html>
