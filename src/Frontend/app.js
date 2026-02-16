@@ -477,6 +477,16 @@ function seleccionarPronostico(matchId, valor) {
 let carrito = [];
 
 function actualizarCostoEstimado() {
+
+    // Si no hay nada seleccionado, mostramos $0 visualmente
+    if (Object.keys(pronosticosSeleccionados).length === 0) {
+        const lblCosto = document.getElementById("costoActual");
+        if (lblCosto) {
+            lblCosto.innerText = "$0";
+        }
+        return 0;
+    }
+
     let dobles = 0;
     let triples = 0;
 
