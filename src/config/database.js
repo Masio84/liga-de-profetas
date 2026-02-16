@@ -5,8 +5,18 @@ dotenv.config();
 
 const { Pool } = pg;
 
+const connectionString = process.env.DATABASE_URL;
+
+if (!connectionString) {
+  console.error("⚠️ CRITICAL: DATABASE_URL no está definida en las variables de entorno.");
+} else {
+  // Ocultar contraseña para los logs
+  const masked = connectionString.replace(/:([^:@]+)@/, ':****@');
+  console.log("ℹ️ Intentando conectar a la DB con:", masked);
+}
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: connectionString,
   ssl: {
     rejectUnauthorized: false
   }
