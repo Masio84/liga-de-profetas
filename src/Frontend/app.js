@@ -705,14 +705,14 @@ async function enviarCarrito() {
         alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nRecuerda hacer tu pago total a la cuenta indicada.`);
         carrito = [];
         renderizarCarrito();
-        cargarParticipacionesUsuario();
+        // cargarParticipacionesUsuario();
     } else {
         alert(`Se enviaron ${enviadas} quinielas, pero hubo ${errores} errores.\nRevisa tu historial y vuelve a intentar las que faltaron.`);
         // No limpiamos el carrito completo por si quiere reintentar? 
         // Simplificación: Limpiamos carrito visualmente para obligar a verificar historial
         carrito = [];
         renderizarCarrito();
-        cargarParticipacionesUsuario();
+        // cargarParticipacionesUsuario();
     }
 }
 
