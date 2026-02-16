@@ -284,9 +284,9 @@ async function cargarPozoActual() {
         };
 
         document.getElementById("pozoActual").innerHTML = `
-            <strong>$${pozo.pozo || 0}</strong><br><br>
-            🥇 1° Lugar: $${premios.premioPrimero}<br>
-            🥈 2° Lugar: $${premios.premioSegundo}<br><br>
+            <strong>$${pozo.pozo ? parseFloat(pozo.pozo).toFixed(2) : "0.00"}</strong><br><br>
+            🥇 1° Lugar: $${premios.premioPrimero ? parseFloat(premios.premioPrimero).toFixed(2) : "0.00"}<br>
+            🥈 2° Lugar: $${premios.premioSegundo ? parseFloat(premios.premioSegundo).toFixed(2) : "0.00"}<br><br>
             <small>Jornada ${disponible.numero}</small>
         `;
 
@@ -487,6 +487,7 @@ async function validarParticipacion(id) {
         }
 
         await cargarParticipacionesAdmin();
+        await cargarPozoActual();
     } catch (error) {
         console.error("Error validando participación:", error);
         alert("Error al validar la participación");
@@ -509,6 +510,7 @@ async function invalidarParticipacion(id) {
         }
 
         await cargarParticipacionesAdmin();
+        await cargarPozoActual();
     } catch (error) {
         console.error("Error invalidando participación:", error);
         alert("Error al invalidar la participación");
@@ -531,6 +533,7 @@ async function desactivarParticipacion(id) {
         }
 
         await cargarParticipacionesAdmin();
+        await cargarPozoActual();
     } catch (error) {
         console.error("Error desactivando participación:", error);
         alert("Error al desactivar la participación");
@@ -553,6 +556,7 @@ async function reactivarParticipacion(id) {
         }
 
         await cargarParticipacionesAdmin();
+        await cargarPozoActual();
     } catch (error) {
         console.error("Error reactivando participación:", error);
         alert("Error al reactivar la participación");
