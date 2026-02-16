@@ -61,6 +61,7 @@ router.get("/", async (req, res) => {
 router.get("/:numero/matches", async (req, res) => {
 
     const numero = parseInt(req.params.numero);
+    console.log(`[DEBUG] Requesting matches for round: ${numero} (raw: ${req.params.numero})`);
 
     try {
         const { rows } = await db.query(`
@@ -79,6 +80,8 @@ router.get("/:numero/matches", async (req, res) => {
             WHERE round = $1
             ORDER BY start_time ASC
         `, [numero]);
+
+        console.log(`[DEBUG] Found ${rows.length} matches for round ${numero}`);
 
         res.json({
             jornada: numero,
