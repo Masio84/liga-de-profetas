@@ -215,48 +215,26 @@ function crearBotonPronostico(match, tipo) {
     let subtitulo = "";
 
     if (tipo === "LOCAL") {
-
         nombreEquipo = match.homeTeam;
         subtitulo = "Local";
-
     }
-
     else if (tipo === "VISITA") {
-
         nombreEquipo = match.awayTeam;
-        subtitulo = "Visitante";
-
+        subtitulo = "Visita";
     }
-
     else {
-
         nombreEquipo = "Empate";
-        subtitulo = "Empate";
-
+        subtitulo = "-";
     }
 
     return `
     <button
         id="btn-${match.id}-${tipo}"
         onclick="seleccionarPronostico(${match.id}, '${tipo}')"
-        style="
-            width: 100%;
-            padding:12px 5px;
-            border-radius:8px;
-            border:1px solid #333;
-            background:#111;
-            color:white;
-            cursor:pointer;
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-            justify-content:center;
-            transition: all 0.2s;
-            font-weight: bold;
-            font-size: 14px;
-        "
+        class="btn-pronostico"
     >
-        <span>${subtitulo}</span> 
+        <span class="team-name">${nombreEquipo}</span>
+        ${tipo !== 'EMPATE' ? `<span class="role-label">${subtitulo}</span>` : ''} 
     </button>
     `;
 
