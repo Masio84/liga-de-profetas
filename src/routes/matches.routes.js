@@ -12,32 +12,22 @@ router.get("/", async (req, res) => {
         const sql = `
             SELECT
                 id,
-                home_team as user_homeTeam, -- Alias para mantener compatibilidad con frontend si es necesario
-                away_team as user_awayTeam,
-                home_team_id as user_homeTeamId,
-                away_team_id as user_awayTeamId,
-                start_time as user_startTime,
+                home_team as "homeTeam",
+                away_team as "awayTeam",
+                home_team_id as "homeTeamId",
+                away_team_id as "awayTeamId",
+                start_time as "startTime",
                 round,
                 resultado,
-                fotmob_match_id as user_fotmobMatchId
+                fotmob_match_id as "fotmobMatchId"
             FROM matches
             ORDER BY start_time ASC
         `;
 
         const { rows } = await db.query(sql);
 
-        // Mapeo manual para asegurar compatibilidad camelCase con frontend
-        const matches = rows.map(m => ({
-            id: m.id,
-            homeTeam: m.user_homeTeam || m.home_team,
-            awayTeam: m.user_awayTeam || m.away_team,
-            homeTeamId: m.user_homeTeamId || m.home_team_id,
-            awayTeamId: m.user_awayTeamId || m.away_team_id,
-            startTime: m.user_startTime || m.start_time,
-            round: m.round,
-            resultado: m.resultado,
-            fotmobMatchId: m.user_fotmobMatchId || m.fotmob_match_id
-        }));
+        // Ya vienen en camelCase desde la query
+        const matches = rows;
 
         res.json({
             total: matches.length,
@@ -61,14 +51,14 @@ router.get("/jornada/:numero", async (req, res) => {
         const sql = `
             SELECT
                 id,
-                home_team,
-                away_team,
-                home_team_id,
-                away_team_id,
-                start_time,
+                home_team as "homeTeam",
+                away_team as "awayTeam",
+                home_team_id as "homeTeamId",
+                away_team_id as "awayTeamId",
+                start_time as "startTime",
                 round,
                 resultado,
-                fotmob_match_id
+                fotmob_match_id as "fotmobMatchId"
             FROM matches
             WHERE round = $1
             ORDER BY start_time ASC
@@ -76,18 +66,7 @@ router.get("/jornada/:numero", async (req, res) => {
 
         const { rows } = await db.query(sql, [numero]);
 
-        // Mapeo camelCase
-        const matches = rows.map(m => ({
-            id: m.id,
-            homeTeam: m.home_team,
-            awayTeam: m.away_team,
-            homeTeamId: m.home_team_id,
-            awayTeamId: m.away_team_id,
-            startTime: m.start_time,
-            round: m.round,
-            resultado: m.resultado,
-            fotmobMatchId: m.fotmob_match_id
-        }));
+        const matches = rows;
 
         res.json({
             jornada: numero,
