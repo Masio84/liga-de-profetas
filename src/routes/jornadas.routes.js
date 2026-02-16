@@ -124,10 +124,24 @@ router.get("/:numero/pozo", async (req, res) => {
         // Simulación simple para no romper, o usar la lógica del service si fuera importada.
         // En el código original: import { calcularPremios } from "../utils/premios.js";
 
+        // Lógica de incentivo:
+        // < 500: 100% a premios, 0% comisión
+        // >= 500: 70% a premios, 30% comisión
+
+        let porcentajePremios = 0.7;
+        let porcentajeComision = 0.3;
+
+        if (pozo < 500) {
+            porcentajePremios = 1.0;
+            porcentajeComision = 0.0;
+        }
+
+        const bolsaPremios = pozo * porcentajePremios;
+
         const premios = {
-            premioPrimero: pozo * 0.7 * 0.8,
-            premioSegundo: pozo * 0.7 * 0.2,
-            comisionAdmin: pozo * 0.3
+            premioPrimero: bolsaPremios * 0.8,
+            premioSegundo: bolsaPremios * 0.2,
+            comisionAdmin: pozo * porcentajeComision
         };
 
         res.json({

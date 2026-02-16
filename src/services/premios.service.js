@@ -69,8 +69,20 @@ export async function calcularPremios(jornada) {
         // Ojo: Podríamos sumar p.monto real si queremos ser exactos a lo que pagaron
         const bolsaTotal = participantesPuntajes.reduce((sum, p) => sum + (Number(p.monto) || 0), 0);
 
-        const comisionAdmin = bolsaTotal * 0.30;
-        const bolsaPremios = bolsaTotal * 0.70;
+        // Lógica de incentivo:
+        // < 500: 100% a premios, 0% comisión
+        // >= 500: 70% a premios, 30% comisión
+
+        let porcentajePremios = 0.70;
+        let porcentajeComision = 0.30;
+
+        if (bolsaTotal < 500) {
+            porcentajePremios = 1.00;
+            porcentajeComision = 0.00;
+        }
+
+        const comisionAdmin = bolsaTotal * porcentajeComision;
+        const bolsaPremios = bolsaTotal * porcentajePremios;
 
         const premioPrimerLugar = bolsaPremios * 0.80;
         const premioSegundoLugar = bolsaPremios * 0.20;
