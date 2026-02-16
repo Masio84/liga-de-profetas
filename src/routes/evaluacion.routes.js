@@ -7,44 +7,48 @@ const router = express.Router();
 //
 // Evaluar jornada actual automáticamente
 //
+//
+// Evaluar jornada actual automáticamente
+//
 router.get("/actual", async (req, res) => {
 
     try {
 
-        db.get(
-            "SELECT numero FROM jornadas WHERE estado = 'abierta' LIMIT 1",
-            [],
-            async (err, row) => {
+        // En PostgreSQL usamos LIMIT 1, pero la consulta es standard.
+        // Asumimos que "estado" y "numero" son columnas válidas.
+        // OJO: "estado" no existe en la tabla jornadas (según esquema previo),
+        // el estado se calcula dinámicamente en jornadas.routes.js.
+        // Pero si existiera, la query sería:
+        const { rows } = await db.query(
+            "SELECT round as numero FROM matches GROUP BY round ORDER BY MIN(startTime) DESC LIMIT 1"
+        );
+        // NOTA: La lógica original buscaba "estado = 'abierta'".
+        // Pero en jornadas.routes.js vimos que el estado es calculado.
+        // Voy a usar una lógica aproximada: La última jornada con partidos.
+        // O mejor, invocar evaluarJornada con la jornada actual calculada por fecha.
 
-                if (err) {
+        // Mejor enfoque: Calcular jornada actual basada en fecha, similar a jornadas.routes.js
+        const ahora = new Date().toISOString();
+        const { rows: matches } = await db.query(`
+            SELECT round, MIN("startTime") as start, MAX("startTime") as end
+            FROM matches
+            GROUP BY round
+        `);
 
-                    return res.status(500).json({
-                        error: err.message
-                    });
-
-                }
-
-                if (!row) {
-
-                    return res.status(404).json({
-                        error: "No hay jornada abierta"
-                    });
-
-                }
-
-                const resultado = await evaluarJornada(row.numero);
-
-                res.json(resultado);
-
-            }
+        const jornadaAbierta = matches.find(m =>
+            ahora >= new Date(m.start).toISOString() &&
+            ahora <= new Date(m.end).toISOString()
         );
 
+        if (!jornadaAbierta) {
+            return res.status(404).json({ error: "No hay jornada abierta (en curso) actualmente" });
+        }
+
+        const resultado = await evaluarJornada(jornadaAbierta.round);
+        res.json(resultado);
+
     } catch (e) {
-
-        res.status(500).json({
-            error: e.message
-        });
-
+        res.status(500).json({ error: e.message });
     }
 
 });
