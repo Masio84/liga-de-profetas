@@ -1,4 +1,4 @@
-const API = window.location.port === "3000" ? "/api" : "http://localhost:3000/api";
+const API = "/api";
 
 let usuarioId = null;
 let celularGuardado = localStorage.getItem("celular");
