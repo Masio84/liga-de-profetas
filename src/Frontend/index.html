@@ -474,7 +474,7 @@
 
 
     <div class="container main-layout">
-        
+
         <!-- COLUMNA IZQUIERDA: PARTIDOS -->
         <div class="matches-column">
             <h2>1. Arma tu Quiniela</h2>
@@ -483,11 +483,11 @@
 
         <!-- COLUMNA DERECHA: DATOS Y CARRITO -->
         <div class="sidebar-column">
-            
+
             <!-- PANEL DE USUARIO Y ACCIONES -->
             <div class="control-panel">
                 <h2>2. Tus Datos</h2>
-                
+
                 <div class="form-group">
                     <label>Nombre</label>
                     <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
@@ -501,14 +501,16 @@
                 <div class="form-group">
                     <label>Referencia de Pago (Opcional)</label>
                     <input type="text" id="referencia" placeholder="Clave de rastreo o folio">
-                    <small style="color: #94a3b8; display: block; margin-top: 5px;">*Ayuda a validar más rápido tu pago</small>
+                    <small style="color: #94a3b8; display: block; margin-top: 5px;">*Ayuda a validar más rápido tu
+                        pago</small>
                 </div>
 
                 <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
 
                 <!-- ACCIONES DE LA QUINIELA ACTUAL -->
                 <div class="current-pick-actions">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <span style="color: #94a3b8;">Costo de esta quiniela:</span>
                         <span id="costoActual" style="font-size: 24px; font-weight: bold; color: #4ade80;">$10</span>
                     </div>
@@ -516,7 +518,7 @@
                     <button id="btnAgregar" onclick="agregarAlCarrito()" class="btn-action btn-add">
                         🛒 Agregar Quiniela
                     </button>
-                    
+
                     <button class="btn-secondary" onclick="limpiarSeleccion()" style="margin-top: 10px; width: 100%;">
                         🗑️ Limpiar Selección
                     </button>
@@ -530,7 +532,7 @@
                 <div id="carritoItems" class="carrito-items">
                     <!-- Items se agregan aqui -->
                 </div>
-                
+
                 <div class="carrito-total">
                     <span>Total a Pagar:</span>
                     <span id="carritoTotal" style="color: #4ade80;">$0</span>
@@ -542,13 +544,13 @@
             </div>
 
             <!-- HISTORIAL -->
-             <div style="margin-top: 30px;">
+            <div style="margin-top: 30px;">
                 <h2 style="font-size: 20px;">📜 Tus Participaciones (Historial)</h2>
                 <div id="participaciones"></div>
-             </div>
+            </div>
 
-             <!-- REGLAMENTO BTN -->
-             <button class="reglamento-btn" onclick="abrirReglamento()" style="margin-top: 20px; width: 100%;">
+            <!-- REGLAMENTO BTN -->
+            <button class="reglamento-btn" onclick="abrirReglamento()" style="margin-top: 20px; width: 100%;">
                 📜 Ver Reglamento
             </button>
 
@@ -655,10 +657,13 @@
                 const data =
                     await res.json();
 
-                const disponible =
-                    data.jornadas.find(
-                        j => j.estado === "DISPONIBLE"
-                    );
+                // 1. FILTRAR DISPONIBLES
+                const disponibles = data.jornadas.filter(j => j.estado === "DISPONIBLE");
+
+                // 2. ORDENAR ASCENDENTE (Para obtener la próxima inmediata, igual que el header)
+                disponibles.sort((a, b) => a.numero - b.numero);
+
+                const disponible = disponibles.length > 0 ? disponibles[0] : null;
 
                 if (!disponible) return;
 
@@ -681,15 +686,15 @@
                 document.getElementById(
                     "premioPrimero"
                 ).innerText =
-                    `$${primero}`;
+                    `$${parseFloat(primero).toFixed(2)}`;
 
                 document.getElementById(
                     "premioSegundo"
                 ).innerText =
-                    `$${segundo}`;
+                    `$${parseFloat(segundo).toFixed(2)}`;
 
             } catch (error) {
-                console.error("Error iniciando countdown:", error);
+                console.error("Error actualizando jackpot:", error);
             }
 
         }
