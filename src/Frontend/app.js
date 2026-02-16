@@ -493,6 +493,11 @@ function seleccionarPronostico(matchId, valor) {
     actualizarCostoEstimado();
 }
 
+//
+// CARRITO LOGIC
+//
+let carrito = [];
+
 function actualizarCostoEstimado() {
     let dobles = 0;
     let triples = 0;
@@ -504,284 +509,224 @@ function actualizarCostoEstimado() {
 
     const costo = COSTO_BASE * (Math.pow(2, dobles)) * (Math.pow(3, triples));
 
-    const btnParticipar = document.querySelector("button[onclick='participar()']");
-    if (btnParticipar) {
-        btnParticipar.innerHTML = `Participar ($${costo})`;
-        // Guardar costo en atributo para usarlo al enviar
-        btnParticipar.dataset.costo = costo;
+    const lblCosto = document.getElementById("costoActual");
+    if (lblCosto) {
+        lblCosto.innerText = "$" + costo;
     }
+
+    return costo; // Return for usage
 }
 
+function limpiarSeleccion() {
+    pronosticosSeleccionados = {};
+    actualizarCostoEstimado();
 
-//
-// CARGAR PARTICIPACIONES USUARIO
-//
-async function cargarParticipacionesUsuario() {
-
-    if (!usuarioId)
-        return;
-
-    try {
-        const res =
-            await fetch(
-                `${API}/participaciones`
-            );
-
-        if (!res.ok) {
-            throw new Error(`Error ${res.status}: ${res.statusText}`);
-        }
-
-        const data =
-            await res.json();
-
-        const propias =
-            (data.participaciones || []).filter(
-                p =>
-                    p.usuarioId === usuarioId &&
-                    p.activa === 1
-            );
-
-        let html = "";
-
-        propias.forEach(p => {
-
-            const pronosticos =
-                typeof p.pronosticos === "string"
-                    ?
-                    JSON.parse(p.pronosticos)
-                    :
-                    p.pronosticos;
-
-            let lista = "";
-
-            pronosticos.forEach(pr => {
-
-                const match =
-                    matchesGlobal[
-                    pr.matchId
-                    ];
-
-                if (match) {
-
-                    lista += `
-                <div>
-                    ${match.homeTeam}
-                    vs
-                    ${match.awayTeam}
-                    →
-                    <strong>
-                    ${Array.isArray(pr.prediccion) ? pr.prediccion.join(" / ") : pr.prediccion}
-                    </strong>
-                </div>
-                `;
-
-                }
-
-            });
-
-            html += `
-        <div class="participacion-card">
-
-            <strong>
-            Participación #${p.id}
-            </strong>
-
-            <div style="
-                margin-top:5px;
-            ">
-                ${lista}
-            </div>
-
-        </div>
-        `;
-
-        });
-
-        document.getElementById(
-            "participaciones"
-        ).innerHTML =
-            html || "<p>No tienes participaciones activas</p>";
-    } catch (error) {
-        console.error("Error cargando participaciones:", error);
-        document.getElementById("participaciones").innerHTML =
-            "<p style='color: red;'>Error al cargar participaciones</p>";
-    }
-
+    // Reset UI
+    document.querySelectorAll(".match-card button").forEach(btn => {
+        btn.style.backgroundColor = "#111";
+        btn.style.border = "1px solid #333";
+        btn.style.boxShadow = "none";
+    });
 }
 
-
-//
-// PARTICIPAR
-//
-async function participar() {
-
-    const nombre =
-        document.getElementById("nombre").value.trim();
-
-    const celular =
-        document.getElementById("celular").value.trim();
-
-    const referenciaPago =
-        document.getElementById("referencia").value.trim();
-
-    if (!nombre || !celular) {
-
-        alert("Ingresa nombre y celular");
-        return;
-
-    }
-
-    const buscar =
-        await fetch(
-            API +
-            "/usuarios/celular/" +
-            celular
-        );
-
-    if (buscar.ok) {
-
-        const usuario =
-            await buscar.json();
-
-        usuarioId =
-            usuario.id;
-
-    }
-    else {
-
-        const crear =
-            await fetch(
-                API +
-                "/usuarios",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-                    body: JSON.stringify({
-                        nombre,
-                        celular
-                    })
-                }
-            );
-
-        const nuevo =
-            await crear.json();
-
-        usuarioId =
-            nuevo.id;
-
-        localStorage.setItem(
-            "celular",
-            celular
-        );
-
-    }
-
-    // Validar que se hayan seleccionado pronósticos para todos los partidos
+async function agregarAlCarrito() {
+    // 1. Validaciones básicas
     if (!jornadaSeleccionada) {
-        alert("No hay jornada disponible para participar");
+        alert("No hay jornada disponible.");
         return;
     }
 
-    // Obtener todos los partidos de la jornada
+    // Obtener matches para validar completitud
     let matchesJornada = [];
     try {
         const resMatches = await fetch(`${API}/jornadas/${jornadaSeleccionada}/matches`);
         const dataMatches = await resMatches.json();
         matchesJornada = dataMatches.matches || [];
     } catch (error) {
-        alert("Error al obtener partidos de la jornada");
         console.error(error);
-        return;
-    }
-
-    if (matchesJornada.length === 0) {
-        alert("La jornada no tiene partidos registrados");
         return;
     }
 
     // Verificar que todos los partidos tengan pronóstico
     const partidosSinPronostico = [];
     matchesJornada.forEach(match => {
-        if (!pronosticosSeleccionados[match.id]) {
+        // match.id debe ser string en las keys del objeto? no, es int key, pero accessos... 
+        // pronosticosSeleccionados tiene keys ints.
+        if (!pronosticosSeleccionados[match.id] || pronosticosSeleccionados[match.id].length === 0) {
             partidosSinPronostico.push(`${match.homeTeam} vs ${match.awayTeam}`);
         }
     });
 
     if (partidosSinPronostico.length > 0) {
-        alert(`Debes seleccionar un pronóstico para todos los partidos.\n\nFaltan:\n${partidosSinPronostico.join("\n")}`);
+        alert(`Faltan pronósticos en:\n${partidosSinPronostico.join("\n")}`);
         return;
     }
 
-    // Validar que los pronósticos sean válidos
-    const prediccionesValidas = ["LOCAL", "VISITA", "EMPATE"];
-    // Flatten arrays to check all values
-    const todosLosPronosticos = Object.values(pronosticosSeleccionados).flat();
+    // 2. Calcular costo
+    const costo = actualizarCostoEstimado();
 
-    const pronosticosInvalidos = todosLosPronosticos.filter(
-        p => !prediccionesValidas.includes(p)
-    );
+    // 3. Crear Objeto Quiniela
+    const nuevaQuiniela = {
+        idTemp: Date.now(), // ID temporal para el carrito
+        jornada: jornadaSeleccionada,
+        monto: costo,
+        pronosticos: JSON.parse(JSON.stringify(pronosticosSeleccionados)), // Deep copy
+        pronosticosFormatoApi: Object.entries(pronosticosSeleccionados).map(([mId, pred]) => ({
+            matchId: parseInt(mId),
+            prediccion: pred // Array o string
+        }))
+    };
 
-    if (pronosticosInvalidos.length > 0) {
-        alert("Hay pronósticos con valores inválidos");
-        return;
-    }
+    // 4. Agregar al array
+    carrito.push(nuevaQuiniela);
 
-    const pronosticos =
-        Object.entries(
-            pronosticosSeleccionados
-        )
-            .map(
-                ([matchId, prediccion]) => ({
-                    matchId:
-                        parseInt(matchId),
-                    prediccion
-                })
-            );
+    // 5. Actualizar UI
+    renderizarCarrito();
+    limpiarSeleccion();
 
-    try {
-        const response = await fetch(
-            `${API}/participaciones`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    usuarioId,
-                    jornada:
-                        jornadaSeleccionada,
-                    monto: parseInt(document.querySelector("button[onclick='participar()']").dataset.costo || 10),
-                    pronosticos,
-                    referenciaPago
-                })
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            alert(`Error: ${result.error || "No se pudo crear la participación"}`);
-            return;
-        }
-
-        alert("¡Participación creada exitosamente! Recuerda transferir $10 a la CLABE: 072010001847418050 para validar tu participación.");
-
-        // Limpiar selecciones
-        pronosticosSeleccionados = {};
-        await cargarMatches(jornadaSeleccionada);
-        await cargarParticipacionesUsuario();
-
-    } catch (error) {
-        alert("Error al crear la participación. Por favor intenta de nuevo.");
-        console.error(error);
-    }
-
+    // Scroll al carrito en movil si es necesario, o feedback visual
+    // alert("Quiniela agregada al carrito");
 }
 
+function eliminarDelCarrito(idTemp) {
+    carrito = carrito.filter(q => q.idTemp !== idTemp);
+    renderizarCarrito();
+}
+
+function renderizarCarrito() {
+    const container = document.getElementById("carritoContainer");
+    const list = document.getElementById("carritoItems");
+    const totalLabel = document.getElementById("carritoTotal");
+
+    if (carrito.length === 0) {
+        container.style.display = "none";
+        return;
+    }
+
+    container.style.display = "block";
+
+    let html = "";
+    let total = 0;
+
+    carrito.forEach((q, index) => {
+        total += q.monto;
+        html += `
+            <div class="carrito-item">
+                <div class="carrito-item-info">
+                    <strong>Quiniela #${index + 1}</strong><br>
+                    Jornada ${q.jornada}
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <span class="carrito-item-cost">$${q.monto}</span>
+                    <button class="btn-delete-item" onclick="eliminarDelCarrito(${q.idTemp})">×</button>
+                </div>
+            </div>
+        `;
+    });
+
+    list.innerHTML = html;
+    totalLabel.innerText = "$" + total;
+}
+
+async function enviarCarrito() {
+    const nombre = document.getElementById("nombre").value.trim();
+    const celular = document.getElementById("celular").value.trim();
+    const referenciaPago = document.getElementById("referencia").value.trim();
+
+    if (!nombre || !celular) {
+        alert("Por favor ingresa tu Nombre y Celular para procesar las quinielas.");
+        document.getElementById("nombre").focus();
+        return;
+    }
+
+    if (carrito.length === 0) return;
+
+    if (!confirm(`¿Confirmas enviar ${carrito.length} quinielas por un total de $${document.getElementById("carritoTotal").innerText}?`)) {
+        return;
+    }
+
+    // 1. Asegurar usuario
+    let uId = usuarioId;
+    if (!uId) {
+        // Crear o buscar usuario
+        try {
+            const buscar = await fetch(API + "/usuarios/celular/" + celular);
+            if (buscar.ok) {
+                const u = await buscar.json();
+                uId = u.id;
+            } else {
+                const crear = await fetch(API + "/usuarios", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ nombre, celular })
+                });
+                const nuevo = await crear.json();
+                uId = nuevo.id;
+            }
+            usuarioId = uId;
+            localStorage.setItem("celular", celular);
+        } catch (e) {
+            alert("Error conectando con el servidor (Usuario).");
+            console.error(e);
+            return;
+        }
+    }
+
+    // 2. Enviar Sequencialmente (para no saturar o simplificar error handling)
+    let enviadas = 0;
+    let errores = 0;
+
+    // Mostrar loading?
+    const btnSubmit = document.querySelector(".btn-submit");
+    const txtOriginal = btnSubmit.innerText;
+    btnSubmit.innerText = "Enviando...";
+    btnSubmit.disabled = true;
+
+    for (const q of carrito) {
+        try {
+            const body = {
+                usuarioId: uId,
+                jornada: q.jornada,
+                monto: q.monto,
+                pronosticos: q.pronosticosFormatoApi,
+                referenciaPago
+            };
+
+            const res = await fetch(`${API}/participaciones`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
+
+            if (res.ok) {
+                enviadas++;
+            } else {
+                errores++;
+            }
+
+        } catch (e) {
+            console.error(e);
+            errores++;
+        }
+    }
+
+    btnSubmit.innerText = txtOriginal;
+    btnSubmit.disabled = false;
+
+    if (errores === 0) {
+        alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nRecuerda hacer tu pago total a la cuenta indicada.`);
+        carrito = [];
+        renderizarCarrito();
+        cargarParticipacionesUsuario();
+    } else {
+        alert(`Se enviaron ${enviadas} quinielas, pero hubo ${errores} errores.\nRevisa tu historial y vuelve a intentar las que faltaron.`);
+        // No limpiamos el carrito completo por si quiere reintentar? 
+        // Simplificación: Limpiamos carrito visualmente para obligar a verificar historial
+        carrito = [];
+        renderizarCarrito();
+        cargarParticipacionesUsuario();
+    }
+}
 
 //
 // INIT

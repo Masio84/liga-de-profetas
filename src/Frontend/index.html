@@ -473,42 +473,87 @@
 
 
 
-    <div class="container">
-        <h2>Partidos</h2>
-
-        <!-- Matches: Ancho 100% hasta 800px para mantener diseño -->
-        <div id="matches" style="display: flex; flex-direction: column; gap: 15px; width: 100%; max-width: 800px;">
+    <div class="container main-layout">
+        
+        <!-- COLUMNA IZQUIERDA: PARTIDOS -->
+        <div class="matches-column">
+            <h2>1. Arma tu Quiniela</h2>
+            <div id="matches"></div>
         </div>
 
+        <!-- COLUMNA DERECHA: DATOS Y CARRITO -->
+        <div class="sidebar-column">
+            
+            <!-- PANEL DE USUARIO Y ACCIONES -->
+            <div class="control-panel">
+                <h2>2. Tus Datos</h2>
+                
+                <div class="form-group">
+                    <label>Nombre</label>
+                    <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
+                </div>
 
-        <h2>Participar</h2>
+                <div class="form-group">
+                    <label>Celular (10 dígitos)</label>
+                    <input type="tel" id="celular" placeholder="Ej. 5512345678" onchange="initUsuario()">
+                </div>
 
-        <div style="max-width: 400px; width: 100%; margin: 0 auto; display: flex; flex-direction: column; gap: 10px;">
-            <input type="text" id="nombre" placeholder="Tu nombre"
-                style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 100%; box-sizing: border-box;">
+                <div class="form-group">
+                    <label>Referencia de Pago (Opcional)</label>
+                    <input type="text" id="referencia" placeholder="Clave de rastreo o folio">
+                    <small style="color: #94a3b8; display: block; margin-top: 5px;">*Ayuda a validar más rápido tu pago</small>
+                </div>
 
-            <input type="text" id="celular" placeholder="Celular"
-                style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 100%; box-sizing: border-box;">
+                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
 
-            <input type="text" id="referencia" placeholder="Referencia de Pago (opcional)"
-                style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; width: 100%; box-sizing: border-box;">
+                <!-- ACCIONES DE LA QUINIELA ACTUAL -->
+                <div class="current-pick-actions">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span style="color: #94a3b8;">Costo de esta quiniela:</span>
+                        <span id="costoActual" style="font-size: 24px; font-weight: bold; color: #4ade80;">$10</span>
+                    </div>
 
-            <button onclick="participar()"
-                style="padding: 12px; background: #00d4ff; color: #0a1a2e; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">
-                Participar ($10)
-            </button>
+                    <button id="btnAgregar" onclick="agregarAlCarrito()" class="btn-action btn-add">
+                        🛒 Agregar Quiniela
+                    </button>
+                    
+                    <button class="btn-secondary" onclick="limpiarSeleccion()" style="margin-top: 10px; width: 100%;">
+                        🗑️ Limpiar Selección
+                    </button>
+                </div>
 
-            <!-- BOTÓN REGLAMENTO MOVIDO AQUÍ -->
-            <button class="reglamento-btn" onclick="abrirReglamento()" style="margin-top: 15px; width: 100%;">
+            </div>
+
+            <!-- CARRITO DE COMPRAS -->
+            <div id="carritoContainer" class="carrito-panel" style="display: none;">
+                <h3>🛒 Tu Carrito</h3>
+                <div id="carritoItems" class="carrito-items">
+                    <!-- Items se agregan aqui -->
+                </div>
+                
+                <div class="carrito-total">
+                    <span>Total a Pagar:</span>
+                    <span id="carritoTotal" style="color: #4ade80;">$0</span>
+                </div>
+
+                <button onclick="enviarCarrito()" class="btn-action btn-submit">
+                    🚀 Enviar Todo
+                </button>
+            </div>
+
+            <!-- HISTORIAL -->
+             <div style="margin-top: 30px;">
+                <h2 style="font-size: 20px;">📜 Tus Participaciones (Historial)</h2>
+                <div id="participaciones"></div>
+             </div>
+
+             <!-- REGLAMENTO BTN -->
+             <button class="reglamento-btn" onclick="abrirReglamento()" style="margin-top: 20px; width: 100%;">
                 📜 Ver Reglamento
             </button>
+
         </div>
 
-
-        <h2>Tus participaciones</h2>
-
-        <div id="participaciones"
-            style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 800px;"></div>
     </div>
 
 
