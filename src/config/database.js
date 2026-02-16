@@ -8,7 +8,7 @@ const { Pool } = pg;
 import dns from 'dns';
 import { promisify } from 'util';
 
-const resolve4 = promisify(dns.resolve4);
+const lookup = promisify(dns.lookup);
 
 // Función para obtener configuración de DB resolviendo IPv4 explícitamente
 // Esto evita errores ENETUNREACH en Render cuando intenta usar IPv6 con Supabase
@@ -19,32 +19,31 @@ const getDbConfig = async () => {
         throw new Error("DATABASE_URL no está definida");
     }
 
-    // Si es local o no necesitamos hack, retornamos string directo
-    // Pero para Render + Supabase, validamos.
     try {
         const url = new URL(connectionString);
-        console.log(`Resolviendo DNS para ${url.hostname}...`);
+        console.log(`Resolviendo IP (Lookup family: 4) para ${url.hostname}...`);
 
-        const ipAddresses = await resolve4(url.hostname);
+        // Usamos dns.lookup con family: 4 para obligar a obtener IPv4
+        // Esto usa el resolver del sistema (getaddrinfo) que puede ser más permisivo que resolve4
+        const { address } = await lookup(url.hostname, { family: 4 });
 
-        if (ipAddresses && ipAddresses.length > 0) {
-            console.log(`DNS Resuelto: ${url.hostname} -> ${ipAddresses[0]}`);
-            const ip = ipAddresses[0];
+        if (address) {
+            console.log(`DNS Resuelto: ${url.hostname} -> ${address}`);
 
-            // Reconstruimos la config usando la IP
             return {
-                host: ip,
+                host: address, // Usamos la IP resuelta
                 port: url.port || 5432,
                 user: url.username,
                 password: url.password,
-                database: url.pathname.slice(1), // Eliminar el '/' inicial
+                database: url.pathname.slice(1),
                 ssl: {
                     rejectUnauthorized: false
                 }
             };
         }
     } catch (e) {
-        console.warn("Fallo resolución DNS manual, usando string original:", e.message);
+        console.warn("Fallo resolución IPv4 (lookup):", e.message);
+        // Si falla, probablemente fallará la conexión normal también si no hay IPv6 route
     }
 
     return {
