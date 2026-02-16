@@ -729,6 +729,8 @@ async function init() {
 
     await cargarParticipacionesUsuario();
 
+    actualizarCostoEstimado();
+
 }
 
 init();
