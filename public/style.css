@@ -116,11 +116,13 @@ h3,
 
 .hero-title {
     font-size: 52px;
-    color: #ffffff; /* Solid White for max contrast */
-    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.6); /* Stronger shadow */
+    color: #ffffff;
+    /* Sombras más fuertes y definidas para mayor contraste */
+    text-shadow:
+        4px 4px 0px #000000,
+        0 0 20px rgba(0, 0, 0, 0.8);
     margin: 0 0 10px 0;
     line-height: 1;
-    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
 .hero-subtitle {
