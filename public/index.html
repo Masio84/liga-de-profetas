@@ -78,19 +78,37 @@
         max-width: 800px;
         margin: 0 auto 30px;
         background: rgba(197, 160, 89, 0.1);
-        border: 1px solid var(--gold-primary);
-        border-radius: 8px;
-        padding: 15px;
+        border: 2px solid var(--gold-primary);
+        border-radius: 12px;
+        padding: 25px;
         text-align: center;
         color: #fff;
+        box-shadow: 0 0 20px rgba(197, 160, 89, 0.2);
     ">
-        <strong style="color: var(--gold-primary); text-transform: uppercase;">⚠️ ¡Atención Profetas!</strong>
-        <p style="margin: 5px 0 0; font-size: 0.9em; color: #e2e8f0;">
-            En caso de empate en aciertos, <strong>gana quien haya enviado su quiniela primero</strong>.
+        <h2 style="
+            color: var(--gold-primary); 
+            text-transform: uppercase; 
+            font-size: 24px; 
+            margin: 0 0 15px 0;
+            text-shadow: 0 0 10px rgba(197, 160, 89, 0.5);
+        ">
+            ⚠️ ¡Entre más pronto participes, mayor ventaja tienes!
+        </h2>
+        <p style="
+            margin: 0; 
+            font-size: 16px; 
+            color: #e2e8f0; 
+            line-height: 1.6;
+        ">
+            En caso de empate en aciertos, gana quien haya enviado su quiniela primero.
             <br>
-            ¡No esperes al último momento! Entre más pronto participes, mayor ventaja tienes.
+            <strong style="color: #fff;">¡No esperes al último momento!</strong>
         </p>
     </div>
+
+    <!-- MODAL REGLAMENTO (CLABE UPDATE) -->
+    <!-- ... (This part is inside modalReglamento, need to verify line numbers) -->
+
 
     <div class="container main-layout">
 
@@ -226,7 +244,8 @@
             <div class="payment-box">
                 <div style="margin-bottom: 5px;"><strong>Costo de participación: $10 MXN</strong></div>
                 <div>Transferencia a cuenta CLABE:</div>
-                <span class="payment-highlight">072010001847418050</span>
+                <span class="payment-highlight">728969000159916895</span>
+                <div style="color: var(--gold-primary); font-weight: bold; margin-top: 5px;">Banco: Spin by Oxxo</div>
                 <div style="font-size: 0.9em; margin-top: 8px; color: #aaa;">*Usa esta referencia al llenar tu quiniela
                 </div>
             </div>
@@ -258,6 +277,9 @@
             <div class="payment-box">
                 <div style="margin-bottom: 10px; color:#cbd5e1;">Cuenta CLABE para transferencia:</div>
 
+                <div style="color: var(--gold-primary); font-weight: bold; margin-bottom: 5px;">Banco: Spin by Oxxo
+                </div>
+
                 <div style="
                     display: flex; 
                     align-items: center; 
@@ -269,7 +291,7 @@
                     border: 1px dashed rgba(255,255,255,0.1);
                 ">
                     <span id="clabeTexto" class="payment-highlight"
-                        style="margin:0; font-size:1.4em; letter-spacing:1px; color:#fff;">072010001847418050</span>
+                        style="margin:0; font-size:1.4em; letter-spacing:1px; color:#fff;">728969000159916895</span>
 
                     <button onclick="copiarCLABE()" style="
                         background: rgba(74, 222, 128, 0.1); 

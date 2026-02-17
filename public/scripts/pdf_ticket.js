@@ -146,7 +146,7 @@ async function generarTicketPDF(datos) {
         // BANCO
         doc.text("Banco:", x + 2, cursorY);
         doc.setFont("helvetica", "bold");
-        doc.text("BANORTE", x + 25, cursorY);
+        doc.text("Spin by Oxxo", x + 25, cursorY);
         cursorY += 4;
 
         // CLABE
