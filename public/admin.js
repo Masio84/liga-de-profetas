@@ -617,30 +617,48 @@ function filtrarAdmin() {
 // REPORTE PDF
 async function generarReportePDF() {
     const { jsPDF } = window.jspdf;
+
+    // 1. Cargar Logo (Promisified)
+    const loadImage = (src) => new Promise((resolve, reject) => {
+        const img = new Image();
+        img.src = src;
+        img.onload = () => resolve(img);
+        img.onerror = () => resolve(null); // Si falla, que siga sin logo
+    });
+
+    const logo = await loadImage("assets/logo-original.png");
     const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
 
-    // Header
-    doc.setFillColor(0, 0, 0);
-    doc.rect(0, 0, 210, 25, 'F');
-    doc.setTextColor(255, 215, 0); // Gold
-    doc.setFontSize(16);
-    doc.setFont("helvetica", "bold");
-    doc.text("LIGA DE PROFETAS - REPORTE DE PARTICIPACIONES", 105, 12, { align: "center" });
+    // 2. Definir Estilos y Header
+    const drawHeader = (doc) => {
+        // Fondo Verde
+        doc.setFillColor(0, 50, 0); // Dark Green (Liga Profetas Style)
+        doc.rect(0, 0, pageWidth, 30, 'F');
 
-    // Metadata
-    doc.setTextColor(50);
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
+        // Logo
+        if (logo) {
+            doc.addImage(logo, "PNG", 10, 5, 20, 20); // Top Left
+        }
+
+        // Título Central
+        doc.setTextColor(255, 215, 0); // Gold
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("LIGA DE PROFETAS", pageWidth / 2, 12, { align: "center" });
+
+        doc.setFontSize(11);
+        doc.setTextColor(255, 255, 255);
+        doc.text("REPORTE DE PARTICIPACIONES", pageWidth / 2, 20, { align: "center" });
+    };
+
+    // 3. Metadata del Reporte
     const fecha = new Date().toLocaleString();
     const filtroTexto = document.getElementById("adminSearchInput").value || "Ninguno";
     const filtroEstado = document.getElementById("adminStatusFilter").options[document.getElementById("adminStatusFilter").selectedIndex].text;
 
-    doc.text(`Fecha de Reporte: ${fecha}`, 14, 32);
-    doc.text(`Filtro Aplicado: ${filtroEstado} | Búsqueda: "${filtroTexto}"`, 14, 38);
-
-    // Get current filtered data (reuse logic or access filtered state appropriately, 
-    // for simplicity assuming renderizarParticipacionesAdmin updates a global or we re-filter)
-    // To ensure accuracy, let's re-run the filter logic:
+    // 4. Obtener Datos Filtrados
     const texto = document.getElementById("adminSearchInput").value.toLowerCase().trim();
     const estado = document.getElementById("adminStatusFilter").value;
     const dataToPrint = participacionesCache.filter(p => {
@@ -655,7 +673,7 @@ async function generarReportePDF() {
         return matchTexto && matchEstado;
     }).sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // Ordenar por fecha desc
 
-    // Prepare Table Data
+    // 5. Tabla
     const tableBody = dataToPrint.map((p, index) => [
         index + 1,
         p.folio || "S/F",
@@ -668,13 +686,43 @@ async function generarReportePDF() {
     ]);
 
     doc.autoTable({
-        startY: 45,
+        startY: 35, // Debajo del header
         head: [['#', 'Folio', 'Usuario', 'Referencia', 'Monto', 'Jornada', 'Estado', 'Fecha']],
         body: tableBody,
         theme: 'grid',
-        headStyles: { fillColor: [0, 0, 0], textColor: [255, 215, 0] },
+        headStyles: {
+            fillColor: [0, 50, 0], // Green Header Table
+            textColor: [255, 255, 255]
+        },
         styles: { fontSize: 8 },
-        alternateRowStyles: { fillColor: [240, 240, 240] }
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        // Hooks para Header/Footer en cada página
+        didDrawPage: function (data) {
+            // Header Global en cada página
+            drawHeader(doc);
+
+            // Info de Filtros (Solo primera página o en todas si se desea, aquí debajo del header)
+            if (data.pageNumber === 1) {
+                doc.setFontSize(8);
+                doc.setTextColor(50);
+                doc.text(`Fecha: ${fecha} | Filtro: ${filtroEstado} | Búsqueda: "${filtroTexto}"`, 14, 33);
+            }
+
+            // Footer (Copyright & Page Number)
+            const str = "Página " + doc.internal.getNumberOfPages();
+            doc.setFontSize(8);
+            doc.setTextColor(150);
+            const footerY = pageHeight - 10;
+
+            // Copyright Left
+            doc.text("© 2026 Liga de Profetas", 14, footerY);
+
+            // Page Number Right
+            const pageSize = doc.internal.pageSize;
+            const pageHeightLocal = pageSize.height ? pageSize.height : pageSize.getHeight();
+            doc.text(str, pageSize.width - 25, footerY);
+        },
+        margin: { top: 35 } // Asegurar margen superior para el header
     });
 
     doc.save(`Reporte_LigaProfetas_${new Date().toISOString().slice(0, 10)}.pdf`);
