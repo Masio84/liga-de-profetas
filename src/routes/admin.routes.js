@@ -29,6 +29,37 @@ router.post("/sync/resultados", async (req, res) => {
 });
 
 //
+// OBTENER TODAS LAS PARTICIPACIONES
+//
+router.get("/participaciones", async (req, res) => {
+    try {
+        const { rows } = await db.query(`
+            SELECT 
+                p.id,
+                p.usuario_id,
+                u.nombre as usuario,
+                u.celular,
+                p.jornada,
+                p.monto,
+                p.pronosticos,
+                p.fecha,
+                p.activa,
+                p.validada,
+                p.referencia_pago as "referenciaPago",
+                p.folio
+            FROM participaciones p
+            JOIN usuarios u ON p.usuario_id = u.id
+            ORDER BY p.fecha DESC
+        `);
+
+        res.json({ participaciones: rows });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error obteniendo participaciones" });
+    }
+});
+
+//
 // VALIDAR PARTICIPACION
 //
 router.post("/participaciones/:id/validar", async (req, res) => {
