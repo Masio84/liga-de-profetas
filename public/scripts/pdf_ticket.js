@@ -142,21 +142,29 @@ async function generarTicketPDF(datos) {
 
         doc.setFontSize(7);
         doc.setFont("helvetica", "normal");
+
+        // BANCO
         doc.text("Banco:", x + 2, cursorY);
         doc.setFont("helvetica", "bold");
         doc.text("BANORTE", x + 25, cursorY);
         cursorY += 4;
 
+        // CLABE
         doc.setFont("helvetica", "normal");
         doc.text("Cuenta/CLABE:", x + 2, cursorY);
         doc.setFont("helvetica", "bold");
         doc.text(datos.clabe, x + 25, cursorY);
-        cursorY += 4;
+        cursorY += 6;
 
-        doc.setFont("helvetica", "normal");
-        doc.text("Beneficiario:", x + 2, cursorY);
-        doc.text("Liga de Profetas", x + 25, cursorY);
-        cursorY += 8;
+        // REFERENCIA (RESALTADA)
+        doc.setFillColor(0, 0, 0);
+        doc.rect(x, cursorY, ancho, 8, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(8);
+        doc.text(`REF: ${datos.referencia}`, 40, cursorY + 5, { align: "center" });
+        doc.setTextColor(0, 0, 0);
+
+        cursorY += 12;
 
         // 6. PIE
         doc.setFontSize(6);

@@ -172,10 +172,23 @@ async function fetchAuth(url, options = {}) {
         headers["Authorization"] = `Bearer ${adminToken}`;
     }
 
-    return fetch(url, {
+    const res = await fetch(url, {
         ...options,
         headers
     });
+
+    if (!res.ok) {
+        const text = await res.text();
+        console.error(`Fetch Error (${res.status}):`, text);
+        try {
+            const json = JSON.parse(text);
+            throw new Error(json.error || `Error ${res.status}: ${res.statusText}`);
+        } catch (e) {
+            throw new Error(`Error ${res.status}: ${text || res.statusText}`);
+        }
+    }
+
+    return res;
 }
 
 

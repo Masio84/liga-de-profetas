@@ -298,23 +298,31 @@ h3,
 }
 
 /* PANELS */
-.control-panel,
+/* PANELS */
+.control-panel {
+    background: var(--black-light);
+    border: 1px solid #333;
+    border-top: 4px solid var(--gold-primary);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #0f172a;
+    position: relative;
+    /* No sticky */
+}
+
 .carrito-panel {
     background: var(--black-light);
     border: 1px solid #333;
     border-top: 4px solid var(--gold-primary);
     padding: 20px;
     border-radius: 8px;
-    border-radius: 8px;
     position: sticky;
     top: 20px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
-    /* Stronger shadow */
     margin-bottom: 20px;
     z-index: 100;
-    /* Ensure it stays above other flowing content */
     background-color: #0f172a;
-    /* Solid background to prevent see-through */
     transition: all 0.3s ease;
 }
 
