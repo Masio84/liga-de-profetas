@@ -485,59 +485,53 @@
                             labelDiv.style.textTransform = 'uppercase';
 
                             // Crear timer
-                            timerDiv = document.createElement('div');
-                            timerDiv.id = 'countdown-display';
-                            timerDiv.style.marginTop = '5px';
-                            timerDiv.style.fontFamily = "'Courier New', monospace";
-                            timerDiv.style.fontSize = '24px';
-                            timerDiv.style.fontWeight = 'bold';
-                            timerDiv.style.color = '#00d4ff';
-                            timerDiv.style.textShadow = '0 0 10px rgba(0, 212, 255, 0.5)';
-
-                            // Insertar después de las fechas
-                            if (fechasEl && fechasEl.parentNode) {
-                                fechasEl.parentNode.appendChild(labelDiv);
-                                fechasEl.parentNode.appendChild(timerDiv);
-                            }
-                        }
-
-                        function actualizarTimer() {
-                            const ahora = new Date().getTime();
-                            const distancia = primerPartido - ahora;
-
+                            // TIMER
                             if (!timerDiv) {
                                 timerDiv = document.createElement("div");
                                 timerDiv.className = "stadium-clock";
-                                fechasEl.parentNode.appendChild(timerDiv);
-                            } if (distancia < 0) {
-                                if (timerDiv) {
-                                    timerDiv.innerHTML = "¡CERRADO!";
-                                    timerDiv.style.color = "#ef4444";
+
+                                if (fechasEl && fechasEl.parentNode) {
+                                    fechasEl.parentNode.appendChild(timerDiv);
                                 }
-                                return;
                             }
 
-                            const days = Math.floor(distancia / (1000 * 60 * 60 * 24));
-                            const hours = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            const minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
-                            const seconds = Math.floor((distancia % (1000 * 60)) / 1000);
+                            function actualizarTimer() {
+                                const ahora = new Date().getTime();
+                                const distancia = primerPartido - ahora;
 
-                            if (timerDiv) {
-                                timerDiv.innerHTML = `⏳ ${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                if (!timerDiv) {
+                                    timerDiv = document.createElement("div");
+                                    timerDiv.className = "stadium-clock";
+                                    fechasEl.parentNode.appendChild(timerDiv);
+                                } if (distancia < 0) {
+                                    if (timerDiv) {
+                                        timerDiv.innerHTML = "¡CERRADO!";
+                                        timerDiv.style.color = "#ef4444";
+                                    }
+                                    return;
+                                }
+
+                                const days = Math.floor(distancia / (1000 * 60 * 60 * 24));
+                                const hours = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                const minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+                                const seconds = Math.floor((distancia % (1000 * 60)) / 1000);
+
+                                if (timerDiv) {
+                                    timerDiv.innerHTML = `⏳ ${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                                }
                             }
+
+                            actualizarTimer();
+                            setInterval(actualizarTimer, 1000);
                         }
-
-                        actualizarTimer();
-                        setInterval(actualizarTimer, 1000);
+                    } catch (e) {
+                        console.error("Error al calcular countdown:", e);
                     }
-                } catch (e) {
-                    console.error("Error al calcular countdown:", e);
-                }
 
-            } catch (error) {
-                console.error("Error header:", error);
+                } catch (error) {
+                    console.error("Error header:", error);
+                }
             }
-        }
 
         iniciarHeader();
 
