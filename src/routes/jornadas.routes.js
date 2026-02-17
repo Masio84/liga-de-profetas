@@ -10,6 +10,9 @@ const router = express.Router();
 //
 router.get("/", async (req, res) => {
 
+    // CACHE: 60 segundos en CDN y borwser
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=60');
+
     const ahora = new Date().toISOString();
 
     try {
@@ -59,6 +62,9 @@ router.get("/", async (req, res) => {
 // Obtener matches de jornada específica
 //
 router.get("/:numero/matches", async (req, res) => {
+
+    // CACHE: 60 segundos
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=60');
 
     const numero = parseInt(req.params.numero);
     console.log(`[DEBUG] Requesting matches for round: ${numero} (raw: ${req.params.numero})`);

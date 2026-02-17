@@ -8,6 +8,9 @@ const router = Router();
 //
 router.get("/", async (req, res) => {
 
+    // CACHE: 60 segundos
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=60');
+
     try {
         const sql = `
             SELECT
@@ -44,6 +47,9 @@ router.get("/", async (req, res) => {
 // GET matches por jornada
 //
 router.get("/jornada/:numero", async (req, res) => {
+
+    // CACHE: 60 segundos
+    res.set('Cache-Control', 'public, max-age=60, s-maxage=60');
 
     const numero = parseInt(req.params.numero);
 

@@ -25,8 +25,10 @@
         h1 {
 
             text-align: center;
-            color: gold;
+            color: #C5A059;
             margin-bottom: 30px;
+            font-family: 'Russo One', sans-serif;
+            text-transform: uppercase;
 
         }
 
@@ -46,23 +48,7 @@
 
         }
 
-        .volver {
-
-            display: inline-block;
-            margin-top: 30px;
-            padding: 12px 18px;
-            background: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-
-        }
-
-        .volver:hover {
-
-            background: #1d4ed8;
-
-        }
+        /* Removed .volver css */
     </style>
 
 </head>
@@ -111,7 +97,7 @@
 
     <div class="seccion">
 
-        <span class="titulo">FORMAS DE JUGAR QUINIELAS MÚLTIPLES:</span>
+        <span class="titulo">FORMAS DE PARTICIPAR EN QUINIELAS MÚLTIPLES:</span>
         <br><br>
         <div
             style="background: rgba(34, 197, 94, 0.1); border-left: 4px solid #22c55e; padding: 10px; margin-bottom: 15px; font-style: italic;">
@@ -150,6 +136,8 @@
     </div>
 
 
+
+
     <div class="seccion">
         <span class="titulo">RESULTADOS OFICIALES.</span>
         Se tomará en cuenta el resultado del partido sólo el tiempo reglamentario, 90 minutos más el agregado excluyendo
@@ -186,10 +174,51 @@
     </div>
 
 
-    <a href="/" class="volver">
-        ← Volver a Liga de Profetas
-    </a>
+    <div style="text-align: center; margin-top: 40px;">
+        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+            <span>← Volver al Inicio</span>
+        </a>
+    </div>
 
+
+    <!-- FOOTER GLOBAL -->
+    <footer
+        style="text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
+
+        <!-- Copyright -->
+        <div style="margin-bottom: 15px; color: #94a3b8;">
+            &copy; 2026 Liga de Profetas. Todos los derechos reservados.
+        </div>
+
+        <!-- Disclaimer -->
+        <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
+            Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
+            participantes.
+            No constituye un sistema de apuestas ni juego de azar.
+        </p>
+
+        <!-- Navigation -->
+        <nav style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; font-size: 13px;">
+            <a href="terminos.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Términos y
+                Condiciones</a>
+            <span style="color: #334155;">|</span>
+            <a href="privacidad.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Aviso de
+                Privacidad</a>
+            <span style="color: #334155;">|</span>
+            <a href="reglamento.html"
+                style="color: #64748b; text-decoration: none; transition: color 0.2s;">Reglamento</a>
+            <span style="color: #334155;">|</span>
+            <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
+                Admin</a>
+        </nav>
+
+        <style>
+            nav a:hover {
+                color: #fff !important;
+                text-decoration: underline !important;
+            }
+        </style>
+    </footer>
 
 </body>
 

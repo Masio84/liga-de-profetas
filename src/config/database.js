@@ -99,7 +99,26 @@ const initDB = async () => {
             );
         `);
 
-    console.log("Tablas inicializadas correctamente.");
+    // TABLA ACEPTACION TERMINOS (Legal Audit)
+    await query(`
+            CREATE TABLE IF NOT EXISTS user_terms_acceptance (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL REFERENCES usuarios(id),
+                terms_version TEXT NOT NULL,
+                accepted_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+                ip_address TEXT,
+                user_agent TEXT,
+                legal_text_hash TEXT
+            );
+        `);
+
+    // ÍNDICES PARA MEJORAR PERFORMANCE (SCALABILITY)
+    console.log("Verificando índices...");
+    await query(`CREATE INDEX IF NOT EXISTS idx_matches_round ON matches(round);`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_participaciones_usuario ON participaciones(usuario_id);`);
+    await query(`CREATE INDEX IF NOT EXISTS idx_participaciones_jornada ON participaciones(jornada);`);
+
+    console.log("Tablas e índices inicializados correctamente.");
   } catch (err) {
     console.error("Error inicializando base de datos:", err);
   }

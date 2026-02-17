@@ -1,7 +1,7 @@
 const API = "/api";
 
 let usuarioId = null;
-let celularGuardado = localStorage.getItem("celular");
+let celularGuardado = null; // Removed localStorage persistence
 
 let jornadaSeleccionada = null;
 let pronosticosSeleccionados = {};
@@ -189,18 +189,22 @@ async function cargarJornadaDisponible() {
 
         jornadaSeleccionada = disponible.numero;
 
-        // Se actualiza ahora desde index.html iniciarHeader()
-        // document.getElementById("jornadaActual").innerHTML = `<h2>Jornada ${disponible.numero}</h2>`;
+        // ACTUALIZAR HEADER UI
+        const titulo = document.getElementById("jornadaTitulo");
+        const fechas = document.getElementById("jornadaFechas");
 
-        await cargarMatches(
-            disponible.numero
-        );
+        if (titulo) titulo.innerText = `JORNADA ${disponible.numero}`;
+        if (fechas && disponible.fechaInicio && disponible.fechaFin) {
+            fechas.innerText = `${formatearFecha(disponible.fechaInicio)} - ${formatearFecha(disponible.fechaFin)}`;
+        }
+
+        await cargarMatches(disponible.numero);
+        await cargarPozoActual(); // También cargar el pozo
+
     } catch (error) {
         console.error("Error cargando jornada disponible:", error);
-        document.getElementById(
-            "jornadaActual"
-        ).innerHTML =
-            "<h2>Error al cargar jornada</h2>";
+        const titulo = document.getElementById("jornadaTitulo");
+        if (titulo) titulo.innerText = "Error de Conexión";
     }
 
 }
@@ -601,8 +605,19 @@ function renderizarCarrito() {
         html += `
             <div class="carrito-item">
                 <div class="carrito-item-info">
-                    <strong>Quiniela #${index + 1}</strong><br>
-                    Jornada ${q.jornada}
+                    <strong>Quiniela #${index + 1}</strong> <span style="font-size:0.8em; color:#94a3b8;">(Jornada ${q.jornada})</span>
+                    <ul class="carrito-picks-list" style="margin:5px 0 0 10px; padding:0; font-size:0.85em; color:#cbd5e1; list-style:none;">
+                        ${Object.entries(q.pronosticos).map(([mId, picks]) => {
+            const m = matchesGlobal[mId];
+            if (!m) return "";
+            const picksText = picks.join("/"); // "LOCAL/EMPATE"
+            // Formato corto: "America: L" ?? O "America vs Chivas: L"
+            // User wants "resultados seleccionados visibles"
+            // Let's try: "Local (vs Visita)" or just match label?
+            // Let's go with: "Home vs Away: [SELECCION]"
+            return `<li>${m.homeTeam} vs ${m.awayTeam}: <strong style="color:#00d4ff">${picksText}</strong></li>`;
+        }).join("")}
+                    </ul>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <span class="carrito-item-cost">$${q.monto}</span>
@@ -616,10 +631,35 @@ function renderizarCarrito() {
     totalLabel.innerText = "$" + total;
 }
 
+//
+// MODAL PAGO LOGIC
+//
+function abrirModalPago() {
+    const total = document.getElementById("carritoTotal").innerText;
+    document.getElementById("modalTotalPagar").innerText = total;
+    document.getElementById("modalPago").style.display = "block";
+}
+
+function cerrarModalPago() {
+    document.getElementById("modalPago").style.display = "none";
+}
+
+function copiarCLABE() {
+    const clabe = document.getElementById("clabeTexto").innerText;
+    navigator.clipboard.writeText(clabe).then(() => {
+        const feedback = document.getElementById("copiadoFeedback");
+        feedback.style.opacity = "1";
+        setTimeout(() => {
+            feedback.style.opacity = "0";
+        }, 2000);
+    }).catch(err => {
+        console.error('Error al copiar: ', err);
+    });
+}
+
 async function enviarCarrito() {
     const nombre = document.getElementById("nombre").value.trim();
     const celular = document.getElementById("celular").value.trim();
-    const referenciaPago = document.getElementById("referencia").value.trim();
 
     if (!nombre || !celular) {
         alert("Por favor ingresa tu Nombre y Celular para procesar las quinielas.");
@@ -629,7 +669,27 @@ async function enviarCarrito() {
 
     if (carrito.length === 0) return;
 
-    if (!confirm(`¿Confirmas enviar ${carrito.length} quinielas por un total de $${document.getElementById("carritoTotal").innerText}?`)) {
+    // ABRIR MODAL EN LUGAR DE CONFIRM (User validation ok)
+    abrirModalPago();
+}
+
+async function confirmarPagoYEnviar() {
+
+    const btnConfirmar = document.querySelector("#modalPago .btn-action");
+    const txtOriginal = btnConfirmar.innerText;
+    btnConfirmar.innerText = "⏳ Enviando...";
+    btnConfirmar.disabled = true;
+
+    const nombre = document.getElementById("nombre").value.trim();
+    const celular = document.getElementById("celular").value.trim();
+    const referenciaPago = document.getElementById("referencia").value.trim();
+
+    // VALIDACION CHECKBOX LEGAL
+    const checkLegal = document.getElementById("checkLegal");
+    if (!checkLegal || !checkLegal.checked) {
+        alert("Debes aceptar los Términos y Condiciones y declarar ser mayor de edad para continuar.");
+        btnConfirmar.innerText = txtOriginal;
+        btnConfirmar.disabled = false;
         return;
     }
 
@@ -652,23 +712,34 @@ async function enviarCarrito() {
                 uId = nuevo.id;
             }
             usuarioId = uId;
-            localStorage.setItem("celular", celular);
+            // localStorage.setItem("celular", celular); // Persistence removed
         } catch (e) {
             alert("Error conectando con el servidor (Usuario).");
             console.error(e);
+            btnConfirmar.innerText = txtOriginal;
+            btnConfirmar.disabled = false;
             return;
         }
     }
 
-    // 2. Enviar Sequencialmente (para no saturar o simplificar error handling)
+    // 2. REGISTRAR ACEPTACION LEGAL (Una vez por envío)
+    try {
+        await fetch(`${API}/legal/accept-terms`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                userId: uId,
+                termsVersion: "1.0" // TERMS_VERSION constant - Ensure matches backend
+            })
+        });
+    } catch (errLegal) {
+        console.error("Error registrando aceptación legal:", errLegal);
+        // Continue flow as user already accepted via UI checkbox
+    }
+
+    // 3. Enviar Sequencialmente
     let enviadas = 0;
     let errores = 0;
-
-    // Mostrar loading?
-    const btnSubmit = document.querySelector(".btn-submit");
-    const txtOriginal = btnSubmit.innerText;
-    btnSubmit.innerText = "Enviando...";
-    btnSubmit.disabled = true;
 
     for (const q of carrito) {
         try {
@@ -698,21 +769,18 @@ async function enviarCarrito() {
         }
     }
 
-    btnSubmit.innerText = txtOriginal;
-    btnSubmit.disabled = false;
+    btnConfirmar.innerText = txtOriginal;
+    btnConfirmar.disabled = false;
+    cerrarModalPago();
 
     if (errores === 0) {
-        alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nRecuerda hacer tu pago total a la cuenta indicada.`);
+        alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nRecuerda adjuntar tu comprobante si se requiere.`);
         carrito = [];
         renderizarCarrito();
-        // cargarParticipacionesUsuario();
     } else {
-        alert(`Se enviaron ${enviadas} quinielas, pero hubo ${errores} errores.\nRevisa tu historial y vuelve a intentar las que faltaron.`);
-        // No limpiamos el carrito completo por si quiere reintentar? 
-        // Simplificación: Limpiamos carrito visualmente para obligar a verificar historial
+        alert(`Se enviaron ${enviadas} quinielas, pero hubo ${errores} errores.\nRevisa tu historial.`);
         carrito = [];
         renderizarCarrito();
-        // cargarParticipacionesUsuario();
     }
 }
 

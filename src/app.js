@@ -3,6 +3,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import dotenv from "dotenv";
+import rateLimit from "express-rate-limit";
 
 // Cargar variables de entorno
 dotenv.config();
@@ -15,6 +16,7 @@ import resultadosRoutes from "./routes/resultados.routes.js";
 import evaluacionRoutes from "./routes/evaluacion.routes.js";
 import adminRoutes from "./routes/admin.routes.js";
 import syncRoutes from "./routes/sync.routes.js";
+import legalRoutes from "./routes/legal.routes.js"; // Legal Audit
 
 import { syncResultados }
     from "./services/sync.service.js";
@@ -39,6 +41,19 @@ app.use(cors({
 }));
 app.use(express.json());
 
+
+//
+// Rate Limiter (Scalability & Security)
+//
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 100, // Limite de 100 peticiones por IP
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    message: { status: "error", message: "Too many requests, please try again later." }
+});
+
+app.use(limiter);
 
 //
 // Servir frontend
@@ -76,8 +91,14 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/admin/sync", syncRoutes);
 
+app.use("/api/legal", legalRoutes); // Legal Routing
+
 import cronRoutes from "./routes/cron.routes.js";
 app.use("/api/cron", cronRoutes);
+
+app.get("/api/health", (req, res) => {
+    res.json({ status: "ok", timestamp: new Date() });
+});
 
 
 //

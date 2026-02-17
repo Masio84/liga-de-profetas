@@ -20,3 +20,7 @@ Thumbs.db
 # Editor
 .vscode/
 .idea/
+.vercel
+
+# Legacy / Archive
+_legacy/

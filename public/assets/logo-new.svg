@@ -1,0 +1,27 @@
+<svg width="300" height="300" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C5A059;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8A6E36;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+  
+  <!-- Shield Shape -->
+  <path d="M150 20 L280 70 V160 Q280 240 150 290 Q20 240 20 160 V70 Z" 
+        fill="#002200" stroke="url(#goldGrad)" stroke-width="8" filter="url(#shadow)"/>
+  
+  <!-- Inner Detail -->
+  <path d="M150 35 L260 78 V155 Q260 220 150 265 Q40 220 40 155 V78 Z" 
+        fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.5"/>
+
+  <!-- Ball Icon Placeholder -->
+  <circle cx="150" cy="110" r="40" fill="#fff" stroke="#000" stroke-width="2"/>
+  <path d="M150 70 L150 150 M110 110 L190 110" stroke="#000" stroke-width="2"/>
+
+  <!-- Text -->
+  <text x="150" y="190" font-family="Arial, sans-serif" font-size="32" font-weight="900" fill="url(#goldGrad)" text-anchor="middle" letter-spacing="2">LIGA DE</text>
+  <text x="150" y="230" font-family="Arial, sans-serif" font-size="42" font-weight="900" fill="#fff" text-anchor="middle" letter-spacing="1">PROFETAS</text>
+</svg>
