@@ -464,10 +464,95 @@ async function cargarResultadosAdmin() {
 
         document.getElementById("adminResultados").innerHTML = html ||
             "<div class='participacion-card'>No se pudieron cargar los resultados</div>";
+
+        // Cargar ganadores de la última jornada finalizada
+        if (finalizadas.length > 0) {
+            // Ordenar por numero descendente (la más reciente primero)
+            finalizadas.sort((a, b) => b.numero - a.numero);
+            const ultimaJornada = finalizadas[0];
+            await cargarGanadoresRecientes(ultimaJornada.numero);
+        } else {
+            document.getElementById("adminGanadores").innerHTML =
+                "<div style='text-align:center; padding:10px; color:#64748b'>No hay jornadas finalizadas aún</div>";
+        }
+
     } catch (error) {
         console.error("Error cargando resultados:", error);
         document.getElementById("adminResultados").innerHTML =
             `<div class='participacion-card' style='color: #ef4444;'>Error cargando resultados: ${error.message}</div>`;
+    }
+}
+
+
+//
+// CARGAR GANADORES RECIENTES (DETALLADO)
+//
+async function cargarGanadoresRecientes(jornada) {
+    try {
+        const res = await fetchAuth(`${API}/admin/premios/${jornada}`);
+        if (!res.ok) throw new Error("Error al obtener premios");
+
+        const data = await res.json();
+        const ganadores = data.ganadores;
+        const container = document.getElementById("adminGanadores");
+
+        if (!ganadores || ganadores.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #94a3b8;">
+                    <small>Jornada ${jornada}</small><br>
+                    No hubo ganadores
+                </div>
+            `;
+            return;
+        }
+
+        let html = `<div style="text-align:center; margin-bottom:10px; color:#facc15; font-weight:bold;">Jornada ${jornada}</div>`;
+
+        ganadores.forEach(g => {
+            const enlaceWhatsapp = `https://wa.me/521${g.celular}?text=${encodeURIComponent(`¡Hola ${g.usuario}! Felicidades, ganaste el ${g.lugar}° lugar en la Quiniela de la Jornada ${jornada}. Tu premio es de $${g.premio.toFixed(2)}. Por favor compárteme tu cuenta para depositarte.`)}`;
+
+            html += `
+            <div style="
+                background: rgba(0,0,0,0.3);
+                padding: 10px;
+                border-radius: 6px;
+                margin-bottom: 8px;
+                border-left: 3px solid ${g.lugar === 1 ? 'gold' : 'silver'};
+            ">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:white;">${g.usuario}</strong>
+                    <span style="color:${g.lugar === 1 ? 'gold' : 'silver'}; font-weight:bold;">
+                        $${g.premio.toFixed(2)}
+                    </span>
+                </div>
+                
+                <div style="font-size:12px; color:#94a3b8; margin: 4px 0;">
+                    ✅ ${g.aciertos} Aciertos <span style="color:#ef4444; margin-left:8px;">❌ ${g.errores} Errores</span>
+                </div>
+
+                <a href="${enlaceWhatsapp}" target="_blank" style="
+                    display: block;
+                    background: #22c55e;
+                    color: white;
+                    text-align: center;
+                    padding: 4px;
+                    border-radius: 4px;
+                    text-decoration: none;
+                    font-size: 11px;
+                    margin-top: 5px;
+                ">
+                    📲 Mandar WhatsApp
+                </a>
+            </div>
+            `;
+        });
+
+        container.innerHTML = html;
+
+    } catch (error) {
+        console.error(error);
+        document.getElementById("adminGanadores").innerHTML =
+            "<div style='color:#ef4444'>Error cargando ganadores</div>";
     }
 }
 

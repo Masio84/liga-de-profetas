@@ -11,6 +11,7 @@ export async function calcularPremios(jornada) {
                 p.id,
                 p.usuario_id as "usuarioId",
                 u.nombre as usuario,
+                u.celular,
                 p.pronosticos,
                 p.monto
             FROM participaciones p
@@ -131,14 +132,18 @@ export async function calcularPremios(jornada) {
         const listaGanadores = [
             ...ganadores1.map(g => ({
                 usuario: g.usuario,
+                celular: g.celular,
                 aciertos: g.aciertos,
+                errores: matches.length - g.aciertos,
                 lugar: 1,
                 premio: montoPorGanador1,
                 detalle: "Empate 1er lugar"
             })),
             ...ganadores2.map(g => ({
                 usuario: g.usuario,
+                celular: g.celular,
                 aciertos: g.aciertos,
+                errores: matches.length - g.aciertos,
                 lugar: 2,
                 premio: montoPorGanador2,
                 detalle: "Empate 2do lugar"
