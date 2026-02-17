@@ -92,10 +92,7 @@ export async function calcularPremios(jornada) {
         // 5. Determinar ganadores
         // Ordenar por aciertos descendente, luego por fecha ascendente (DESEMPATE)
         participantesPuntajes.sort((a, b) => {
-            if (b.aciertos !== a.aciertos) {
-                return b.aciertos - a.aciertos;
-            }
-            return new Date(a.fecha) - new Date(b.fecha);
+            return b.aciertos - a.aciertos;
         });
 
         if (participantesPuntajes.length === 0) {

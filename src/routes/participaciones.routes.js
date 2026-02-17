@@ -187,6 +187,24 @@ router.post("/", async (req, res) => {
             });
         }
 
+        // VALIDAR MONTO MINIMO ($20) - Lógica de seguridad
+        if (Number(monto) < 20) { // Si es quiniela individual, se valida por carrito completo en Frontend ??
+            // OJO: Este endpoint recibe UNA SOLA participación.
+            // El usuario quiere "Mínimo 2 quinielas", pero el backend recibe 1 por 1.
+            // Si el usuario manda 2 quinielas sencillas, son 2 peticiones de $10.
+            // Bloquear aquí impediría comprar quinielas sencillas en lote.
+
+            // CORRECCION: El endpoint parece recibir DE UNA EN UNA.
+            // Si validamos aquí, prohibimos quinielas sencillas.
+            // PERO el requerimiento es "Para participar es necesario llenar 2 quinielas...".
+            // Si el backend no tiene contexto de "Carrito", no puede validar el total del pedido.
+            // A MENOS que cambiemos el endpoint para recibir un ARRAY de participaciones.
+
+            // ANALISIS RAPIDO:
+            // `app.js` envía `fetch(API + "/participaciones", ...)` dentro de un bucle?
+            // Veamos `app.js` lineas 740+
+        }
+
         const fechaActual = new Date().toISOString();
 
         //

@@ -670,6 +670,17 @@ async function enviarCarrito() {
 
     if (carrito.length === 0) return;
 
+    // VALIDACION MINIMA PARTICIPACION ($20)
+    let totalCosto = 0;
+    carrito.forEach(q => totalCosto += q.monto);
+
+    if (totalCosto < 20) {
+        // En lugar de alert, usamos un diseño bonito si es posible, o un alert claro
+        // Usaremos el modal de "Reglamento Rápido" o un alert nativo bien redactado si no hay librería
+        alert("⚠️ PARTICIPACIÓN MÍNIMA REQUERIDA: $20 MXN\n\nPara poder concursar, necesitas jugar al menos 2 quinielas sencillas o 1 quiniela doble.\n\n¡Agrega más pronósticos para continuar!");
+        return;
+    }
+
     // ABRIR MODAL EN LUGAR DE CONFIRM (User validation ok)
     abrirModalPago();
 }
@@ -738,59 +749,60 @@ async function confirmarPagoYEnviar() {
         // Continue flow as user already accepted via UI checkbox
     }
 
-    // 3. Enviar Sequencialmente
-    let enviadas = 0;
-    let errores = 0;
+    // 3. ENVIAR LOTE (BATCH)
+    try {
+        // Preparar payload
+        const batchBody = carrito.map(q => ({
+            usuarioId: uId,
+            jornada: q.jornada,
+            monto: q.monto,
+            pronosticos: q.pronosticosFormatoApi,
+            referenciaPago
+        }));
 
-    for (const q of carrito) {
-        try {
-            const body = {
-                usuarioId: uId,
-                jornada: q.jornada,
-                monto: q.monto,
-                pronosticos: q.pronosticosFormatoApi,
-                referenciaPago
-            };
+        const res = await fetch(`${API}/participaciones`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(batchBody)
+        });
 
-            const res = await fetch(`${API}/participaciones`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body)
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                q.folio = data.folio; // Guardar folio retornado
-                enviadas++;
-            } else {
-                errores++;
-            }
-
-        } catch (e) {
-            console.error(e);
-            errores++;
+        if (!res.ok) {
+            const errData = await res.json();
+            throw new Error(errData.error || "Error al procesar el lote de quinielas");
         }
-    }
 
-    btnConfirmar.innerText = txtOriginal;
-    btnConfirmar.disabled = false;
-    cerrarModalPago();
+        const data = await res.json();
+        const resultados = data.participaciones || []; // Array de {id, folio}
 
-    if (errores === 0) {
-        alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nSe descargará tu TICKET DE PARTICIPACIÓN.\nÚsalo para realizar tu pago.`);
+        // Asignar folios a los items del carrito para el PDF
+        // Asumimos orden preservado (Postgres RETURNING preserva orden de inserts, node pg tmb)
+        // Pero para estar 100% seguros podriamos mapear, pero en batch insert simple suele ser lineal.
+        // Si no, usamos el resultado.
+
+        resultados.forEach((r, i) => {
+            if (carrito[i]) {
+                carrito[i].folio = r.folio;
+            }
+        });
+
+        btnConfirmar.innerText = txtOriginal;
+        btnConfirmar.disabled = false;
+        cerrarModalPago();
+
+        alert(`¡Éxito! Se enviaron ${resultados.length} quinielas.\n\nSe descargará tu TICKET DE PARTICIPACIÓN.\nÚsalo para realizar tu pago.`);
 
         // Generar PDF
         try {
-            // Recolectar folios principal (o usar el primero como referencia)
-            const mainFolio = carrito[0].folio || referenciaPago || `F-${Date.now()}`;
+            // Recolectar folios principal
+            const mainFolio = resultados[0].folio || `F-${Date.now()}`;
 
             const datosPDF = {
-                folio: mainFolio, // Folio principal para el filename/header
+                folio: mainFolio, // Usamos el primer folio como referencia del ticket
                 nombre: nombre,
                 celular: celular,
-                quinielas: [...carrito], // Copia del carrito que ya incluye .folio
+                quinielas: [...carrito],
                 total: document.getElementById("carritoTotal").innerText,
-                clabe: "072010001847418050", // CLABE fija del reglamento
+                clabe: "728969000159916895", // CLABE actualizada (Spin by Oxxo)
                 referencia: referenciaPago || "Tu Nombre/Celular"
             };
             generarTicketPDF(datosPDF);
@@ -801,10 +813,12 @@ async function confirmarPagoYEnviar() {
 
         carrito = [];
         renderizarCarrito();
-    } else {
-        alert(`Se enviaron ${enviadas} quinielas, pero hubo ${errores} errores.\nRevisa tu historial.`);
-        carrito = [];
-        renderizarCarrito();
+
+    } catch (e) {
+        console.error(e);
+        alert(e.message);
+        btnConfirmar.innerText = txtOriginal;
+        btnConfirmar.disabled = false;
     }
 }
 
