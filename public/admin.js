@@ -670,11 +670,6 @@ async function reactivarParticipacion(id) {
 }
 
 // Convertir renderizado actual en funcion reutilizable
-
-renderizarParticipacionesAdmin(filtradas);
-}
-
-// Convertir renderizado actual en funcion reutilizable
 function renderizarParticipacionesAdmin(lista) {
     const container = document.getElementById("participacionesAdmin");
 
