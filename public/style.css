@@ -278,13 +278,10 @@ h3,
     border-radius: 4px;
     cursor: pointer;
     transition: all 0.2s;
-    width: 30%;
-    /* 3 botones en linea */
-    margin-right: 2%;
-}
-
-.btn-pronostico:last-child {
-    margin-right: 0;
+    width: 100%;
+    /* Full width of grid cell */
+    margin: 0;
+    /* Remove old margins */
 }
 
 .btn-pronostico:hover {

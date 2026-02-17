@@ -309,9 +309,9 @@ async function cargarMatches(numero) {
 
             <div style="
                 display:grid;
-                grid-template-columns: 1fr auto 1fr;
+                grid-template-columns: 1fr 1fr 1fr;
                 align-items:center;
-                gap:10px;
+                gap:8px;
                 margin-bottom: 15px;
             ">
 
@@ -335,7 +335,7 @@ async function cargarMatches(numero) {
                     ">
                         <img src="${escudoLocal}" style="max-width:100%; max-height:100%;">
                     </div>
-                    <div style="font-weight:bold; font-size: 15px;">${match.homeTeam}</div>
+                    <div style="font-weight:bold; font-size: 14px; line-height: 1.2;">${match.homeTeam}</div>
                 </div>
 
                 <!-- VS -->
@@ -344,6 +344,7 @@ async function cargarMatches(numero) {
                     font-size: 20px;
                     color: #94a3b8;
                     opacity:0.5;
+                    text-align: center;
                 ">
                     VS
                 </div>
@@ -368,7 +369,7 @@ async function cargarMatches(numero) {
                     ">
                         <img src="${escudoVisita}" style="max-width:100%; max-height:100%;">
                     </div>
-                    <div style="font-weight:bold; font-size: 15px;">${match.awayTeam}</div>
+                    <div style="font-weight:bold; font-size: 14px; line-height: 1.2;">${match.awayTeam}</div>
                 </div>
 
             </div>
