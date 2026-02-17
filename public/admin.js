@@ -558,28 +558,161 @@ async function cargarGanadoresRecientes(jornada) {
 
 
 // VALIDAR
-async function validarParticipacion(id) {
+let participacionesCache = []; // Cache local para filtrado
+
+async function cargarParticipacionesAdmin() {
     try {
-        const res = await fetchAuth(
-            `${API}/admin/participaciones/${id}/validar`,
-            { method: "POST" }
-        );
+        const res = await fetchAuth(`${API}/admin/participaciones`);
+        if (!res.ok) throw new Error("Error fetching participaciones");
 
-        if (!res.ok) {
-            const error = await res.json();
-            alert(`Error: ${error.error || "No se pudo validar la participación"}`);
-            return;
-        }
+        const data = await res.json();
+        participacionesCache = data.participaciones; // Guardar en cache
 
-        await cargarParticipacionesAdmin();
-        await cargarPozoActual();
+        renderizarParticipacionesAdmin(participacionesCache); // Render inicial
+
     } catch (error) {
-        console.error("Error validando participación:", error);
-        alert("Error al validar la participación");
+        console.error(error);
+        document.getElementById("adminParticipaciones").innerHTML = "Error cargando datos";
     }
 }
 
+function filtrarAdmin() {
+    const texto = document.getElementById("adminSearchInput").value.toLowerCase().trim();
+    const estado = document.getElementById("adminStatusFilter").value;
 
+    const filtradas = participacionesCache.filter(p => {
+        // Filtro Texto (Nombre, Celular, Folio)
+        const matchTexto =
+            (p.usuario && p.usuario.toLowerCase().includes(texto)) ||
+            (p.celular && p.celular.includes(texto)) ||
+            (p.folio && p.folio.toLowerCase().includes(texto));
+
+        // Filtro Estado
+        let matchEstado = true;
+        if (estado === "VALIDADA") matchEstado = (p.validada === 1 && p.activa === 1);
+        if (estado === "PENDIENTE") matchEstado = (p.validada === 0 && p.activa === 1);
+        if (estado === "DESACTIVADA") matchEstado = (p.activa === 0);
+
+        return matchTexto && matchEstado;
+    });
+
+    renderizarParticipacionesAdmin(filtradas);
+}
+
+// VALIDAR
+async function validarParticipacion(id) {
+    if (!confirm("¿Validar esta participación?")) return;
+    try {
+        const res = await fetchAuth(`${API}/admin/participaciones/${id}/validar`, { method: "POST" });
+        if (!res.ok) throw new Error("Error validando");
+        await cargarParticipacionesAdmin();
+        await cargarPozoActual();
+    } catch (e) {
+        console.error(e);
+        alert("Error al validar");
+    }
+}
+
+// INVALIDAR
+async function invalidarParticipacion(id) {
+    if (!confirm("¿Invalidar esta participación?")) return;
+    try {
+        const res = await fetchAuth(`${API}/admin/participaciones/${id}/invalidar`, { method: "POST" });
+        if (!res.ok) throw new Error("Error invalidando");
+        await cargarParticipacionesAdmin();
+        await cargarPozoActual();
+    } catch (e) {
+        console.error(e);
+        alert("Error al invalidar");
+    }
+}
+
+// DESACTIVAR
+async function desactivarParticipacion(id) {
+    if (!confirm("¿Desactivar esta participación?")) return;
+    try {
+        const res = await fetchAuth(`${API}/admin/participaciones/${id}/desactivar`, { method: "POST" });
+        if (!res.ok) throw new Error("Error desactivando");
+        await cargarParticipacionesAdmin();
+        await cargarPozoActual();
+    } catch (e) {
+        console.error(e);
+        alert("Error al desactivar");
+    }
+}
+
+// REACTIVAR
+async function reactivarParticipacion(id) {
+    if (!confirm("¿Reactivar esta participación?")) return;
+    try {
+        const res = await fetchAuth(`${API}/admin/participaciones/${id}/reactivar`, { method: "POST" });
+        if (!res.ok) throw new Error("Error reactivando");
+        await cargarParticipacionesAdmin();
+        await cargarPozoActual();
+    } catch (e) {
+        console.error(e);
+        alert("Error al reactivar");
+    }
+}
+
+// Convertir renderizado actual en funcion reutilizable
+function renderizarParticipacionesAdmin(lista) {
+    const container = document.getElementById("adminParticipaciones");
+
+    if (lista.length === 0) {
+        container.innerHTML = "<div style='padding:20px; text-align:center; color:#94a3b8;'>No se encontraron participaciones.</div>";
+        return;
+    }
+
+    let html = "";
+    lista.forEach(p => {
+        // ... (Logic to build HTML items)
+        const statusClass = p.activa === 0 ? 'status-desactivada' : (p.validada === 1 ? 'status-validada' : 'status-pendiente');
+        const statusText = p.activa === 0 ? 'DESACTIVADA' : (p.validada === 1 ? 'VALIDADA' : 'PENDIENTE');
+
+        // Format Timestamp
+        const fecha = new Date(p.fecha).toLocaleString();
+
+        html += `
+        <div class="participacion-item">
+            <div class="participacion-info">
+                <div style="margin-bottom:5px;">
+                    <strong style="color:white; font-size:1.1em;">${p.usuario}</strong>
+                    <span style="color:#94a3b8; margin-left:10px;">${p.celular}</span>
+                </div>
+                
+                <div style="font-size:0.9em; color:#cbd5e1; margin-bottom:5px;">
+                    Jornada: <strong style="color:var(--gold-primary)">${p.jornada}</strong> | 
+                    Monto: $${p.monto} | 
+                    Ref: <em style="color:white">${p.referenciaPago || 'N/A'}</em>
+                    ${p.folio ? `| Folio: <strong style="color:#00d4ff">${p.folio}</strong>` : ''}
+                </div>
+
+                <div class="participacion-meta">
+                    <span>📅 ${fecha}</span>
+                </div>
+            </div>
+
+            <div style="text-align:right;">
+                <span class="status-badge ${statusClass}">${statusText}</span>
+                <div style="margin-top:10px;">
+                    ${p.validada === 0 && p.activa === 1 ?
+                `<button class="btn-mini btn-success" onclick="validarParticipacion(${p.id})">VALIDAR</button>` : ''}
+                    
+                    ${p.validada === 1 && p.activa === 1 ?
+                `<button class="btn-mini btn-danger" onclick="invalidarParticipacion(${p.id})">INVALIDAR</button>` : ''}
+
+                    ${p.activa === 1 ?
+                `<button class="btn-mini btn-warning" onclick="desactivarParticipacion(${p.id})">DESACTIVAR</button>` :
+                `<button class="btn-mini btn-info" onclick="reactivarParticipacion(${p.id})">REACTIVAR</button>`}
+                </div>
+            </div>
+        </div>
+        `;
+    });
+
+    container.innerHTML = html;
+}
 // INVALIDAR
 async function invalidarParticipacion(id) {
     try {

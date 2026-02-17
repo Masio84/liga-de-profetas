@@ -759,6 +759,8 @@ async function confirmarPagoYEnviar() {
             });
 
             if (res.ok) {
+                const data = await res.json();
+                q.folio = data.folio; // Guardar folio retornado
                 enviadas++;
             } else {
                 errores++;
@@ -779,11 +781,14 @@ async function confirmarPagoYEnviar() {
 
         // Generar PDF
         try {
+            // Recolectar folios principal (o usar el primero como referencia)
+            const mainFolio = carrito[0].folio || referenciaPago || `F-${Date.now()}`;
+
             const datosPDF = {
-                folio: referenciaPago || `F-${Date.now()}`, // Usar referencia o generar folio
+                folio: mainFolio, // Folio principal para el filename/header
                 nombre: nombre,
                 celular: celular,
-                quinielas: [...carrito], // Copia del carrito
+                quinielas: [...carrito], // Copia del carrito que ya incluye .folio
                 total: document.getElementById("carritoTotal").innerText,
                 clabe: "072010001847418050", // CLABE fija del reglamento
                 referencia: referenciaPago || "Tu Nombre/Celular"

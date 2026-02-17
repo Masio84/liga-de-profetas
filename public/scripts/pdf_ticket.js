@@ -1,125 +1,171 @@
-
 //
-// GENERAR TICKET PDF
+// GENERAR TICKET PDF (Estilo Ticket/Recibo)
 //
 async function generarTicketPDF(datos) {
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
 
-    const margenX = 20;
-    let margenY = 20;
+    // Dimensiones tipo Ticket (80mm ancho - largo dinámico o fijo 200mm)
+    const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: [80, 290] // 80mm ancho (estándar impresora térmica), largo suficiente
+    });
 
-    // 1. HEADER
-    // Logo (Simulado con texto o imagen si es posible cargarla base64)
-    doc.setFontSize(22);
-    doc.setTextColor(197, 160, 89); // Gold
-    doc.text("LIGA DE PROFETAS", margenX, margenY);
+    const margenX = 5;
+    let margenY = 10;
+    const anchoUtil = 70; // 80 - 10 margen
 
-    margenY += 10;
-    doc.setFontSize(16);
-    doc.setTextColor(0, 0, 0);
-    doc.text("TICKET DE PARTICIPACIÓN", margenX, margenY);
+    // Cargar Logo (Asíncrono)
+    const imgLogo = new Image();
+    imgLogo.src = "assets/logo-original.png";
 
-    margenY += 10;
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text(`Fecha: ${new Date().toLocaleString()}`, margenX, margenY);
+    imgLogo.onload = () => {
+        renderTicket(doc, imgLogo, datos, margenX, margenY, anchoUtil);
+    };
 
-    margenY += 6;
-    doc.text(`Folio: ${datos.folio}`, margenX, margenY);
+    imgLogo.onerror = () => {
+        // Si falla logo, renderizar sin él
+        renderTicket(doc, null, datos, margenX, margenY, anchoUtil);
+    };
 
-    // 2. DATOS USUARIO
-    margenY += 15;
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("DATOS DEL PARTICIPANTE", margenX, margenY);
-    doc.setLineWidth(0.5);
-    doc.line(margenX, margenY + 2, 190, margenY + 2);
+    // Helper para renderizar tras carga
+    function renderTicket(doc, logo, datos, x, y, ancho) {
+        let cursorY = y;
 
-    margenY += 10;
-    doc.setFontSize(10);
-    doc.text(`Nombre: ${datos.nombre}`, margenX, margenY);
-    doc.text(`Celular: ${datos.celular}`, margenX + 100, margenY);
-
-    // 3. DETALLE QUINIELAS
-    margenY += 15;
-    doc.setFontSize(12);
-    doc.text("DETALLE DE APUESTAS", margenX, margenY);
-    doc.line(margenX, margenY + 2, 190, margenY + 2);
-
-    margenY += 10;
-    doc.setFontSize(9);
-
-    datos.quinielas.forEach((q, index) => {
-        // Verificar espacio en pagina
-        if (margenY > 250) {
-            doc.addPage();
-            margenY = 20;
+        // 1. LOGO & HEADER
+        if (logo) {
+            // Ajustar logo centrado
+            const logoW = 20;
+            const logoH = 20; // Asumiendo cuadrado o ajustar aspect
+            const logoX = (80 - logoW) / 2;
+            doc.addImage(logo, "PNG", logoX, cursorY, logoW, logoH);
+            cursorY += 22;
         }
 
         doc.setFont("helvetica", "bold");
-        doc.text(`Quiniela #${index + 1} (Jornada ${q.jornada}) - Monto: $${q.monto}`, margenX, margenY);
-        margenY += 5;
-        doc.setFont("helvetica", "normal");
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text("LIGA DE PROFETAS", 40, cursorY, { align: "center" });
+        cursorY += 5;
 
-        // Listar Pronosticos con nombres de equipos
-        const picks = Object.entries(q.pronosticos).map(([mId, p]) => {
-            const m = matchesGlobal[mId];
-            const equipos = m ? `${m.homeTeam} vs ${m.awayTeam}` : `Partido ${mId}`;
-            return `${equipos}: ${p}`;
-        });
-
-        // Imprimir en columnas o lista
-        picks.forEach(p => {
-            if (margenY > 270) {
-                doc.addPage();
-                margenY = 20;
-            }
-            doc.text(`• ${p}`, margenX + 5, margenY);
-            margenY += 4;
-        });
-
-        margenY += 5;
-    });
-
-    // 4. TOTAL Y PAGO
-    if (margenY > 220) {
-        doc.addPage();
-        margenY = 20;
-    } else {
-        margenY += 10;
-    }
-
-    doc.setFontSize(12);
-    doc.setTextColor(0);
-    doc.text("INSTRUCCIONES DE PAGO", margenX, margenY);
-    doc.line(margenX, margenY + 2, 190, margenY + 2);
-
-    margenY += 10;
-    doc.setFontSize(10);
-    doc.text(`TOTAL A PAGAR: $${datos.total}`, margenX, margenY);
-
-    margenY += 8;
-    doc.setFont("helvetica", "bold");
-    doc.text(`CLABE INTERBANCARIA: ${datos.clabe}`, margenX, margenY);
-
-    margenY += 6;
-    doc.setFont("helvetica", "normal");
-    doc.text("Banco: STP", margenX, margenY);
-
-    margenY += 6;
-    doc.text(`Concepto/Referencia: ${datos.referencia}`, margenX, margenY);
-
-    // 5. FOOTER
-    const pageCount = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
         doc.setFontSize(8);
-        doc.setTextColor(150);
-        doc.text("Liga de Profetas - Plataforma de Concurso de Habilidad", 105, 285, { align: "center" });
-        doc.text(`Página ${i} de ${pageCount}`, 190, 285, { align: "right" });
-    }
+        doc.setFont("helvetica", "normal");
+        doc.text("Ticket de Participación", 40, cursorY, { align: "center" });
+        cursorY += 8;
 
-    // DESCARGAR
-    doc.save(`Ticket_LigaProfetas_${datos.folio}.pdf`);
+        // SEPARADOR
+        doc.setLineWidth(0.2);
+        doc.setLineDash([1, 1], 0);
+        doc.line(x, cursorY, x + ancho, cursorY);
+        cursorY += 5;
+
+        // 2. INFO GENERAL
+        doc.setFontSize(7);
+        doc.text(`FOLIO: ${datos.folio}`, x, cursorY);
+        cursorY += 4;
+        doc.text(`FECHA: ${new Date().toLocaleString()}`, x, cursorY);
+        cursorY += 6;
+
+        doc.text(`PARTICIPANTE:`, x, cursorY);
+        cursorY += 4;
+        doc.setFont("helvetica", "bold");
+        doc.text(datos.nombre.substring(0, 35), x, cursorY);
+        cursorY += 4;
+        doc.text(datos.celular, x, cursorY);
+        cursorY += 6;
+
+        // SEPARADOR
+        doc.setLineDash([1, 1], 0);
+        doc.line(x, cursorY, x + ancho, cursorY);
+        cursorY += 5;
+
+        // 3. DETALLES (Quinielas)
+        doc.setFontSize(8);
+        doc.setFont("helvetica", "bold");
+        doc.text("DETALLE DE APUESTAS", 40, cursorY, { align: "center" });
+        cursorY += 5;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(7);
+
+        datos.quinielas.forEach((q, idx) => {
+            doc.setFont("helvetica", "bold");
+            doc.text(`Quiniela #${idx + 1} (Jor ${q.jornada}) - $${q.monto}`, x, cursorY);
+            cursorY += 4;
+
+            // Mostrar Folio Individual
+            if (q.folio) {
+                doc.setFontSize(7);
+                doc.setTextColor(100);
+                doc.text(`Ref: ${q.folio}`, x, cursorY);
+                doc.setTextColor(0);
+                cursorY += 4;
+            }
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(6);
+
+            // Picks
+            const picks = Object.entries(q.pronosticos).map(([mId, p]) => {
+                const m = window.matchesGlobal ? window.matchesGlobal[mId] : null;
+                // Acceso a matchesGlobal global si existe, sino generic
+                const label = m ? `${m.homeTeam.substring(0, 10)} vs ${m.awayTeam.substring(0, 10)}` : `Juego ${mId}`;
+                return `${label}: ${p}`;
+            });
+
+            picks.forEach(p => {
+                doc.text(`- ${p}`, x + 2, cursorY);
+                cursorY += 3;
+            });
+            cursorY += 2;
+        });
+
+        // 4. TOTALES
+        cursorY += 2;
+        doc.setLineDash([1, 1], 0);
+        doc.line(x, cursorY, x + ancho, cursorY);
+        cursorY += 6;
+
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "bold");
+        doc.text(`TOTAL A PAGAR: $${datos.total}`, 40, cursorY, { align: "center" });
+        cursorY += 8;
+
+        // 5. BANCO (BANORTE)
+        doc.setFillColor(240, 240, 240);
+        doc.rect(x, cursorY, ancho, 25, 'F');
+        cursorY += 5;
+
+        doc.setFontSize(8);
+        doc.text("DATOS PARA TRANSFERENCIA", 40, cursorY, { align: "center" });
+        cursorY += 5;
+
+        doc.setFontSize(7);
+        doc.setFont("helvetica", "normal");
+        doc.text("Banco:", x + 2, cursorY);
+        doc.setFont("helvetica", "bold");
+        doc.text("BANORTE", x + 25, cursorY);
+        cursorY += 4;
+
+        doc.setFont("helvetica", "normal");
+        doc.text("Cuenta/CLABE:", x + 2, cursorY);
+        doc.setFont("helvetica", "bold");
+        doc.text(datos.clabe, x + 25, cursorY);
+        cursorY += 4;
+
+        doc.setFont("helvetica", "normal");
+        doc.text("Beneficiario:", x + 2, cursorY);
+        doc.text("Liga de Profetas", x + 25, cursorY);
+        cursorY += 8;
+
+        // 6. PIE
+        doc.setFontSize(6);
+        doc.setFont("helvetica", "italic");
+        doc.text("Conserva este comprobante para aclaraciones.", 40, cursorY, { align: "center" });
+        cursorY += 3;
+        doc.text("¡Buena suerte!", 40, cursorY, { align: "center" });
+
+        // SAVE
+        doc.save(`Ticket_LigaProfetas_${datos.folio}.pdf`);
+    }
 }

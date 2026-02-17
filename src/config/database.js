@@ -83,8 +83,19 @@ const initDB = async () => {
                 fecha TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
                 activa INTEGER DEFAULT 1, -- 1: Activa, 0: Desactivada
                 validada INTEGER DEFAULT 0, -- 0: Pendiente, 1: Validada
-                referencia_pago TEXT
+                referencia_pago TEXT,
+                folio TEXT UNIQUE -- Folio único de participación
             );
+        `);
+
+    // MIGRATION: Ensure folio exists for existing tables
+    await query(`
+            DO $$ 
+            BEGIN 
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name='participaciones' AND column_name='folio') THEN 
+                    ALTER TABLE participaciones ADD COLUMN folio TEXT UNIQUE; 
+                END IF; 
+            END $$;
         `);
 
     // TABLA EVALUACION (Para guardar resultados históricos de jornadas)

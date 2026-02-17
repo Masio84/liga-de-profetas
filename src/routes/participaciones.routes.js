@@ -92,6 +92,13 @@ router.post("/", async (req, res) => {
         }
 
         //
+        // GENERAR FOLIO ÚNICO
+        //
+        const timestamp = Date.now().toString().slice(-6);
+        const random = Math.floor(1000 + Math.random() * 9000);
+        const folio = `LDP-${timestamp}-${random}`;
+
+        //
         // VALIDAR QUE TODOS LOS PARTIDOS DE LA JORNADA TENGAN PRONÓSTICO
         //
         const { rows: matchesJornada } = await db.query(
@@ -183,14 +190,14 @@ router.post("/", async (req, res) => {
         const fechaActual = new Date().toISOString();
 
         //
-        // INSERTAR (Postgres usa RETURNING id)
+        // INSERTAR PARTICIPACIÓN
         //
-        const { rows: insertResult } = await db.query(
+        const { rows: nueva } = await db.query(
             `
             INSERT INTO participaciones
-            (usuario_id, jornada, monto, pronosticos, fecha, activa, validada, referencia_pago)
-            VALUES ($1, $2, $3, $4, $5, 1, 0, $6)
-            RETURNING id
+            (usuario_id, jornada, monto, pronosticos, fecha, activa, validada, referencia_pago, folio)
+            VALUES ($1, $2, $3, $4, $5, 1, 0, $6, $7)
+            RETURNING id, folio
             `,
             [
                 usuarioId,
@@ -198,13 +205,15 @@ router.post("/", async (req, res) => {
                 monto,
                 JSON.stringify(pronosticosArray), // JSONB acepta string JSON válido
                 fechaActual,
-                referenciaPago || null
+                referenciaPago || null,
+                folio
             ]
         );
 
-        res.json({
-            ok: true,
-            id: insertResult[0].id
+        res.status(201).json({
+            message: "Participación registrada",
+            id: nueva[0].id,
+            folio: nueva[0].folio
         });
 
     } catch (err) {

@@ -388,10 +388,27 @@
                     </div>
                 </div>
 
-                <div id="adminParticipaciones">
-                    <div style="text-align: center; padding: 40px; color: #64748b;">
-                        Cargando participaciones...
-                    </div>
+                <!-- SEARCH & FILTER BAR -->
+                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <input type="text" id="adminSearchInput" placeholder="🔍 Buscar por Folio, Nombre o Celular..."
+                        style="flex: 2; padding: 10px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px;">
+
+                    <select id="adminStatusFilter"
+                        style="flex: 1; padding: 10px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px;">
+                        <option value="TODAS">Todas</option>
+                        <option value="VALIDADA">Validadas</option>
+                        <option value="PENDIENTE">Pendientes</option>
+                    </select>
+
+                    <button onclick="filtrarAdmin()" class="btn-mini"
+                        style="background: var(--gold-primary); color: black;">
+                        FILTRAR
+                    </button>
+                </div>
+
+                <div id="participacionesAdmin">
+                    <!-- Se llena con JS -->
+                    <div style="text-align:center; color:#94a3b8; padding:20px;">Cargando...</div>
                 </div>
             </div>
 
