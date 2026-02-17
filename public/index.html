@@ -505,7 +505,11 @@
                             const ahora = new Date().getTime();
                             const distancia = primerPartido - ahora;
 
-                            if (distancia < 0) {
+                            if (!timerDiv) {
+                                timerDiv = document.createElement("div");
+                                timerDiv.className = "stadium-clock";
+                                fechasEl.parentNode.appendChild(timerDiv);
+                            } if (distancia < 0) {
                                 if (timerDiv) {
                                     timerDiv.innerHTML = "¡CERRADO!";
                                     timerDiv.style.color = "#ef4444";

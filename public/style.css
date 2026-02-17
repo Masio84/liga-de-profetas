@@ -266,6 +266,25 @@ h3,
     display: block;
 }
 
+/* STADIUM CLOCK */
+.stadium-clock {
+    margin-top: 15px;
+    background: #000;
+    color: #ff3333;
+    /* Red LED */
+    font-family: 'Courier New', Courier, monospace;
+    /* Digital feel */
+    font-size: 20px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: 4px solid #333;
+    border-radius: 6px;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.3), inset 0 0 10px rgba(0, 0, 0, 0.8);
+    display: inline-block;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px #ff0000;
+}
+
 /* BOTONES PRONOSTICO */
 .btn-pronostico {
     background: linear-gradient(to bottom, #2a2a2a, #1a1a1a);
