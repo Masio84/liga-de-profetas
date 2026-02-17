@@ -13,7 +13,8 @@ export async function calcularPremios(jornada) {
                 u.nombre as usuario,
                 u.celular,
                 p.pronosticos,
-                p.monto
+                p.monto,
+                p.fecha
             FROM participaciones p
             JOIN usuarios u ON u.id = p.usuario_id
             WHERE p.jornada = $1 AND p.validada = 1 AND p.activa = 1
@@ -89,8 +90,13 @@ export async function calcularPremios(jornada) {
         const premioSegundoLugar = bolsaPremios * 0.20;
 
         // 5. Determinar ganadores
-        // Ordenar por aciertos descendente
-        participantesPuntajes.sort((a, b) => b.aciertos - a.aciertos);
+        // Ordenar por aciertos descendente, luego por fecha ascendente (DESEMPATE)
+        participantesPuntajes.sort((a, b) => {
+            if (b.aciertos !== a.aciertos) {
+                return b.aciertos - a.aciertos;
+            }
+            return new Date(a.fecha) - new Date(b.fecha);
+        });
 
         if (participantesPuntajes.length === 0) {
             return {

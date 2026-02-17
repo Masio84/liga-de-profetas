@@ -775,7 +775,25 @@ async function confirmarPagoYEnviar() {
     cerrarModalPago();
 
     if (errores === 0) {
-        alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nRecuerda adjuntar tu comprobante si se requiere.`);
+        alert(`¡Éxito! Se enviaron ${enviadas} quinielas.\n\nSe descargará tu TICKET DE PARTICIPACIÓN.\nÚsalo para realizar tu pago.`);
+
+        // Generar PDF
+        try {
+            const datosPDF = {
+                folio: referenciaPago || `F-${Date.now()}`, // Usar referencia o generar folio
+                nombre: nombre,
+                celular: celular,
+                quinielas: [...carrito], // Copia del carrito
+                total: document.getElementById("carritoTotal").innerText,
+                clabe: "072010001847418050", // CLABE fija del reglamento
+                referencia: referenciaPago || "Tu Nombre/Celular"
+            };
+            generarTicketPDF(datosPDF);
+        } catch (errPDF) {
+            console.error("Error generando PDF", errPDF);
+            alert("No se pudo generar el PDF automáticamente. Por favor toma captura de pantalla.");
+        }
+
         carrito = [];
         renderizarCarrito();
     } else {

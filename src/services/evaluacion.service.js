@@ -25,7 +25,7 @@ export async function evaluarJornada(jornadaNumero) {
         //
         const { rows: participaciones } = await db.query(
             `
-            SELECT id, pronosticos, monto, activa, validada
+            SELECT id, pronosticos, monto, activa, validada, fecha
             FROM participaciones
             WHERE jornada = $1 AND activa = 1 AND validada = 1
             `,
@@ -87,6 +87,11 @@ export async function evaluarJornada(jornadaNumero) {
                 ganadores.push(p);
             }
         });
+
+        // DESEMPATE: Primer en tiempo es el ganador
+        if (ganadores.length > 1) {
+            ganadores.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+        }
 
         //
         // 3. Calcular pozo total válido
