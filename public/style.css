@@ -116,15 +116,10 @@ h3,
 
 .hero-title {
     font-size: 52px;
-    color: #fff;
-    text-shadow: 3px 3px 0px var(--green-deep);
+    color: #ffffff; /* Solid White for max contrast */
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.6); /* Stronger shadow */
     margin: 0 0 10px 0;
     line-height: 1;
-    /* Efecto gradiente en texto */
-    background: -webkit-linear-gradient(#fff, #e0e0e0);
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.5));
 }
 
