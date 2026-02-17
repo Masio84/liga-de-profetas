@@ -17,7 +17,7 @@ import adminRoutes from "./routes/admin.routes.js";
 import syncRoutes from "./routes/sync.routes.js";
 
 import { syncResultados }
-from "./services/sync.service.js";
+    from "./services/sync.service.js";
 
 
 const app = express();
@@ -43,11 +43,14 @@ app.use(express.json());
 //
 // Servir frontend
 //
-app.use(
-express.static(
-path.join(__dirname, "Frontend")
-)
-);
+//
+// Servir frontend
+//
+// En Vercel, los archivos estáticos en 'public' se sirven automáticamente.
+// Mantenemos esto solo para desarrollo local si se corre con 'node src/server.js'
+if (process.env.NODE_ENV !== 'production') {
+    app.use(express.static(path.join(__dirname, "../public")));
+}
 
 
 //
@@ -73,6 +76,9 @@ app.use("/api/admin", adminRoutes);
 
 app.use("/api/admin/sync", syncRoutes);
 
+import cronRoutes from "./routes/cron.routes.js";
+app.use("/api/cron", cronRoutes);
+
 
 //
 // Health check
@@ -86,7 +92,7 @@ app.get("/api/health", (req, res) => {
         service: "liga-de-profetas-backend",
 
         timestamp:
-        new Date().toISOString()
+            new Date().toISOString()
 
     });
 
@@ -172,18 +178,19 @@ async function ejecutarAutoSync() {
 //
 // EJECUTAR UNA VEZ AL INICIAR (con delay para que el servidor termine de inicializar)
 //
-setTimeout(() => {
-    ejecutarAutoSync();
-}, 10000); // 10 segundos después del inicio
-
-
 //
-// EJECUTAR PERIÓDICAMENTE
+// EJECUTAR PERIÓDICAMENTE (Solo en desarrollo local)
 //
-setInterval(
-    ejecutarAutoSync,
-    INTERVALO_SYNC
-);
+if (process.env.NODE_ENV !== 'production') {
+    setTimeout(() => {
+        ejecutarAutoSync();
+    }, 10000);
+
+    setInterval(
+        ejecutarAutoSync,
+        INTERVALO_SYNC
+    );
+}
 
 
 //
