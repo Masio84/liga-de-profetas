@@ -484,54 +484,68 @@
                             labelDiv.style.fontWeight = 'bold';
                             labelDiv.style.textTransform = 'uppercase';
 
-                            // Crear timer
-                            // TIMER
-                            if (!timerDiv) {
-                                timerDiv = document.createElement("div");
-                                timerDiv.className = "stadium-clock";
-
-                                if (fechasEl && fechasEl.parentNode) {
-                                    fechasEl.parentNode.appendChild(timerDiv);
-                                }
+                            if (fechasEl && fechasEl.parentNode) {
+                                fechasEl.parentNode.appendChild(labelDiv);
                             }
-
-                            function actualizarTimer() {
-                                const ahora = new Date().getTime();
-                                const distancia = primerPartido - ahora;
-
-                                if (!timerDiv) {
-                                    timerDiv = document.createElement("div");
-                                    timerDiv.className = "stadium-clock";
-                                    fechasEl.parentNode.appendChild(timerDiv);
-                                } if (distancia < 0) {
-                                    if (timerDiv) {
-                                        timerDiv.innerHTML = "¡CERRADO!";
-                                        timerDiv.style.color = "#ef4444";
-                                    }
-                                    return;
-                                }
-
-                                const days = Math.floor(distancia / (1000 * 60 * 60 * 24));
-                                const hours = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                const minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
-                                const seconds = Math.floor((distancia % (1000 * 60)) / 1000);
-
-                                if (timerDiv) {
-                                    timerDiv.innerHTML = `⏳ ${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-                                }
-                            }
-
-                            actualizarTimer();
-                            setInterval(actualizarTimer, 1000);
                         }
-                    } catch (e) {
-                        console.error("Error al calcular countdown:", e);
-                    }
 
-                } catch (error) {
-                    console.error("Error header:", error);
+                        // Label "Cierra en:"
+                        if (!labelDiv) { // This condition will always be false now as labelDiv is created above
+                            labelDiv = document.createElement("div");
+                            labelDiv.innerText = "Cierra en:";
+                            labelDiv.style.fontSize = "12px";
+                            labelDiv.style.opacity = "0.8";
+                            labelDiv.style.marginTop = "5px";
+                            labelDiv.style.textTransform = 'uppercase';
+
+                            if (fechasEl && fechasEl.parentNode) {
+                                fechasEl.parentNode.appendChild(labelDiv);
+                            }
+                        }
+
+                        // Timer Element
+                        if (!timerDiv) {
+                            timerDiv = document.createElement("div");
+                            timerDiv.className = "stadium-clock";
+
+                            if (fechasEl && fechasEl.parentNode) {
+                                fechasEl.parentNode.appendChild(timerDiv);
+                            }
+                        }
+
+                        function actualizarTimer() {
+                            const ahora = new Date().getTime();
+                            const distancia = primerPartido - ahora;
+
+                            if (distancia < 0) {
+                                if (timerDiv) {
+                                    timerDiv.innerHTML = "¡CERRADO!";
+                                    timerDiv.style.color = "#ef4444";
+                                }
+                                return;
+                            }
+
+                            const days = Math.floor(distancia / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((distancia % (1000 * 60)) / 1000);
+
+                            if (timerDiv) {
+                                timerDiv.innerHTML = `⏳ ${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                            }
+                        }
+
+                        actualizarTimer();
+                        setInterval(actualizarTimer, 1000);
+                    }
+                } catch (e) {
+                    console.error("Error al calcular countdown:", e);
                 }
+
+            } catch (error) {
+                console.error("Error header:", error);
             }
+        }
 
         iniciarHeader();
 
