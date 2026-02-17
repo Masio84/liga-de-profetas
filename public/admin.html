@@ -389,21 +389,34 @@
                 </div>
 
                 <!-- SEARCH & FILTER BAR -->
-                <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <input type="text" id="adminSearchInput" placeholder="🔍 Buscar por Folio, Nombre o Celular..."
-                        style="flex: 2; padding: 10px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px;">
+                <div class="search-container"
+                    style="margin-bottom: 25px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                        <div style="flex: 2; position: relative;">
+                            <span
+                                style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔍</span>
+                            <input type="text" id="adminSearchInput"
+                                placeholder="Buscar por Folio, Nombre, Celular o Referencia..."
+                                style="width: 100%; padding: 12px 12px 12px 40px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 6px; font-size: 14px; transition: border-color 0.2s;">
+                        </div>
 
-                    <select id="adminStatusFilter"
-                        style="flex: 1; padding: 10px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 4px;">
-                        <option value="TODAS">Todas</option>
-                        <option value="VALIDADA">Validadas</option>
-                        <option value="PENDIENTE">Pendientes</option>
-                    </select>
+                        <select id="adminStatusFilter"
+                            style="flex: 0 0 150px; padding: 12px; background: #0f172a; border: 1px solid #475569; color: white; border-radius: 6px; font-size: 14px;">
+                            <option value="TODAS">Estatus: Todos</option>
+                            <option value="VALIDADA">Validadas</option>
+                            <option value="PENDIENTE">Pendientes</option>
+                        </select>
 
-                    <button onclick="filtrarAdmin()" class="btn-mini"
-                        style="background: var(--gold-primary); color: black;">
-                        FILTRAR
-                    </button>
+                        <button onclick="filtrarAdmin()" class="btn-mini"
+                            style="background: var(--gold-primary); color: black; padding: 12px 20px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer;">
+                            FILTRAR
+                        </button>
+
+                        <button onclick="generarReportePDF()" class="btn-mini"
+                            style="background: #ef4444; color: white; padding: 12px 20px; font-weight: bold; border-radius: 6px; border: none; cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                            📄 PDF
+                        </button>
+                    </div>
                 </div>
 
                 <div id="participacionesAdmin">
@@ -417,6 +430,8 @@
     </div>
 
     <!-- Same heavy lifting logic -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="admin.js"></script>
 
     <!-- Overwrite specific render functions to match new design -->

@@ -599,7 +599,8 @@ function filtrarAdmin() {
         const matchTexto =
             (p.usuario && p.usuario.toLowerCase().includes(texto)) ||
             (p.celular && p.celular.includes(texto)) ||
-            (p.folio && p.folio.toLowerCase().includes(texto));
+            (p.folio && p.folio.toLowerCase().includes(texto)) ||
+            (p.referenciaPago && p.referenciaPago.toLowerCase().includes(texto));
 
         // Filtro Estado
         let matchEstado = true;
@@ -611,6 +612,72 @@ function filtrarAdmin() {
     });
 
     renderizarParticipacionesAdmin(filtradas);
+}
+
+// REPORTE PDF
+async function generarReportePDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    // Header
+    doc.setFillColor(0, 0, 0);
+    doc.rect(0, 0, 210, 25, 'F');
+    doc.setTextColor(255, 215, 0); // Gold
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("LIGA DE PROFETAS - REPORTE DE PARTICIPACIONES", 105, 12, { align: "center" });
+
+    // Metadata
+    doc.setTextColor(50);
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "normal");
+    const fecha = new Date().toLocaleString();
+    const filtroTexto = document.getElementById("adminSearchInput").value || "Ninguno";
+    const filtroEstado = document.getElementById("adminStatusFilter").options[document.getElementById("adminStatusFilter").selectedIndex].text;
+
+    doc.text(`Fecha de Reporte: ${fecha}`, 14, 32);
+    doc.text(`Filtro Aplicado: ${filtroEstado} | Búsqueda: "${filtroTexto}"`, 14, 38);
+
+    // Get current filtered data (reuse logic or access filtered state appropriately, 
+    // for simplicity assuming renderizarParticipacionesAdmin updates a global or we re-filter)
+    // To ensure accuracy, let's re-run the filter logic:
+    const texto = document.getElementById("adminSearchInput").value.toLowerCase().trim();
+    const estado = document.getElementById("adminStatusFilter").value;
+    const dataToPrint = participacionesCache.filter(p => {
+        const matchTexto = (p.usuario && p.usuario.toLowerCase().includes(texto)) ||
+            (p.celular && p.celular.includes(texto)) ||
+            (p.folio && p.folio.toLowerCase().includes(texto)) ||
+            (p.referenciaPago && p.referenciaPago.toLowerCase().includes(texto));
+        let matchEstado = true;
+        if (estado === "VALIDADA") matchEstado = (p.validada === 1 && p.activa === 1);
+        if (estado === "PENDIENTE") matchEstado = (p.validada === 0 && p.activa === 1);
+        if (estado === "DESACTIVADA") matchEstado = (p.activa === 0);
+        return matchTexto && matchEstado;
+    }).sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // Ordenar por fecha desc
+
+    // Prepare Table Data
+    const tableBody = dataToPrint.map((p, index) => [
+        index + 1,
+        p.folio || "S/F",
+        p.usuario,
+        p.referenciaPago || "N/A",
+        `$${p.monto}`,
+        p.jornada,
+        p.validada === 1 ? "VALIDADA" : (p.activa === 0 ? "DESACTIVADA" : "PENDIENTE"),
+        new Date(p.fecha).toLocaleDateString() + " " + new Date(p.fecha).toLocaleTimeString()
+    ]);
+
+    doc.autoTable({
+        startY: 45,
+        head: [['#', 'Folio', 'Usuario', 'Referencia', 'Monto', 'Jornada', 'Estado', 'Fecha']],
+        body: tableBody,
+        theme: 'grid',
+        headStyles: { fillColor: [0, 0, 0], textColor: [255, 215, 0] },
+        styles: { fontSize: 8 },
+        alternateRowStyles: { fillColor: [240, 240, 240] }
+    });
+
+    doc.save(`Reporte_LigaProfetas_${new Date().toISOString().slice(0, 10)}.pdf`);
 }
 
 // VALIDAR
