@@ -572,7 +572,8 @@ async function cargarParticipacionesAdmin() {
 
     } catch (error) {
         console.error(error);
-        document.getElementById("adminParticipaciones").innerHTML = "Error cargando datos";
+        const container = document.getElementById("participacionesAdmin");
+        if (container) container.innerHTML = `<div style="text-align:center; color:#ef4444; padding:20px;">Error cargando datos: ${error.message}</div>`;
     }
 }
 
