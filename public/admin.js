@@ -616,6 +616,7 @@ function filtrarAdmin() {
 
 // REPORTE PDF
 async function generarReportePDF() {
+    console.log("Generando PDF Versión 2 (Green Header)...");
     const { jsPDF } = window.jspdf;
 
     // 1. Cargar Logo (Promisified)
