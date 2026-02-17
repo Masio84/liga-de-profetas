@@ -670,11 +670,18 @@ async function reactivarParticipacion(id) {
 }
 
 // Convertir renderizado actual en funcion reutilizable
+
+renderizarParticipacionesAdmin(filtradas);
+}
+
+// Convertir renderizado actual en funcion reutilizable
 function renderizarParticipacionesAdmin(lista) {
-    const container = document.getElementById("adminParticipaciones");
+    const container = document.getElementById("participacionesAdmin");
+
+    if (!container) return; // Validación de seguridad
 
     if (lista.length === 0) {
-        container.innerHTML = "<div style='padding:20px; text-align:center; color:#94a3b8;'>No se encontraron participaciones.</div>";
+        container.innerHTML = "<div style='padding:20px; text-align:center; color:#94a3b8;'>No se encontraron participaciones con los filtros actuales.</div>";
         return;
     }
 
