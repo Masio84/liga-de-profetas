@@ -808,63 +808,82 @@ async function reactivarParticipacion(id) {
 
 // Convertir renderizado actual en funcion reutilizable
 function renderizarParticipacionesAdmin(lista) {
-    const container = document.getElementById("participacionesAdmin");
+    const contenedor = document.getElementById("participacionesAdmin");
 
-    if (!container) return; // Validación de seguridad
-
-    if (lista.length === 0) {
-        container.innerHTML = "<div style='padding:20px; text-align:center; color:#94a3b8;'>No se encontraron participaciones con los filtros actuales.</div>";
+    if (!lista || lista.length === 0) {
+        contenedor.innerHTML = "<div class='participacion-card'>No se encontraron participaciones</div>";
         return;
     }
 
     let html = "";
     lista.forEach(p => {
-        // ... (Logic to build HTML items)
-        const statusClass = p.activa === 0 ? 'status-desactivada' : (p.validada === 1 ? 'status-validada' : 'status-pendiente');
-        const statusText = p.activa === 0 ? 'DESACTIVADA' : (p.validada === 1 ? 'VALIDADA' : 'PENDIENTE');
+        // DETERMINAR ESTADO Y COLOR
+        let estadoColor = "#f59e0b"; // Naranja/Amarillo (Pendiente) por defecto
+        let estadoBg = "rgba(245, 158, 11, 0.1)"; // Fondo sutil amarillo
+        let estadoTexto = "PENDIENTE";
 
-        // Format Timestamp
+        if (p.activa === 0) {
+            estadoColor = "#ef4444"; // Rojo (Desactivada)
+            estadoBg = "rgba(239, 68, 68, 0.1)";
+            estadoTexto = "DESACTIVADA";
+        } else if (p.validada === 1) {
+            estadoColor = "#22c55e"; // Verde (Validada)
+            estadoBg = "rgba(34, 197, 94, 0.1)";
+            estadoTexto = "VALIDADA";
+        }
+
         const fecha = new Date(p.fecha).toLocaleString();
 
         html += `
-        <div class="participacion-item">
+        <div class="participacion-item" style="border-left: 4px solid ${estadoColor}; background: ${estadoBg};">
             <div class="participacion-info">
-                <div style="margin-bottom:5px;">
-                    <strong style="color:white; font-size:1.1em;">${p.usuario}</strong>
-                    <span style="color:#94a3b8; margin-left:10px;">${p.celular}</span>
+                <div style="display:flex; justify-content:space-between;">
+                    <strong style="color:white; font-size:1.1em;">${p.folio || "SIN FOLIO"}</strong>
+                    <span class="status-badge" style="border: 1px solid ${estadoColor}; color: ${estadoColor}; background: rgba(0,0,0,0.3);">
+                        ${estadoTexto}
+                    </span>
                 </div>
                 
-                <div style="font-size:0.9em; color:#cbd5e1; margin-bottom:5px;">
-                    Jornada: <strong style="color:var(--gold-primary)">${p.jornada}</strong> | 
-                    Monto: $${p.monto} | 
-                    Ref: <em style="color:white">${p.referenciaPago || 'N/A'}</em>
-                    ${p.folio ? `| Folio: <strong style="color:#00d4ff">${p.folio}</strong>` : ''}
+                <div style="margin-top:5px; color:#cbd5e1;">
+                    👤 <strong>${p.usuario}</strong> <br>
+                    📱 ${p.celular || "N/A"}
                 </div>
 
                 <div class="participacion-meta">
                     <span>📅 ${fecha}</span>
+                    <span>💰 $${p.monto}</span>
+                    <span>Jornada ${p.jornada}</span>
+                </div>
+
+                <div style="margin-top:8px; font-size:12px; color: ${p.referenciaPago ? '#fcd34d' : '#94a3b8'};">
+                    Ref: ${p.referenciaPago || "No especificada"}
                 </div>
             </div>
 
-            <div style="text-align:right;">
-                <span class="status-badge ${statusClass}">${statusText}</span>
-                <div style="margin-top:10px;">
-                    ${p.validada === 0 && p.activa === 1 ?
-                `<button class="btn-mini btn-success" onclick="validarParticipacion(${p.id})">VALIDAR</button>` : ''}
-                    
-                    ${p.validada === 1 && p.activa === 1 ?
-                `<button class="btn-mini btn-danger" onclick="invalidarParticipacion(${p.id})">INVALIDAR</button>` : ''}
+            <div class="participacion-actions" style="display:flex; flex-direction:column; gap:5px;">
+                ${p.validada === 0 && p.activa === 1 ? `
+                    <button class="btn-mini btn-success" onclick="validarParticipacion(${p.id})">✅ Validar</button>
+                    <button class="btn-mini btn-danger" onclick="cancelarParticipacion(${p.id})">❌ Rechazar</button>
+                ` : ''}
 
-                    ${p.activa === 1 ?
-                `<button class="btn-mini btn-warning" onclick="desactivarParticipacion(${p.id})">DESACTIVAR</button>` :
-                `<button class="btn-mini btn-info" onclick="reactivarParticipacion(${p.id})">REACTIVAR</button>`}
-                </div>
+                ${p.validada === 1 && p.activa === 1 ? `
+                    <button class="btn-mini btn-warning" onclick="invalidarParticipacion(${p.id})">↩ Invalidar</button>
+                    <button class="btn-mini btn-danger" onclick="cancelarParticipacion(${p.id})">❌ Cancelar</button>
+                ` : ''}
+                
+                ${p.activa === 0 ? `
+                    <button class="btn-mini btn-success" onclick="reactivarParticipacion(${p.id})">♻ Reactivar</button>
+                ` : ''}
+
+                <button class="btn-mini" style="background:#334155; color:white; border:1px solid #475569;" onclick="verDetallesParticipacion(${p.id})">
+                    👁 Ver
+                </button>
             </div>
         </div>
         `;
     });
 
-    container.innerHTML = html;
+    contenedor.innerHTML = html;
 }
 // INVALIDAR
 async function invalidarParticipacion(id) {
