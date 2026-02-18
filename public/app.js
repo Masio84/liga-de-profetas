@@ -753,21 +753,23 @@ async function confirmarPagoYEnviar() {
 
     // 2. REGISTRAR ACEPTACION LEGAL (Una vez por envío)
     try {
+        console.log("DEBUG: Iniciando aceptación legal..."); // CHECKPOINT 4
         await fetch(`${API}/legal/accept-terms`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 userId: uId,
-                termsVersion: "1.0" // TERMS_VERSION constant - Ensure matches backend
+                termsVersion: "1.0"
             })
         });
+        console.log("DEBUG: Aceptación legal completada/ignorada"); // CHECKPOINT 5
     } catch (errLegal) {
-        console.error("Error registrando aceptación legal:", errLegal);
-        // Continue flow as user already accepted via UI checkbox
+        console.error("DEBUG: Error legal (no bloqueante):", errLegal);
     }
 
     // 3. ENVIAR LOTE (BATCH)
     try {
+        console.log("DEBUG: Preparando envío de quinielas..."); // CHECKPOINT 6
         // Preparar payload
         const batchBody = carrito.map(q => ({
             usuarioId: uId,
@@ -777,11 +779,13 @@ async function confirmarPagoYEnviar() {
             referenciaPago
         }));
 
+        console.log("DEBUG: Enviando POST /participaciones...", batchBody); // CHECKPOINT 7
         const res = await fetch(`${API}/participaciones`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(batchBody)
         });
+        console.log("DEBUG: Respuesta /participaciones recibida. Status:", res.status); // CHECKPOINT 8
 
         if (!res.ok) {
             const errData = await res.json();
