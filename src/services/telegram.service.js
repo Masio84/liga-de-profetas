@@ -19,8 +19,8 @@ import fetch from 'node-fetch';
 //      si no, el bot no podrá escribirte.
 //
 
-const BOT_TOKEN = "CHANGE_ME"; // <--- Pega aquí el Token de BotFather
-const CHAT_ID = "CHANGE_ME";   // <--- Pega aquí tu ID numérico
+const BOT_TOKEN = "7987837298:AAER7ssmwlNDiAWZhXSbojCFlcRk7tqQSnU";
+const CHAT_ID = "7936347187";
 
 export async function notificarAdminTelegram(data) {
     try {
