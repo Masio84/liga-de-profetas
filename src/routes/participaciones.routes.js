@@ -64,36 +64,47 @@ router.get("/", async (req, res) => {
 // Crear participación (Batch or Single)
 //
 router.post("/", async (req, res) => {
+
+    // 1. Preparar datos y validar payload básico (SIN CONEXIÓN)
+    let items = Array.isArray(req.body) ? req.body : [req.body];
+
+    if (items.length === 0) {
+        return res.status(400).json({ error: "No se enviaron participaciones" });
+    }
+
+    // VALIDAR MONTO TOTAL DEL LOTE (Regla >= $20)
+    const totalLote = items.reduce((sum, item) => sum + Number(item.monto || 0), 0);
+    if (totalLote < 20) {
+        return res.status(400).json({
+            error: `El monto total de la participación debe ser mínimo $20 MXN. (Total recibido: $${totalLote})`
+        });
+    }
+
+    // 2. Verificar Jornada (DB POOL - SIN TRANSACCIÓN)
+    // Evita deadlock al no tener un cliente tomado mientras se pide otro
+    const firstJornada = items[0].jornada;
+
+    // Validar consistencia de jornada en el lote antes de nada
+    const mixed = items.some(i => i.jornada !== firstJornada);
+    if (mixed) {
+        return res.status(400).json({ error: "No se pueden mezclar jornadas en un mismo envío" });
+    }
+
+    try {
+        const acepta = await jornadaAceptaParticipaciones(firstJornada);
+        if (!acepta) {
+            return res.status(403).json({ error: "La jornada ya inició y no acepta participaciones" });
+        }
+    } catch (errJornada) {
+        return res.status(500).json({ error: "Error validando jornada: " + errJornada.message });
+    }
+
+    // 3. INICIAR TRANSACCIÓN (Conexión Exclusiva)
     const client = await db.connect();
     try {
         await client.query('BEGIN');
 
-        let items = Array.isArray(req.body) ? req.body : [req.body];
-
-        if (items.length === 0) {
-            await client.query('ROLLBACK');
-            return res.status(400).json({ error: "No se enviaron participaciones" });
-        }
-
-        // VALIDAR MONTO TOTAL DEL LOTE (Regla >= $20)
-        const totalLote = items.reduce((sum, item) => sum + Number(item.monto || 0), 0);
-        if (totalLote < 20) {
-            await client.query('ROLLBACK');
-            return res.status(400).json({
-                error: `El monto total de la participación debe ser mínimo $20 MXN. (Total recibido: $${totalLote})`
-            });
-        }
-
         const resultados = [];
-
-        // 0. OPTIMIZACION: Checar jornada una sola vez (asumiendo lote de misma jornada)
-        // Si vienen jornadas mixtas, habría que agrupar, pero el UI manda todo de una jornada.
-        const firstJornada = items[0].jornada;
-        const acepta = await jornadaAceptaParticipaciones(firstJornada);
-        if (!acepta) {
-            await client.query('ROLLBACK');
-            return res.status(403).json({ error: "La jornada ya inició y no acepta participaciones" });
-        }
 
         for (const item of items) {
             const { usuarioId, jornada, monto, pronosticos, referenciaPago } = item;
@@ -101,12 +112,6 @@ router.post("/", async (req, res) => {
             if (!usuarioId || !jornada || !monto || !pronosticos) {
                 await client.query('ROLLBACK');
                 return res.status(400).json({ error: "Datos incompletos en una de las participaciones" });
-            }
-
-            // Validar consistencia de jornada en el lote
-            if (jornada !== firstJornada) {
-                await client.query('ROLLBACK');
-                return res.status(400).json({ error: "No se pueden mezclar jornadas en un mismo envío" });
             }
 
             // GENERAR FOLIO ÚNICO
