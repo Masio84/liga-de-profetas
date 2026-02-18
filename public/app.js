@@ -462,15 +462,17 @@ function seleccionarPronostico(matchId, valor) {
         const btn = document.getElementById(`btn-${matchId}-${op}`);
         if (!btn) return;
 
+        // Limpiar estilos inline previos para que mande el CSS
+        btn.style = "";
+
         if (selecciones.includes(op)) {
-            btn.style.backgroundColor = "#22c55e";
-            btn.style.border = "2px solid #16a34a";
-            // Efecto de brillo para indicar selección activa
-            btn.style.boxShadow = "0 0 10px rgba(34, 197, 94, 0.4)";
+            btn.classList.add("selected");
+            // Agregar clase especifica para futuro styling si se desea
+            if (op === "LOCAL") btn.classList.add("selected-local");
+            else if (op === "EMPATE") btn.classList.add("selected-empate");
+            else if (op === "VISITA") btn.classList.add("selected-visita");
         } else {
-            btn.style.backgroundColor = "#111";
-            btn.style.border = "1px solid #333";
-            btn.style.boxShadow = "none";
+            btn.classList.remove("selected", "selected-local", "selected-empate", "selected-visita");
         }
     });
 
@@ -517,9 +519,8 @@ function limpiarSeleccion() {
 
     // Reset UI
     document.querySelectorAll(".match-card button").forEach(btn => {
-        btn.style.backgroundColor = "#111";
-        btn.style.border = "1px solid #333";
-        btn.style.boxShadow = "none";
+        btn.style = ""; // Remove inline
+        btn.classList.remove("selected", "selected-local", "selected-empate", "selected-visita");
     });
 }
 

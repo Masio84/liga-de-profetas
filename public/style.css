@@ -306,11 +306,16 @@ h3,
 }
 
 .btn-pronostico.selected {
-    background: var(--green-gradient);
-    border: 1px solid var(--green-bright);
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+    border: 2px solid var(--gold-primary);
+    /* Borde Dorado para resaltar */
     color: #fff;
-    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
-    text-shadow: 1px 1px 0 #000;
+    box-shadow: 0 0 15px rgba(34, 197, 94, 0.6);
+    text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+    transform: scale(1.05);
+    /* Ligeramente más grande */
+    z-index: 10;
+    font-weight: bold;
 }
 
 /* PANELS */
