@@ -2,7 +2,7 @@ import express from "express";
 import db from "../config/database.js";
 import { requireAdminAuth } from "../middleware/auth.js";
 import { syncResultados } from "../services/sync.service.js";
-import { calcularPremios, buscarGanadores } from "../services/premios.service.js"; // Asegurar import correcto si existe
+import { calcularPremios } from "../services/premios.service.js"; // Asegurar import correcto si existe
 import { evaluarJornada } from "../services/evaluacion.service.js";
 
 const router = express.Router();
@@ -83,7 +83,8 @@ router.get("/jornadas/resumen", async (req, res) => {
         // Para no duplicar lógica compleja, asumiremos que el admin quiere ver el resumen de TODAS las jornadas que tengan algun partido.
         // O mejor: Iteramos sobre las jornadas que existen en la base de datos de matches.
 
-        const { rows: rounds } = await db.query(`SELECT DISTINCT round FROM matches ORDER BY round DESC`);
+        // LIMITAMOS a las últimas 12 jornadas para evitar timeouts en serverless functions
+        const { rows: rounds } = await db.query(`SELECT DISTINCT round FROM matches ORDER BY round DESC LIMIT 12`);
 
         const resumen = [];
 
