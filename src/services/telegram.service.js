@@ -42,13 +42,24 @@ export async function notificarAdminTelegram(data) {
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`;
 
         // Enviar petición
-        fetch(url)
-            .then(res => res.json())
-            .then(data => {
-                if (data.ok) console.log("✅ Notificación Telegram enviada.");
-                else console.error("❌ Error Telegram API:", data.description);
-            })
-            .catch(err => console.error("❌ Error red Telegram:", err.message));
+        // Enviar petición con Timeout de 2 segundos para no bloquear
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+        try {
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            const data = await res.json();
+
+            if (data.ok) console.log("✅ Notificación Telegram enviada.");
+            else console.error("❌ Error Telegram API:", data.description);
+        } catch (err) {
+            if (err.name === 'AbortError') {
+                console.error("⚠️ Telegram: Tiempo de espera agotado (2s).");
+            } else {
+                console.error("❌ Error red Telegram:", err.message);
+            }
+        }
 
     } catch (error) {
         console.error("Error en servicio Telegram:", error);

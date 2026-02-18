@@ -1,7 +1,7 @@
 import express from "express";
 import db from "../config/database.js";
 import { jornadaAceptaParticipaciones } from "../services/jornadas.service.js";
-// import { notificarAdminTelegram } from "../services/telegram.service.js";
+import { notificarAdminTelegram } from "../services/telegram.service.js";
 
 const router = express.Router();
 
@@ -143,7 +143,14 @@ router.post("/", async (req, res) => {
             resultados.push(nueva[0]);
         }
 
-        // TELEGRAM REMOVED PER USER REQUEST to prevent timeouts
+        // NOTIFICACION TELEGRAM (Con Timeout de seguridad)
+        // Usamos await para asegurar que Vercel no mate el proceso,
+        // pero el servicio tiene un timeout interno de 2s para no bloquear.
+        await notificarAdminTelegram({
+            cantidad: resultados.length,
+            montoTotal: totalLote,
+            folios: resultados.map(r => r.folio)
+        });
 
         if (items.length === 1) {
             res.status(201).json({
