@@ -788,8 +788,18 @@ async function confirmarPagoYEnviar() {
         console.log("DEBUG: Respuesta /participaciones recibida. Status:", res.status); // CHECKPOINT 8
 
         if (!res.ok) {
-            const errData = await res.json();
-            throw new Error(errData.error || "Error al procesar el lote de quinielas");
+            const contentType = res.headers.get("content-type");
+            let errorMessage = "Error al procesar el lote de quinielas";
+
+            if (contentType && contentType.includes("application/json")) {
+                const errData = await res.json();
+                errorMessage = errData.error || errorMessage;
+            } else {
+                const textBody = await res.text();
+                console.error("DEBUG: Error no-JSON recibido:", textBody);
+                errorMessage = `Error del servidor (${res.status}): Posible timeout o falla de conexión.`;
+            }
+            throw new Error(errorMessage);
         }
 
         const data = await res.json();

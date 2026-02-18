@@ -86,6 +86,15 @@ router.post("/", async (req, res) => {
 
         const resultados = [];
 
+        // 0. OPTIMIZACION: Checar jornada una sola vez (asumiendo lote de misma jornada)
+        // Si vienen jornadas mixtas, habría que agrupar, pero el UI manda todo de una jornada.
+        const firstJornada = items[0].jornada;
+        const acepta = await jornadaAceptaParticipaciones(firstJornada);
+        if (!acepta) {
+            await client.query('ROLLBACK');
+            return res.status(403).json({ error: "La jornada ya inició y no acepta participaciones" });
+        }
+
         for (const item of items) {
             const { usuarioId, jornada, monto, pronosticos, referenciaPago } = item;
 
@@ -94,11 +103,10 @@ router.post("/", async (req, res) => {
                 return res.status(400).json({ error: "Datos incompletos en una de las participaciones" });
             }
 
-            // VERIFICAR SI LA JORNADA AÚN ACEPTA PARTICIPACIONES
-            const acepta = await jornadaAceptaParticipaciones(jornada);
-            if (!acepta) {
+            // Validar consistencia de jornada en el lote
+            if (jornada !== firstJornada) {
                 await client.query('ROLLBACK');
-                return res.status(403).json({ error: "La jornada ya inició y no acepta participaciones" });
+                return res.status(400).json({ error: "No se pueden mezclar jornadas en un mismo envío" });
             }
 
             // GENERAR FOLIO ÚNICO
