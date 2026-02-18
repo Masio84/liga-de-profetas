@@ -425,26 +425,22 @@ async function cargarParticipacionesAdmin() {
 //
 // CARGAR RESULTADO DE JORNADAS
 //
+//
+// CARGAR RESULTADO DE JORNADAS (OPTIMIZADO)
+//
 async function cargarResultadosAdmin() {
     try {
-        const res = await fetch(API + "/jornadas");
+        const res = await fetchAuth(API + "/admin/jornadas/resumen");
 
         if (!res.ok) {
             throw new Error(`Error ${res.status}: ${res.statusText}`);
         }
 
         const data = await res.json();
+        const resumen = data.resumen || [];
 
-        if (!data.jornadas) {
-            document.getElementById("adminResultados").innerHTML =
-                "<div class='participacion-card'>No hay jornadas disponibles</div>";
-            return;
-        }
-
-        const finalizadas = data.jornadas.filter(j => j.estado === "FINALIZADA");
-
-        if (finalizadas.length === 0) {
-            document.getElementById("adminResultados").innerHTML = "<div class='participacion-card'>No hay jornadas finalizadas</div>";
+        if (resumen.length === 0) {
+            document.getElementById("adminResultados").innerHTML = "<div class='participacion-card'>No hay jornadas registradas</div>";
             return;
         }
 
@@ -455,59 +451,44 @@ async function cargarResultadosAdmin() {
                     <th>Jornada</th>
                     <th>Ganadores</th>
                     <th>Pozo</th>
-
                 </tr>
             </thead>
             <tbody>
         `;
 
-        // Ordenar descencente por defecto para ver la más reciente arriba
-        finalizadas.sort((a, b) => b.numero - a.numero);
+        // Ordenar: más reciente primero
+        resumen.sort((a, b) => b.jornada - a.jornada);
 
-        for (const jornada of finalizadas) {
-            try {
-                const resEval = await fetch(API + "/evaluacion/" + jornada.numero);
+        for (const r of resumen) {
+            if (r.error) continue; // Skip errores
 
-                if (!resEval.ok) {
-                    console.error(`Error evaluando jornada ${jornada.numero}:`, resEval.status);
-                    continue;
-                }
+            const ganadoresCount = r.ganadores ? r.ganadores.length : 0;
+            const pozo = r.pozoTotal || 0;
 
-                const evalData = await resEval.json();
-
-                html += `
-                <tr onclick="cargarGanadoresRecientes(${jornada.numero})" style="cursor: pointer;" title="Ver ganadores">
-                    <td>
-                        <strong style="color: var(--gold-primary);">#${jornada.numero}</strong>
-                    </td>
-                    <td>
-                        ${evalData.ganadores.length > 0
-                        ? `<span style="color:#4ade80">✅ ${evalData.ganadores.length}</span>`
-                        : '<span style="color:#94a3b8">0</span>'}
-                    </td>
-                    <td>
-                        $${evalData.pozoTotal || 0}
-                    </td>
-
-                </tr>
-                `;
-            } catch (error) {
-                console.error(`Error procesando jornada ${jornada.numero}:`, error);
-            }
+            html += `
+            <tr onclick="cargarGanadoresRecientes(${r.jornada})" style="cursor: pointer;" title="Ver ganadores">
+                <td>
+                    <strong style="color: var(--gold-primary);">#${r.jornada}</strong>
+                </td>
+                <td>
+                    ${ganadoresCount > 0
+                    ? `<span style="color:#4ade80">✅ ${ganadoresCount}</span>`
+                    : '<span style="color:#94a3b8">0</span>'}
+                </td>
+                <td>
+                    $${pozo}
+                </td>
+            </tr>
+            `;
         }
 
         html += "</tbody></table>";
         document.getElementById("adminResultados").innerHTML = html;
 
-        // Cargar ganadores de la última jornada finalizada
-        if (finalizadas.length > 0) {
-            // Ordenar por numero descendente (la más reciente primero)
-            finalizadas.sort((a, b) => b.numero - a.numero);
-            const ultimaJornada = finalizadas[0];
-            await cargarGanadoresRecientes(ultimaJornada.numero);
-        } else {
-            document.getElementById("adminGanadores").innerHTML =
-                "<div style='text-align:center; padding:10px; color:#64748b'>No hay jornadas finalizadas aún</div>";
+        // Cargar ganadores de la última jornada si existe
+        if (resumen.length > 0) {
+            const ultima = resumen[0];
+            await cargarGanadoresRecientes(ultima.jornada);
         }
 
     } catch (error) {

@@ -2,7 +2,8 @@ import express from "express";
 import db from "../config/database.js";
 import { requireAdminAuth } from "../middleware/auth.js";
 import { syncResultados } from "../services/sync.service.js";
-import { calcularPremios } from "../services/premios.service.js";
+import { calcularPremios, buscarGanadores } from "../services/premios.service.js"; // Asegurar import correcto si existe
+import { evaluarJornada } from "../services/evaluacion.service.js";
 
 const router = express.Router();
 
@@ -56,6 +57,59 @@ router.get("/participaciones", async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error obteniendo participaciones" });
+    }
+});
+
+//
+// RESUMEN DE JORNADAS (BULK)
+// Evita hacer N peticiones desde el cliente
+//
+router.get("/jornadas/resumen", async (req, res) => {
+    try {
+        // 1. Obtener jornadas finalizadas
+        const { rows: jornadas } = await db.query(
+            `SELECT round as numero, status, MIN("startTime") as start 
+             FROM matches 
+             GROUP BY round, status 
+             HAVING status = 'finished' 
+             ORDER BY round DESC`
+        );
+
+        // NOTA: La lógica de estatus de jornada es compleja en 'jornadas.routes.js', 
+        // pero aquí simplificamos: si todos los matches de una round están finished, la jornada es finished.
+        // O mejor aún, reutilizamos la lógica de que el cliente ya sabe cuáles son finalizadas,
+        // pero para ser robustos, el backend debería determinarlo.
+
+        // Para no duplicar lógica compleja, asumiremos que el admin quiere ver el resumen de TODAS las jornadas que tengan algun partido.
+        // O mejor: Iteramos sobre las jornadas que existen en la base de datos de matches.
+
+        const { rows: rounds } = await db.query(`SELECT DISTINCT round FROM matches ORDER BY round DESC`);
+
+        const resumen = [];
+
+        // Ejecutamos secuencialmente para no matar la DB, pero es mucho más rápido que via HTTP
+        for (const r of rounds) {
+            try {
+                // Usamos el servicio existente
+                const evalData = await evaluarJornada(r.round);
+
+                // Solo nos interesa si ya tiene ganadores o si ya terminó
+                // Opcional: filtrar si no ha empezado.
+                resumen.push(evalData);
+            } catch (e) {
+                console.error(`Error evaluando jornada ${r.round}:`, e.message);
+                resumen.push({
+                    jornada: r.round,
+                    error: true
+                });
+            }
+        }
+
+        res.json({ resumen });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error obteniendo resumen" });
     }
 });
 
