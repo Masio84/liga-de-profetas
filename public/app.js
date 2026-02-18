@@ -718,12 +718,22 @@ async function confirmarPagoYEnviar() {
                 const u = await buscar.json();
                 uId = u.id;
             } else {
+                console.log("DEBUG: Usuario no encontrado, creando nueva cuenta...");
                 const crear = await fetch(API + "/usuarios", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ nombre, celular })
                 });
+
+                console.log("DEBUG: Respuesta creación usuario:", crear.status, crear.statusText);
+
+                if (!crear.ok) {
+                    const errBody = await crear.text();
+                    throw new Error(`Error creando usuario: ${crear.status} - ${errBody}`);
+                }
+
                 const nuevo = await crear.json();
+                console.log("DEBUG: Usuario creado con ID:", nuevo.id);
                 uId = nuevo.id;
             }
             usuarioId = uId;
