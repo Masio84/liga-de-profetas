@@ -992,10 +992,19 @@ async function verDetallesParticipacion(id) {
                         </thead>
                         <tbody>
                             ${pronosticos.map(pr => {
-            let prediccionTexto = pr.seleccion;
-            if (pr.seleccion === 'LOCAL') prediccionTexto = `${pr.local} (L)`;
-            if (pr.seleccion === 'VISITA') prediccionTexto = `${pr.visitante} (V)`;
-            if (pr.seleccion === 'EMPATE') prediccionTexto = `Empate (E)`;
+            // Normalizar selección (puede ser array o string)
+            let sel = pr.seleccion;
+            if (Array.isArray(sel)) sel = sel[0];
+            sel = (sel || '').toString().toUpperCase().trim();
+
+            let prediccionTexto = sel; // Default al valor normalizado
+
+            if (sel === 'LOCAL' || sel === 'L') prediccionTexto = `${pr.local} (L)`;
+            else if (sel === 'VISITA' || sel === 'V') prediccionTexto = `${pr.visitante} (V)`;
+            else if (sel === 'EMPATE' || sel === 'E') prediccionTexto = `Empate (E)`;
+
+            // Console log para depurar si sigue fallando
+            console.log("Renderizando detalle:", { original: pr.seleccion, match: sel, final: prediccionTexto });
 
             return `
                                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
