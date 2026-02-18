@@ -67,13 +67,14 @@ router.get("/participaciones", async (req, res) => {
 router.get("/jornadas/resumen", async (req, res) => {
     try {
         // LIMITAMOS a las últimas 12 jornadas FINALIZADAS
-        // Una jornada se considera finalizada si NO tiene partidos pendientes (status != 'finished')
-        // Usamos GROUP BY para revisar todos los partidos de la jornada
+        // Usamos la misma lógica que el index: Si MAX(start_time) ya pasó, la jornada se considera finalizada (o al menos jugada).
+        // Agregamos un margen de 2 horas (120 min) para asegurar que los partidos terminaron.
+        // NOW() devuelve UTC, start_time es timestamp with time zone (UTC).
         const { rows: rounds } = await db.query(`
             SELECT round 
             FROM matches 
             GROUP BY round 
-            HAVING COUNT(CASE WHEN status != 'finished' THEN 1 END) = 0 
+            HAVING MAX(start_time) < (NOW() - INTERVAL '105 minutes') 
             ORDER BY round DESC 
             LIMIT 12
         `);
