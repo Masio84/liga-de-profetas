@@ -17,6 +17,7 @@ if (!connectionString) {
 
 const pool = new Pool({
   connectionString: connectionString,
+  connectionTimeoutMillis: 5000, // Fail fast if pool is full (5s timeout)
   ssl: {
     rejectUnauthorized: false
   }
