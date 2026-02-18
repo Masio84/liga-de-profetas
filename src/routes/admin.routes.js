@@ -89,18 +89,53 @@ router.get("/participaciones/:id", async (req, res) => {
         }
         const participacion = pRows[0];
 
-        // 2. Obtener los pronósticos
-        // Asumimos que están en una tabla 'pronosticos' o en un campo jsonb 'pronosticos' en la tabla participaciones
-        // Basado en el código de 'crearParticipacion' (no visible pero inferido), y la consulta anterior que tenía p.pronosticos
-        // Si p.pronosticos existe en la tabla participaciones como JSONB:
-        let pronosticos = [];
+        // 2. Obtener los pronósticos (JSONB)
+        let pronosticosRaw = [];
         const { rows: jsonRows } = await db.query(`SELECT pronosticos FROM participaciones WHERE id = $1`, [id]);
         if (jsonRows.length > 0 && jsonRows[0].pronosticos) {
-            pronosticos = jsonRows[0].pronosticos;
+            // Manejar si viene como string JSON o ya como objeto
+            if (typeof jsonRows[0].pronosticos === 'string') {
+                try {
+                    pronosticosRaw = JSON.parse(jsonRows[0].pronosticos);
+                } catch (e) {
+                    pronosticosRaw = [];
+                }
+            } else {
+                pronosticosRaw = jsonRows[0].pronosticos;
+            }
         }
 
-        res.json({ participaciones: participacion, participacion: participacion, pronosticos });
-        // Nota: enviamos 'participacion' singular para el frontend, y manteniendo compatibilidad si se usa plural.
+        // 3. Obtener Partidos de esa Jornada para tener nombres reales
+        const { rows: matches } = await db.query(
+            `SELECT id, home_team as "homeTeam", away_team as "awayTeam", resultado, status 
+             FROM matches WHERE round = $1`,
+            [participacion.jornada]
+        );
+
+        // Map para búsqueda rápida de partido por ID
+        const matchesMap = {};
+        matches.forEach(m => matchesMap[m.id] = m);
+
+        // 4. Enriquecer pronósticos con datos del partido
+        const pronosticosEnriquecidos = pronosticosRaw.map(p => {
+            // El ID puede venir como matchId o match_id
+            const mId = p.matchId || p.match_id;
+            const matchData = matchesMap[mId] || {};
+
+            return {
+                matchId: mId,
+                local: matchData.homeTeam || "Desconocido",
+                visitante: matchData.awayTeam || "Desconocido",
+                seleccion: p.prediccion || p.seleccion || "N/A", // Unificar a 'seleccion' para frontend
+                resultadoReal: matchData.resultado,
+                status: matchData.status
+            };
+        });
+
+        res.json({
+            participacion: participacion,
+            pronosticos: pronosticosEnriquecidos
+        });
 
     } catch (error) {
         console.error(error);
