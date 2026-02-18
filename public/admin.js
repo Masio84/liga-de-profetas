@@ -455,7 +455,7 @@ async function cargarResultadosAdmin() {
                     <th>Jornada</th>
                     <th>Ganadores</th>
                     <th>Pozo</th>
-                    <th>Record</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -488,9 +488,7 @@ async function cargarResultadosAdmin() {
                     <td>
                         $${evalData.pozoTotal || 0}
                     </td>
-                    <td>
-                        ${evalData.mejorPuntaje || 0} pts
-                    </td>
+
                 </tr>
                 `;
             } catch (error) {
