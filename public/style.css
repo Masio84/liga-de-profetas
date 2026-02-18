@@ -544,35 +544,40 @@ a:hover {
         font-size: 42px;
     }
 
-    /* ADMIN TABLE STYLES */
-    .admin-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 14px;
-        margin-top: 10px;
+    .pozo-amount {
+        font-size: 32px;
     }
+}
 
-    .admin-table th {
-        background: rgba(0, 50, 0, 0.8);
-        color: var(--gold-primary);
-        text-transform: uppercase;
-        text-align: left;
-        padding: 12px;
-        font-size: 12px;
-        letter-spacing: 1px;
-        border-bottom: 2px solid var(--gold-dark);
-    }
+/* ADMIN TABLE STYLES */
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 10px;
+}
 
-    .admin-table td {
-        padding: 12px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        color: #cbd5e1;
-    }
+.admin-table th {
+    background: rgba(0, 50, 0, 0.8);
+    color: var(--gold-primary);
+    text-transform: uppercase;
+    text-align: left;
+    padding: 12px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    border-bottom: 2px solid var(--gold-dark);
+}
 
-    .admin-table tr:hover {
-        background: rgba(255, 255, 255, 0.05);
-    }
+.admin-table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+}
 
-    .admin-table td strong {
-        color: #fff;
-    }
+.admin-table tr:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.admin-table td strong {
+    color: #fff;
+}
