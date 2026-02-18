@@ -143,13 +143,28 @@ router.post("/", async (req, res) => {
             resultados.push(nueva[0]);
         }
 
+        // OBTENER DATOS DE USUARIO PARA NOTIFICACIÓN
+        let nombreUsuario = "Desconocido";
+        let celUsuario = "N/A";
+        try {
+            const { rows: uData } = await db.query("SELECT nombre, celular FROM usuarios WHERE id = $1", [items[0].usuarioId]);
+            if (uData.length > 0) {
+                nombreUsuario = uData[0].nombre;
+                celUsuario = uData[0].celular;
+            }
+        } catch (errU) {
+            console.error("Error obteniendo usuario para Telegram:", errU);
+        }
+
         // NOTIFICACION TELEGRAM (Con Timeout de seguridad)
         // Usamos await para asegurar que Vercel no mate el proceso,
         // pero el servicio tiene un timeout interno de 2s para no bloquear.
         await notificarAdminTelegram({
             cantidad: resultados.length,
             montoTotal: totalLote,
-            folios: resultados.map(r => r.folio)
+            folios: resultados.map(r => r.folio),
+            usuario: nombreUsuario,
+            celular: celUsuario
         });
 
         if (items.length === 1) {

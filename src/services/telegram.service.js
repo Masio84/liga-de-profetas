@@ -29,15 +29,17 @@ export async function notificarAdminTelegram(data) {
             return;
         }
 
-        const { cantidad, montoTotal, folios } = data;
+        const { cantidad, montoTotal, folios, usuario, celular } = data;
         const folioMuestra = folios[0] || "N/A";
 
         // Mensaje formateado (Markdown V2 o HTML)
         const message = `🔔 *Nueva Participación* 🔔%0A%0A` +
+            `👤 Usuario: *${usuario || 'N/A'}*%0A` +
+            `📱 Celular: \`${celular || 'N/A'}\`%0A` +
             `💰 Monto: *$${montoTotal}*%0A` +
             `🎟️ Quinielas: ${cantidad}%0A` +
             `📄 Folio: \`${folioMuestra}\` ${cantidad > 1 ? '...' : ''}%0A` +
-            `🕒 Hora: ${new Date().toLocaleTimeString()}`;
+            `🕒 Hora: ${new Date().toLocaleTimeString('es-MX', { timeZone: 'America/Mexico_City' })}`;
 
         const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${message}&parse_mode=Markdown`;
 
