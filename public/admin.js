@@ -444,12 +444,25 @@ async function cargarResultadosAdmin() {
         const finalizadas = data.jornadas.filter(j => j.estado === "FINALIZADA");
 
         if (finalizadas.length === 0) {
-            document.getElementById("adminResultados").innerHTML =
-                "<div class='participacion-card'>No hay jornadas finalizadas</div>";
+            document.getElementById("adminResultados").innerHTML = "<div class='participacion-card'>No hay jornadas finalizadas</div>";
             return;
         }
 
-        let html = "";
+        let html = `
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Jornada</th>
+                    <th>Ganadores</th>
+                    <th>Pozo</th>
+                    <th>Record</th>
+                </tr>
+            </thead>
+            <tbody>
+        `;
+
+        // Ordenar descencente por defecto para ver la más reciente arriba
+        finalizadas.sort((a, b) => b.numero - a.numero);
 
         for (const jornada of finalizadas) {
             try {
@@ -463,20 +476,30 @@ async function cargarResultadosAdmin() {
                 const evalData = await resEval.json();
 
                 html += `
-                <div class="participacion-card">
-                    <strong>Jornada ${jornada.numero}</strong><br>
-                    Ganadores: ${evalData.ganadores.length}<br>
-                    Pozo total: $${evalData.pozoTotal || 0}<br>
-                    Mejor puntaje: ${evalData.mejorPuntaje || 0}
-                </div>
+                <tr onclick="cargarGanadoresRecientes(${jornada.numero})" style="cursor: pointer;" title="Ver ganadores">
+                    <td>
+                        <strong style="color: var(--gold-primary);">#${jornada.numero}</strong>
+                    </td>
+                    <td>
+                        ${evalData.ganadores.length > 0
+                        ? `<span style="color:#4ade80">✅ ${evalData.ganadores.length}</span>`
+                        : '<span style="color:#94a3b8">0</span>'}
+                    </td>
+                    <td>
+                        $${evalData.pozoTotal || 0}
+                    </td>
+                    <td>
+                        ${evalData.mejorPuntaje || 0} pts
+                    </td>
+                </tr>
                 `;
             } catch (error) {
                 console.error(`Error procesando jornada ${jornada.numero}:`, error);
             }
         }
 
-        document.getElementById("adminResultados").innerHTML = html ||
-            "<div class='participacion-card'>No se pudieron cargar los resultados</div>";
+        html += "</tbody></table>";
+        document.getElementById("adminResultados").innerHTML = html;
 
         // Cargar ganadores de la última jornada finalizada
         if (finalizadas.length > 0) {
