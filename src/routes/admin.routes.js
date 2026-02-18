@@ -66,8 +66,17 @@ router.get("/participaciones", async (req, res) => {
 //
 router.get("/jornadas/resumen", async (req, res) => {
     try {
-        // LIMITAMOS a las últimas 12 jornadas para evitar timeouts en serverless functions
-        const { rows: rounds } = await db.query(`SELECT DISTINCT round FROM matches ORDER BY round DESC LIMIT 12`);
+        // LIMITAMOS a las últimas 12 jornadas FINALIZADAS
+        // Una jornada se considera finalizada si NO tiene partidos pendientes (status != 'finished')
+        // Usamos GROUP BY para revisar todos los partidos de la jornada
+        const { rows: rounds } = await db.query(`
+            SELECT round 
+            FROM matches 
+            GROUP BY round 
+            HAVING COUNT(CASE WHEN status != 'finished' THEN 1 END) = 0 
+            ORDER BY round DESC 
+            LIMIT 12
+        `);
 
         const resumen = [];
 
