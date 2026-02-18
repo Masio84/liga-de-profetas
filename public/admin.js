@@ -975,19 +975,23 @@ async function syncResultados() {
         alert("Sincronización completada exitosamente");
     } catch (error) {
         console.error("Error sincronizando:", error);
-        // VER DETALLES (MODAL)
-        async function verDetallesParticipacion(id) {
-            try {
-                const res = await fetchAuth(`${API}/admin/participaciones/${id}`);
-                if (!res.ok) throw new Error("Error obteniendo detalles");
+        alert("Error al sincronizar resultados");
+    }
+}
 
-                const data = await res.json();
-                const p = data.participacion;
-                const pronosticos = data.pronosticos || [];
+// VER DETALLES (MODAL)
+async function verDetallesParticipacion(id) {
+    try {
+        const res = await fetchAuth(`${API}/admin/participaciones/${id}`);
+        if (!res.ok) throw new Error("Error obteniendo detalles");
 
-                // Crear modal dinámicamente si no existe, o usar uno genérico
-                // Por simplicidad, usaremos un alert formateado o un modal simple inyectado
-                let modalHtml = `
+        const data = await res.json();
+        const p = data.participacion;
+        const pronosticos = data.pronosticos || [];
+
+        // Crear modal dinámicamente si no existe, o usar uno genérico
+        // Por simplicidad, usaremos un alert formateado o un modal simple inyectado
+        let modalHtml = `
             <div id="modalDetalles" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; justify-content:center; align-items:center;">
                 <div style="background:#0f172a; padding:20px; border:2px solid var(--gold-primary); border-radius:8px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; color:white; position:relative;">
                     <button onclick="document.getElementById('modalDetalles').remove()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:white; font-size:20px; cursor:pointer;">&times;</button>
@@ -1024,32 +1028,32 @@ async function syncResultados() {
             </div>
         `;
 
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-            } catch (error) {
-                console.error(error);
-                alert("Error al cargar detalles: " + error.message);
-            }
-        }
+    } catch (error) {
+        console.error(error);
+        alert("Error al cargar detalles: " + error.message);
+    }
+}
 
-        // CANCELAR (Alias para desactivar con confirmación)
-        async function cancelarParticipacion(id) {
-            if (!confirm("¿Estás seguro de que deseas RECHAZAR/CANCELAR esta participación?")) return;
-            await desactivarParticipacion(id);
-        }
+// CANCELAR (Alias para desactivar con confirmación)
+async function cancelarParticipacion(id) {
+    if (!confirm("¿Estás seguro de que deseas RECHAZAR/CANCELAR esta participación?")) return;
+    await desactivarParticipacion(id);
+}
 
 
-        // INIT
-        async function initAdmin() {
+// INIT
+async function initAdmin() {
 
-            await cargarEstadoSync();
+    await cargarEstadoSync();
 
-            await cargarPozoActual();
+    await cargarPozoActual();
 
-            await cargarParticipacionesAdmin();
+    await cargarParticipacionesAdmin();
 
-            await cargarResultadosAdmin();
+    await cargarResultadosAdmin();
 
-        }
+}
 
-        initAdmin();
+initAdmin();
