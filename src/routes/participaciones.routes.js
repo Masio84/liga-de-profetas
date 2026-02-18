@@ -1,7 +1,7 @@
 import express from "express";
 import db from "../config/database.js";
 import { jornadaAceptaParticipaciones } from "../services/jornadas.service.js";
-import { notificarAdminTelegram } from "../services/telegram.service.js";
+// import { notificarAdminTelegram } from "../services/telegram.service.js";
 
 const router = express.Router();
 
@@ -144,13 +144,8 @@ router.post("/", async (req, res) => {
 
         await client.query('COMMIT');
 
-        // NOTIFICACION TELEGRAM
-        // Se ejecuta en segundo plano, no bloquea respuesta
-        notificarAdminTelegram({
-            cantidad: resultados.length,
-            montoTotal: totalLote,
-            folios: resultados.map(r => r.folio)
-        });
+        // TELEGRAM REMOVED PER USER REQUEST to prevent timeouts
+        // notificarAdminTelegram({...});
 
         if (items.length === 1) {
             res.status(201).json({
