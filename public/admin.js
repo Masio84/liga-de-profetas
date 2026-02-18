@@ -975,22 +975,81 @@ async function syncResultados() {
         alert("Sincronización completada exitosamente");
     } catch (error) {
         console.error("Error sincronizando:", error);
-        alert("Error al sincronizar resultados");
-    }
-}
+        // VER DETALLES (MODAL)
+        async function verDetallesParticipacion(id) {
+            try {
+                const res = await fetchAuth(`${API}/admin/participaciones/${id}`);
+                if (!res.ok) throw new Error("Error obteniendo detalles");
+
+                const data = await res.json();
+                const p = data.participacion;
+                const pronosticos = data.pronosticos || [];
+
+                // Crear modal dinámicamente si no existe, o usar uno genérico
+                // Por simplicidad, usaremos un alert formateado o un modal simple inyectado
+                let modalHtml = `
+            <div id="modalDetalles" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; justify-content:center; align-items:center;">
+                <div style="background:#0f172a; padding:20px; border:2px solid var(--gold-primary); border-radius:8px; max-width:500px; width:90%; max-height:80vh; overflow-y:auto; color:white; position:relative;">
+                    <button onclick="document.getElementById('modalDetalles').remove()" style="position:absolute; top:10px; right:15px; background:none; border:none; color:white; font-size:20px; cursor:pointer;">&times;</button>
+                    
+                    <h3 style="color:var(--gold-primary); text-align:center; margin-top:0;">Detalle de Pronósticos</h3>
+                    <div style="text-align:center; margin-bottom:15px; color:#cbd5e1;">
+                        Folio: <strong style="color:white">${p.folio || 'N/A'}</strong><br>
+                        Usuario: ${p.usuario}
+                    </div>
+
+                    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+                        <thead style="background:rgba(255,255,255,0.1); color:var(--gold-primary);">
+                            <tr>
+                                <th style="padding:8px; text-align:left;">Partido</th>
+                                <th style="padding:8px; text-align:center;">Pronóstico</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${pronosticos.map(pr => `
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                                    <td style="padding:8px;">${pr.local} vs ${pr.visitante}</td>
+                                    <td style="padding:8px; text-align:center; font-weight:bold; color:${pr.seleccion === 'LOCAL' ? '#4ade80' : pr.seleccion === 'VISITA' ? '#facc15' : '#cbd5e1'}">
+                                        ${pr.seleccion}
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <div style="margin-top:20px; text-align:center;">
+                        <button onclick="document.getElementById('modalDetalles').remove()" class="btn-mini" style="padding:10px 30px; background: #334155;">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+            } catch (error) {
+                console.error(error);
+                alert("Error al cargar detalles: " + error.message);
+            }
+        }
+
+        // CANCELAR (Alias para desactivar con confirmación)
+        async function cancelarParticipacion(id) {
+            if (!confirm("¿Estás seguro de que deseas RECHAZAR/CANCELAR esta participación?")) return;
+            await desactivarParticipacion(id);
+        }
 
 
-// INIT
-async function initAdmin() {
+        // INIT
+        async function initAdmin() {
 
-    await cargarEstadoSync();
+            await cargarEstadoSync();
 
-    await cargarPozoActual();
+            await cargarPozoActual();
 
-    await cargarParticipacionesAdmin();
+            await cargarParticipacionesAdmin();
 
-    await cargarResultadosAdmin();
+            await cargarResultadosAdmin();
 
-}
+        }
 
-initAdmin();
+        initAdmin();
