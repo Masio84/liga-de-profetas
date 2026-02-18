@@ -66,23 +66,6 @@ router.get("/participaciones", async (req, res) => {
 //
 router.get("/jornadas/resumen", async (req, res) => {
     try {
-        // 1. Obtener jornadas finalizadas
-        const { rows: jornadas } = await db.query(
-            `SELECT round as numero, status, MIN("startTime") as start 
-             FROM matches 
-             GROUP BY round, status 
-             HAVING status = 'finished' 
-             ORDER BY round DESC`
-        );
-
-        // NOTA: La lógica de estatus de jornada es compleja en 'jornadas.routes.js', 
-        // pero aquí simplificamos: si todos los matches de una round están finished, la jornada es finished.
-        // O mejor aún, reutilizamos la lógica de que el cliente ya sabe cuáles son finalizadas,
-        // pero para ser robustos, el backend debería determinarlo.
-
-        // Para no duplicar lógica compleja, asumiremos que el admin quiere ver el resumen de TODAS las jornadas que tengan algun partido.
-        // O mejor: Iteramos sobre las jornadas que existen en la base de datos de matches.
-
         // LIMITAMOS a las últimas 12 jornadas para evitar timeouts en serverless functions
         const { rows: rounds } = await db.query(`SELECT DISTINCT round FROM matches ORDER BY round DESC LIMIT 12`);
 
@@ -148,7 +131,6 @@ router.get("/participaciones/:id", async (req, res) => {
         let pronosticosRaw = [];
         const { rows: jsonRows } = await db.query(`SELECT pronosticos FROM participaciones WHERE id = $1`, [id]);
         if (jsonRows.length > 0 && jsonRows[0].pronosticos) {
-            // Manejar si viene como string JSON o ya como objeto
             if (typeof jsonRows[0].pronosticos === 'string') {
                 try {
                     pronosticosRaw = JSON.parse(jsonRows[0].pronosticos);
@@ -173,7 +155,6 @@ router.get("/participaciones/:id", async (req, res) => {
 
         // 4. Enriquecer pronósticos con datos del partido
         const pronosticosEnriquecidos = pronosticosRaw.map(p => {
-            // El ID puede venir como matchId o match_id
             const mId = p.matchId || p.match_id;
             const matchData = matchesMap[mId] || {};
 
@@ -199,94 +180,48 @@ router.get("/participaciones/:id", async (req, res) => {
 });
 
 //
-// VALIDAR PARTICIPACION
+// VALIDAR / INVALIDAR / REACTIVAR
 //
-router.post("/participaciones/:id/validar", async (req, res) => {
-
-    const id = req.params.id;
+router.post("/participaciones/:id/:action", async (req, res) => {
+    const { id, action } = req.params;
+    // action: 'validar', 'invalidar', 'desactivar', 'reactivar'
 
     try {
-        await db.query(
-            `UPDATE participaciones SET validada = 1 WHERE id = $1`,
-            [id]
-        );
-        res.json({ ok: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+        let query = "";
+        let params = [id];
 
+        if (action === "validar") {
+            query = "UPDATE participaciones SET validada = 1, activa = 1 WHERE id = $1";
+        } else if (action === "invalidar") {
+            query = "UPDATE participaciones SET validada = 0 WHERE id = $1";
+        } else if (action === "desactivar") {
+            query = "UPDATE participaciones SET activa = 0 WHERE id = $1"; // Soft delete
+        } else if (action === "reactivar") {
+            query = "UPDATE participaciones SET activa = 1 WHERE id = $1";
+        } else {
+            return res.status(400).json({ error: "Acción no válida" });
+        }
+
+        await db.query(query, params);
+        res.json({ success: true, action });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error actualizando estado" });
+    }
 });
 
 //
-// INVALIDAR
-//
-router.post("/participaciones/:id/invalidar", async (req, res) => {
-
-    const id = req.params.id;
-
-    try {
-        await db.query(
-            `UPDATE participaciones SET validada = 0 WHERE id = $1`,
-            [id]
-        );
-        res.json({ ok: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-
-});
-
-//
-// DESACTIVAR
-//
-router.post("/participaciones/:id/desactivar", async (req, res) => {
-
-    const id = req.params.id;
-
-    try {
-        await db.query(
-            `UPDATE participaciones SET activa = 0 WHERE id = $1`,
-            [id]
-        );
-        res.json({ ok: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-
-});
-
-//
-// REACTIVAR
-//
-router.post("/participaciones/:id/reactivar", async (req, res) => {
-
-    const id = req.params.id;
-
-    try {
-        await db.query(
-            `UPDATE participaciones SET activa = 1 WHERE id = $1`,
-            [id]
-        );
-        res.json({ ok: true });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
-
-});
-
-//
-// CALCULAR PREMIOS
+// OBTENER GANADORES DETALLADOS DE UNA JORNADA
 //
 router.get("/premios/:jornada", async (req, res) => {
     try {
-        const jornada = parseInt(req.params.jornada);
+        const jornada = req.params.jornada;
         const resultado = await calcularPremios(jornada);
         res.json(resultado);
     } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            error: "Error calculando premios"
-        });
+        console.error("Error calculando premios:", error);
+        res.status(500).json({ error: "Error calculando premios" });
     }
 });
 
