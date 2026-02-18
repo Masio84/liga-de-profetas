@@ -824,6 +824,24 @@ async function confirmarPagoYEnviar() {
 }
 
 //
+// CARGAR HISTORIAL USUARIO
+//
+async function cargarParticipacionesUsuario() {
+    if (!usuarioId) return;
+
+    // Aquí iría lógica para obtener historial si existiera el endpoint filtrado
+    // Por ahora, para evitar el crash, definimos la función vacía o con log
+    // Si queremos implementarla bien:
+    /*
+    try {
+        const res = await fetch(`${API}/participaciones/usuario/${usuarioId}`);
+        // ... render
+    } catch (e) { console.error(e); }
+    */
+    console.log("Cargando historial (Placeholder)...");
+}
+
+//
 // INIT
 //
 async function init() {
