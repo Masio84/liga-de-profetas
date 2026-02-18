@@ -1010,14 +1010,20 @@ async function verDetallesParticipacion(id) {
                             </tr>
                         </thead>
                         <tbody>
-                            ${pronosticos.map(pr => `
+                            ${pronosticos.map(pr => {
+            let prediccionTexto = pr.seleccion;
+            if (pr.seleccion === 'LOCAL') prediccionTexto = `${pr.local} (L)`;
+            if (pr.seleccion === 'VISITA') prediccionTexto = `${pr.visitante} (V)`;
+            if (pr.seleccion === 'EMPATE') prediccionTexto = `Empate (E)`;
+
+            return `
                                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
                                     <td style="padding:8px;">${pr.local} vs ${pr.visitante}</td>
                                     <td style="padding:8px; text-align:center; font-weight:bold; color:${pr.seleccion === 'LOCAL' ? '#4ade80' : pr.seleccion === 'VISITA' ? '#facc15' : '#cbd5e1'}">
-                                        ${pr.seleccion}
+                                        ${prediccionTexto}
                                     </td>
                                 </tr>
-                            `).join('')}
+                            `}).join('')}
                         </tbody>
                     </table>
 
