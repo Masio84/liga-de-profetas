@@ -714,11 +714,15 @@ async function confirmarPagoYEnviar() {
             console.log("DEBUG: Buscando usuario por celular:", celular);
             if (!celular || celular === "undefined") throw new Error("Celular inválido: " + celular);
             const buscar = await fetch(API + "/usuarios/celular/" + celular);
+
+            console.log("DEBUG: GET Status:", buscar.status, "OK:", buscar.ok); // CHECKPOINT 1
+
             if (buscar.ok) {
                 const u = await buscar.json();
+                console.log("DEBUG: Usuario encontrado:", u); // CHECKPOINT 2
                 uId = u.id;
             } else {
-                console.log("DEBUG: Usuario no encontrado, creando nueva cuenta...");
+                console.log("DEBUG: Entrando a ELSE (Usuario no encontrado)"); // CHECKPOINT 3
                 const crear = await fetch(API + "/usuarios", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
