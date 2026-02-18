@@ -1032,7 +1032,18 @@ async function verDetallesParticipacion(id) {
 
     } catch (error) {
         console.error(error);
-        alert("Error al cargar detalles: " + error.message);
+        // Mostrar error en modal bonito en lugar de alert
+        const errorHtml = `
+            <div id="modalError" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; display:flex; justify-content:center; align-items:center;">
+                <div style="background:#0f172a; padding:20px; border:2px solid #ef4444; border-radius:8px; max-width:400px; width:90%; color:white; text-align:center;">
+                    <div style="font-size:40px; margin-bottom:10px;">⚠️</div>
+                    <h3 style="color:#ef4444; margin:0 0 10px 0;">Error</h3>
+                    <p style="color:#cbd5e1; margin-bottom:20px;">No se pudieron cargar los detalles.<br><small>${error.message}</small></p>
+                    <button onclick="document.getElementById('modalError').remove()" class="btn-mini" style="padding:8px 20px; background: #ef4444; color: white; border: none;">Cerrar</button>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', errorHtml);
     }
 }
 
