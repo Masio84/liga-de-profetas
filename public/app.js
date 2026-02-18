@@ -711,6 +711,8 @@ async function confirmarPagoYEnviar() {
     if (!uId) {
         // Crear o buscar usuario
         try {
+            console.log("DEBUG: Buscando usuario por celular:", celular);
+            if (!celular || celular === "undefined") throw new Error("Celular inválido: " + celular);
             const buscar = await fetch(API + "/usuarios/celular/" + celular);
             if (buscar.ok) {
                 const u = await buscar.json();
