@@ -99,18 +99,20 @@ router.post("/", async (req, res) => {
         return res.status(500).json({ error: "Error validando jornada: " + errJornada.message });
     }
 
-    // 3. INICIAR TRANSACCIÓN (Conexión Exclusiva)
-    const client = await db.connect();
+    // 3. INSERTAR PARTICIPACIONES (Usando Pool Directo - Más ligero que transacción)
     try {
-        await client.query('BEGIN');
-
         const resultados = [];
+
+        // Query única o bucle secuencial. Para batches pequeños loop está bien.
+        // Usamos db.query que maneja el pool automáticamente (conecta, ejecuta, libera).
+
+        const fechaActual = new Date().toISOString();
 
         for (const item of items) {
             const { usuarioId, jornada, monto, pronosticos, referenciaPago } = item;
 
             if (!usuarioId || !jornada || !monto || !pronosticos) {
-                await client.query('ROLLBACK');
+                // Si falta dato, fallamos esta petición
                 return res.status(400).json({ error: "Datos incompletos en una de las participaciones" });
             }
 
@@ -121,9 +123,8 @@ router.post("/", async (req, res) => {
 
             const pronosticosArray = Array.isArray(pronosticos) ? pronosticos : [];
 
-            const fechaActual = new Date().toISOString();
-
-            const { rows: nueva } = await client.query(
+            // Insertar sin transacción explícita
+            const { rows: nueva } = await db.query(
                 `INSERT INTO participaciones
                 (usuario_id, jornada, monto, pronosticos, fecha, activa, validada, referencia_pago, folio)
                 VALUES ($1, $2, $3, $4, $5, 1, 0, $6, $7)
@@ -142,10 +143,7 @@ router.post("/", async (req, res) => {
             resultados.push(nueva[0]);
         }
 
-        await client.query('COMMIT');
-
         // TELEGRAM REMOVED PER USER REQUEST to prevent timeouts
-        // notificarAdminTelegram({...});
 
         if (items.length === 1) {
             res.status(201).json({
@@ -163,10 +161,8 @@ router.post("/", async (req, res) => {
         }
 
     } catch (err) {
-        await client.query('ROLLBACK');
-        res.status(500).json({ error: err.message });
-    } finally {
-        client.release();
+        console.error("Error insertando participaciones:", err);
+        res.status(500).json({ error: "Error guardando en base de datos: " + err.message });
     }
 });
 
