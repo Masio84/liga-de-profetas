@@ -1,4 +1,5 @@
 const API = "/api";
+const COSTO_BASE = 10;
 
 let usuarioId = null;
 let celularGuardado = null; // Removed localStorage persistence
@@ -431,7 +432,7 @@ async function cargarMatches(numero) {
 //
 // SELECCIONAR PRONOSTICO
 //
-const COSTO_BASE = 10;
+
 
 function seleccionarPronostico(matchId, valor) {
 
