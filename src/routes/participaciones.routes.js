@@ -1,5 +1,5 @@
 // ... imports
-import { notificarAdminNuevaParticipacion } from "../services/whatsapp.service.js";
+import { notificarAdminTelegram } from "../services/telegram.service.js";
 
 // ... (dentro de router.post)
 
@@ -43,7 +43,7 @@ router.post("/", async (req, res) => {
         await client.query('COMMIT');
 
         // NOTIFICACION ASINCRONA (No bloquea la respuesta)
-        notificarAdminNuevaParticipacion({
+        notificarAdminTelegram({
             cantidad: resultados.length,
             montoTotal: totalLote,
             folios: resultados.map(r => r.folio)
