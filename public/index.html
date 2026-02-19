@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" href="assets/logo-original.png?v=2">
     <title>Liga de Profetas | Quiniela Deportiva</title>
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 
     <!-- GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -77,10 +77,6 @@
 
 
 
-    <!-- MODAL REGLAMENTO (CLABE UPDATE) -->
-    <!-- ... (This part is inside modalReglamento, need to verify line numbers) -->
-
-
     <div class="container main-layout">
 
         <!-- COLUMNA IZQUIERDA: PARTIDOS -->
@@ -114,78 +110,78 @@
             <div id="matches"></div>
         </div>
 
-        <!-- COLUMNA DERECHA: DATOS Y CARRITO -->
+        <!-- COLUMNA DERECHA: CARRITO -->
         <div class="sidebar-column">
 
-            <!-- PANEL DE USUARIO Y ACCIONES -->
-            <div class="control-panel">
-                <h2>2. Tus Datos</h2>
-
-                <div class="form-group">
-                    <label>Nombre</label>
-                    <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
-                </div>
-
-                <div class="form-group">
-                    <label>Celular (10 dígitos)</label>
-                    <input type="tel" id="celular" placeholder="Ej. 5512345678" onchange="initUsuario()">
-                </div>
-
-                <div class="form-group">
-                    <label>Referencia de Pago (Opcional)</label>
-                    <input type="text" id="referencia" placeholder="Clave de rastreo o folio">
-                    <small style="color: #94a3b8; display: block; margin-top: 5px;">*Ayuda a validar más rápido tu
-                        pago</small>
-                </div>
-
-                <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 20px 0;">
-
-                <!-- ACCIONES DE LA QUINIELA ACTUAL -->
-                <div class="current-pick-actions">
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <span style="color: #94a3b8;">Costo de esta quiniela:</span>
-                        <span id="costoActual" style="font-size: 24px; font-weight: bold; color: #4ade80;">$0</span>
-                    </div>
-
-                    <button id="btnAgregar" onclick="agregarAlCarrito()" class="btn-action btn-add">
-                        🛒 Agregar Quiniela
-                    </button>
-
-                    <button class="btn-secondary" onclick="limpiarSeleccion()" style="margin-top: 10px; width: 100%;">
-                        🗑️ Limpiar Selección
-                    </button>
-                </div>
-
-            </div>
-
-            <!-- CARRITO DE COMPRAS -->
-            <div id="carritoContainer" class="carrito-panel" style="display: none;">
+            <!-- CARRITO DE COMPRAS (AHORA POR DEFECTO VISIBLE O PLACEHOLDER) -->
+            <div id="carritoContainer" class="carrito-panel">
                 <h3>🛒 Tu Carrito</h3>
                 <div id="carritoItems" class="carrito-items">
-                    <!-- Items se agregan aqui -->
+                    <!-- Items se agregan aqui o Mensaje Vacio -->
+                    <div class="carrito-empty-message">Tu carrito está vacío.<br>Agrega quinielas para continuar.</div>
                 </div>
 
-                <div class="carrito-total">
+                <div class="carrito-total" style="margin-top: 15px; border-top: 1px solid #333; padding-top: 10px;">
                     <span>Total a Pagar:</span>
-                    <span id="carritoTotal" style="color: #4ade80;">$0</span>
+                    <span id="carritoTotal" style="color: #4ade80; float: right; font-weight: bold;">$0</span>
                 </div>
 
-                <button onclick="enviarCarrito()" class="btn-action btn-submit">
+                <button onclick="enviarCarrito()" class="btn-action btn-submit" style="font-size: 16px;">
                     🚀 Enviar Todo
                 </button>
             </div>
 
-
-
+            <!-- BOTONES EXTRA -->
+            <div style="text-align: center;">
+                <button onclick="abrirModalParticipantes()" class="btn-secondary" style="width: 100%;">
+                    👥 Ver Participantes
+                </button>
+            </div>
 
 
         </div>
 
     </div>
 
-    <!-- MODAL REGLAMENTO -->
+    <!-- STICKY USER PANEL (DATOS + COSTO) -->
+    <div class="sticky-user-panel">
 
+        <div class="input-row">
+            <div class="form-group">
+                <label>Tu Nombre</label>
+                <input type="text" id="nombre" placeholder="Ej. Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label>Celular (10 dígitos)</label>
+                <input type="tel" id="celular" placeholder="Ej. 5512345678" onchange="initUsuario()">
+            </div>
+            <div class="form-group">
+                <label>Referencia (Opcional)</label>
+                <input type="text" id="referencia" placeholder="Clave rastreo / Folio">
+            </div>
+        </div>
+
+        <div class="action-row">
+            <div class="costo-display">
+                <span class="costo-label">Costo Actual</span>
+                <span id="costoActual" class="costo-amount">$0</span>
+            </div>
+
+            <div>
+                <button id="btnAgregar" onclick="agregarAlCarrito()" class="btn-action btn-add">
+                    🛒 Agregar
+                </button>
+                <div style="text-align: center; margin-top: 5px;">
+                    <a href="#" onclick="limpiarSeleccion()"
+                        style="font-size: 12px; color: #ef4444; opacity: 0.8;">Limpiar</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- MODAL REGLAMENTO -->
     <div id="modalReglamento" class="modal">
         <div class="modal-content">
             <span class="cerrar" onclick="cerrarReglamento()">×</span>
@@ -228,6 +224,39 @@
             </div>
         </div>
     </div>
+
+
+    <!-- MODAL PARTICIPANTES -->
+    <div id="modalParticipantes" class="modal">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="cerrar" onclick="cerrarModalParticipantes()">×</span>
+
+            <div class="modal-header">
+                <h2 class="modal-title">👥 Participantes Confirmados</h2>
+                <p style="color: #94a3b8; margin: 0 0 15px;">Listado oficial de la jornada actual.</p>
+            </div>
+
+            <input type="text" id="filtroParticipantes" placeholder="🔍 Buscar por nombre o folio..."
+                onkeyup="filtrarParticipantes()" style="margin-bottom: 15px; border-color: var(--gold-dark);">
+
+            <div style="max-height: 400px; overflow-y: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Folio</th>
+                            <th>Nombre</th>
+                            <th>Estatus</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaParticipantesBody">
+                        <!-- Llenado dinámico -->
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
 
     <!-- MODAL PAGO -->
     <div id="modalPago" class="modal">
@@ -342,69 +371,55 @@
 
 
 
-    <script src="app.js"></script>
+    <script src="app.js?v=2"></script>
 
     <script>
 
-        /* MODAL */
-
+        /* MODAL REGLAMENTO (SIMPLE) */
         function abrirReglamento() {
-
-            document.getElementById(
-                "modalReglamento"
-            ).style.display = "block";
-
+            document.getElementById("modalReglamento").style.display = "block";
         }
-
         function cerrarReglamento() {
-
-            document.getElementById(
-                "modalReglamento"
-            ).style.display = "none";
-
+            document.getElementById("modalReglamento").style.display = "none";
         }
-
         function abrirReglamentoCompleto() {
             window.location.href = "reglamento.html";
         }
 
 
+        /* MODAL PARTICIPANTES */
+        async function abrirModalParticipantes() {
+            document.getElementById("modalParticipantes").style.display = "block";
+
+            // Obtener jornada actual del header (un poco hacky pero usa la logica existente)
+            // Lo ideal seria tener 'jornadaActualGlobal' en app.js.
+            // Intentamos invocar la funcion global si existe
+            if (typeof cargarParticipantes === 'function') {
+                await cargarParticipantes();
+            }
+        }
+        function cerrarModalParticipantes() {
+            document.getElementById("modalParticipantes").style.display = "none";
+        }
+
+
         /* BOLSA DE PREMIOS CALCULO */
-
         async function actualizarPozo() {
-
             try {
+                const res = await fetch("/api/jornadas");
+                const data = await res.json();
 
-                const res =
-                    await fetch("/api/jornadas");
-
-                const data =
-                    await res.json();
-
-                // 1. FILTRAR DISPONIBLES
+                // MISMA LOGICA que app.js para determinar cual mostrar (la proxima)
                 const disponibles = data.jornadas.filter(j => j.estado === "DISPONIBLE");
-
-                // 2. ORDENAR ASCENDENTE (Para obtener la próxima inmediata, igual que el header)
                 disponibles.sort((a, b) => a.numero - b.numero);
-
                 const disponible = disponibles.length > 0 ? disponibles[0] : null;
 
                 if (!disponible) return;
 
-                const resPozo =
-                    await fetch(
-                        `/api/jornadas/${disponible.numero}/pozo`
-                    );
+                const resPozo = await fetch(`/api/jornadas/${disponible.numero}/pozo`);
+                const pozo = await resPozo.json();
+                const premios = pozo.premios || { premioPrimero: 0, premioSegundo: 0 };
 
-                const pozo =
-                    await resPozo.json();
-
-                const premios = pozo.premios || {
-                    premioPrimero: 0,
-                    premioSegundo: 0
-                };
-
-                // ANIMAR NUMEROS (Opcional, por ahora texto directo)
                 document.getElementById("premioPrimero").innerText =
                     `$${premios.premioPrimero ? parseFloat(premios.premioPrimero).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : "0.00"}`;
 
@@ -414,9 +429,7 @@
             } catch (error) {
                 console.error("Error actualizando pozo:", error);
             }
-
         }
-
         actualizarPozo();
 
         /* HEADER LOGIC (SIMPLE + COUNTDOWN) */
@@ -424,13 +437,8 @@
             try {
                 const res = await fetch("/api/jornadas");
                 const data = await res.json();
-
-                // 1. FILTRAR DISPONIBLES
                 const disponibles = data.jornadas.filter(j => j.estado === "DISPONIBLE");
-
-                // 2. ORDENAR ASCENDENTE (Jornada 7 antes que 17)
                 disponibles.sort((a, b) => a.numero - b.numero);
-
                 const disponible = disponibles.length > 0 ? disponibles[0] : null;
 
                 if (!disponible) {
@@ -439,71 +447,49 @@
                     return;
                 }
 
-                // 3. MOSTRAR INFO
+                // Global var hack for modal
+                window.jornadaActivaNumero = disponible.numero;
+
                 const titulo = document.getElementById('jornadaTitulo');
                 if (titulo) titulo.textContent = `Jornada ${disponible.numero}`;
 
                 const inicio = new Date(disponible.fechaInicio);
                 const fin = new Date(disponible.fechaFin);
                 const opciones = { day: 'numeric', month: 'long' };
-
                 const textoFechas = `${inicio.toLocaleDateString('es-MX', opciones)} - ${fin.toLocaleDateString('es-MX', opciones)}`;
                 const fechasEl = document.getElementById('jornadaFechas');
                 if (fechasEl) fechasEl.textContent = textoFechas;
 
-                // 4. COUNTDOWN (AUTOMÁTICO BASADO EN PRIMER PARTIDO)
+                // COUNTDOWN
                 try {
                     const resMatches = await fetch(`/api/jornadas/${disponible.numero}/matches`);
                     const dataMatches = await resMatches.json();
 
                     if (dataMatches.matches && dataMatches.matches.length > 0) {
-                        // Ordenar por hora de inicio
                         dataMatches.matches.sort((a, b) => new Date(a.startTime) - new Date(b.startTime));
                         const primerPartido = new Date(dataMatches.matches[0].startTime).getTime();
 
-                        // Crear elemento para el timer si no existe
                         let timerDiv = document.getElementById('countdown-display');
                         let labelDiv = document.getElementById('countdown-label');
 
-                        if (!timerDiv) {
-                            // Crear label
+                        if (!labelDiv) {
                             labelDiv = document.createElement('div');
                             labelDiv.id = 'countdown-label';
-                            labelDiv.textContent = "CIERRE DE PARTICIPACIONES:"; // TEXTO AGREGADO
+                            labelDiv.textContent = "CIERRE DE PARTICIPACIONES:";
                             labelDiv.style.marginTop = '15px';
                             labelDiv.style.fontSize = '12px';
                             labelDiv.style.color = '#94a3b8';
                             labelDiv.style.letterSpacing = '1px';
                             labelDiv.style.fontWeight = 'bold';
                             labelDiv.style.textTransform = 'uppercase';
-
-                            if (fechasEl && fechasEl.parentNode) {
-                                fechasEl.parentNode.appendChild(labelDiv);
-                            }
+                            if (fechasEl && fechasEl.parentNode) fechasEl.parentNode.appendChild(labelDiv);
                         }
 
-                        // Label "Cierra en:"
-                        if (!labelDiv) { // This condition will always be false now as labelDiv is created above
-                            labelDiv = document.createElement("div");
-                            labelDiv.innerText = "Cierra en:";
-                            labelDiv.style.fontSize = "12px";
-                            labelDiv.style.opacity = "0.8";
-                            labelDiv.style.marginTop = "5px";
-                            labelDiv.style.textTransform = 'uppercase';
-
-                            if (fechasEl && fechasEl.parentNode) {
-                                fechasEl.parentNode.appendChild(labelDiv);
-                            }
-                        }
-
-                        // Timer Element
                         if (!timerDiv) {
                             timerDiv = document.createElement("div");
                             timerDiv.className = "stadium-clock";
-
-                            if (fechasEl && fechasEl.parentNode) {
-                                fechasEl.parentNode.appendChild(timerDiv);
-                            }
+                            timerDiv.id = 'countdown-display';
+                            if (fechasEl && fechasEl.parentNode) fechasEl.parentNode.appendChild(timerDiv);
                         }
 
                         function actualizarTimer() {
@@ -527,20 +513,40 @@
                                 timerDiv.innerHTML = `⏳ ${days}d ${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                             }
                         }
-
                         actualizarTimer();
                         setInterval(actualizarTimer, 1000);
                     }
-                } catch (e) {
-                    console.error("Error al calcular countdown:", e);
-                }
+                } catch (e) { console.error(e); }
 
-            } catch (error) {
-                console.error("Error header:", error);
-            }
+            } catch (error) { console.error(error); }
         }
 
         iniciarHeader();
+
+
+        /* FILTRO PARTICIPANTES (GLOBAL) */
+        function filtrarParticipantes() {
+            const input = document.getElementById("filtroParticipantes");
+            const filter = input.value.toUpperCase();
+            const table = document.getElementById("tablaParticipantesBody");
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 0; i < tr.length; i++) {
+                const tdFolio = tr[i].getElementsByTagName("td")[0];
+                const tdNombre = tr[i].getElementsByTagName("td")[1];
+
+                if (tdFolio || tdNombre) {
+                    const txtFolio = tdFolio.textContent || tdFolio.innerText;
+                    const txtNombre = tdNombre.textContent || tdNombre.innerText;
+
+                    if (txtFolio.toUpperCase().indexOf(filter) > -1 || txtNombre.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
 
     </script>
 
@@ -549,40 +555,20 @@
     <!-- FOOTER GLOBAL -->
     <footer
         style="text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
-
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
         </div>
-
-        <!-- Disclaimer -->
-        <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
-            Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
-            participantes.
-            No constituye un sistema de apuestas ni juego de azar.
-        </p>
-
         <!-- Navigation -->
         <nav style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; font-size: 13px;">
-            <a href="terminos.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Términos y
-                Condiciones</a>
+            <a href="terminos.html" style="color: #64748b;">Términos y Condiciones</a>
             <span style="color: #334155;">|</span>
-            <a href="privacidad.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Aviso de
-                Privacidad</a>
+            <a href="privacidad.html" style="color: #64748b;">Aviso de Privacidad</a>
             <span style="color: #334155;">|</span>
-            <a href="reglamento.html"
-                style="color: #64748b; text-decoration: none; transition: color 0.2s;">Reglamento</a>
+            <a href="reglamento.html" style="color: #64748b;">Reglamento</a>
             <span style="color: #334155;">|</span>
-            <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
-                Admin</a>
+            <a href="admin.html" style="color: var(--gold-primary); font-weight: bold;">Panel Admin</a>
         </nav>
-
-        <style>
-            nav a:hover {
-                color: #fff !important;
-                text-decoration: underline !important;
-            }
-        </style>
     </footer>
 
 </body>
