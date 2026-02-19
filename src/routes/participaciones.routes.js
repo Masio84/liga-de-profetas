@@ -188,4 +188,30 @@ router.post("/", async (req, res) => {
     }
 });
 
+//
+// Obtener lista publica de participantes (SOLO NOMBRE Y FOLIO)
+//
+router.get("/jornada/:numero/public", async (req, res) => {
+    const numero = parseInt(req.params.numero);
+    try {
+        const { rows } = await db.query(`
+            SELECT 
+                p.folio,
+                u.nombre
+            FROM participaciones p
+            JOIN usuarios u ON p.usuario_id = u.id
+            WHERE p.jornada = $1
+            AND p.validada = 1
+            AND p.activa = 1
+            ORDER BY u.nombre ASC
+        `, [numero]);
+
+        res.json({ participantes: rows });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Error obteniendo participantes" });
+    }
+});
+
 export default router;
