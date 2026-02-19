@@ -27,6 +27,7 @@
 
 * {
     box-sizing: border-box;
+    /* Evitar problemas de padding */
 }
 
 body {
@@ -39,6 +40,8 @@ body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
+    /* Padding bottom para el footer sticky */
+    padding-bottom: 220px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -153,6 +156,11 @@ h3,
 
     .hero-logo {
         max-width: 180px;
+    }
+
+    body {
+        padding-bottom: 350px;
+        /* Más espacio en móvil */
     }
 }
 
@@ -318,34 +326,94 @@ h3,
     font-weight: bold;
 }
 
-/* PANELS */
-/* PANELS */
-.control-panel {
-    background: var(--black-light);
-    border: 1px solid #333;
-    border-top: 4px solid var(--gold-primary);
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    background-color: #0f172a;
-    position: relative;
-    /* No sticky */
-}
-
+/* PANELS - UPDATED */
 .carrito-panel {
     background: var(--black-light);
     border: 1px solid #333;
     border-top: 4px solid var(--gold-primary);
     padding: 20px;
     border-radius: 8px;
-    position: sticky;
-    top: 20px;
+    /* Position sticky removed here, will be in sidebar */
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
     margin-bottom: 20px;
-    z-index: 100;
+    z-index: 90;
     background-color: #0f172a;
     transition: all 0.3s ease;
 }
+
+/* STICKY USER PANEL (New Footer) */
+.sticky-user-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 4px solid var(--gold-primary);
+    padding: 15px 20px;
+    z-index: 1000;
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.input-row {
+    display: flex;
+    gap: 15px;
+    flex: 1;
+    min-width: 300px;
+    justify-content: center;
+}
+
+.input-row .form-group {
+    margin: 0;
+    flex: 1;
+}
+
+.action-row {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.costo-display {
+    text-align: center;
+}
+
+.costo-label {
+    display: block;
+    font-size: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+}
+
+.costo-amount {
+    font-size: 24px;
+    color: #4ade80;
+    font-weight: bold;
+    font-family: 'Russo One', sans-serif;
+}
+
+@media (max-width: 768px) {
+    .sticky-user-panel {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .input-row {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .action-row {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
 
 /* FORM INPUTS */
 .form-group {
@@ -429,6 +497,13 @@ input:focus {
     box-shadow: 0 8px 25px rgba(184, 134, 11, 0.6);
 }
 
+.btn-add {
+    font-size: 16px;
+    padding: 10px 20px;
+    margin: 0;
+    width: auto;
+}
+
 /* TOP BAR */
 .top-bar-container {
     background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.1), transparent);
@@ -490,6 +565,8 @@ a:hover {
     padding: 30px;
     max-width: 600px;
     position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-title {
@@ -528,6 +605,13 @@ a:hover {
     color: #ef4444;
     cursor: pointer;
     font-size: 18px;
+}
+
+.carrito-empty-message {
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 20px;
 }
 
 /* UTILS */
