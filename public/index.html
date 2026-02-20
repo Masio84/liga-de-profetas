@@ -28,6 +28,13 @@
         body {
             padding-bottom: 0 !important;
         }
+
+        /* En móvil creamos el espacio extra necesario detrás de la barra sticky */
+        @media (max-width: 768px) {
+            #index-footer {
+                padding-bottom: 240px !important;
+            }
+        }
     </style>
 
 </head>
@@ -582,7 +589,7 @@
 
 
     <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
-    <footer
+    <footer id="index-footer"
         style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px 180px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">

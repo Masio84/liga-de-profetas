@@ -400,17 +400,50 @@ h3,
 @media (max-width: 768px) {
     .sticky-user-panel {
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
+        padding: 10px;
     }
 
     .input-row {
         width: 100%;
         flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .input-row .form-group {
+        flex: 1 1 45%; 
+    }
+    
+    .input-row .form-group:nth-child(3) {
+        flex: 1 1 100%;
     }
 
     .action-row {
         width: 100%;
         justify-content: space-between;
+        gap: 10px;
+        align-items: center;
+    }
+    
+    .sticky-user-panel input[type="text"],
+    .sticky-user-panel input[type="tel"] {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+    
+    .sticky-user-panel .form-group label {
+        font-size: 10px;
+        margin-bottom: 2px;
+    }
+    
+    .costo-amount {
+        font-size: 20px;
+    }
+    
+    .btn-action.btn-add {
+        font-size: 14px;
+        padding: 8px 20px;
+        margin-top: 0;
     }
 }
 
