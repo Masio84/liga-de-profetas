@@ -372,7 +372,7 @@
 
     <!-- MODAL PARTICIPANTES -->
     <div id="modalParticipantes" class="modal" style="display: none;">
-        <div class="modal-content" style="max-width: 600px;">
+        <div class="modal-content" style="width: 90%; max-width: 400px;">
             <span class="close"
                 onclick="document.getElementById('modalParticipantes').style.display='none'">&times;</span>
 
@@ -389,7 +389,7 @@
                 <span
                     style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔍</span>
                 <input type="text" id="filtroParticipantes" onkeyup="filtrarParticipantes()"
-                    placeholder="Buscar por Nombre o Folio..." style="
+                    placeholder="Buscar por Folio..." style="
                         width: 100%; 
                         padding: 10px 10px 10px 35px; 
                         background: #0f172a; 
@@ -405,8 +405,7 @@
                     <thead
                         style="background: rgba(255, 255, 255, 0.05); color: var(--gold-primary); position: sticky; top: 0;">
                         <tr>
-                            <th style="padding: 10px; text-align: left;">Folio</th>
-                            <th style="padding: 10px; text-align: left;">Nombre</th>
+                            <th style="padding: 10px; text-align: center;">Folio</th>
                         </tr>
                     </thead>
                     <tbody id="tablaParticipantesBody">
