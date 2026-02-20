@@ -594,7 +594,9 @@ function renderizarCarrito() {
     const totalLabel = document.getElementById("carritoTotal");
 
     if (carrito.length === 0) {
-        container.style.display = "none";
+        container.style.display = "block"; // Siempre visible ahora
+        list.innerHTML = '<div class="carrito-empty-message">Tu carrito está vacío.<br>Agrega quinielas para continuar.</div>';
+        totalLabel.innerText = "$0";
         return;
     }
 
@@ -658,6 +660,53 @@ function copiarCLABE() {
     }).catch(err => {
         console.error('Error al copiar: ', err);
     });
+}
+
+//
+// CARGAR PARTICIPANTES (PUBLICO)
+//
+async function cargarParticipantes() {
+    if (!jornadaSeleccionada) {
+        // Fallback si se llama antes de cargar jornada
+        const elTitulo = document.getElementById("jornadaTitulo");
+        if (elTitulo && elTitulo.innerText.includes("Jornada")) {
+            // Ya cargó visualmente, tal vez variable interna aun no? Raro.
+            // Intentar obtener de window hack si es necesario
+            if (window.jornadaActivaNumero) jornadaSeleccionada = window.jornadaActivaNumero;
+        }
+        if (!jornadaSeleccionada) return;
+    }
+
+    const tbody = document.getElementById("tablaParticipantesBody");
+    if (!tbody) return;
+
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">Cargando...</td></tr>';
+
+    try {
+        const res = await fetch(`${API}/participaciones/jornada/${jornadaSeleccionada}/public`);
+        const data = await res.json();
+
+        tbody.innerHTML = "";
+
+        if (!data.participantes || data.participantes.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#94a3b8;">Aún no hay participantes confirmados.</td></tr>';
+            return;
+        }
+
+        data.participantes.forEach(p => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong style="color:#4ade80;">${p.folio}</strong></td>
+                <td>${p.nombre}</td>
+                <td><span style="background:rgba(34, 197, 94, 0.2); color:#4ade80; padding:2px 6px; border-radius:4px; font-size:11px;">CONFIRMADO</span></td>
+             `;
+            tbody.appendChild(tr);
+        });
+
+    } catch (error) {
+        console.error("Error cargando participantes:", error);
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444;">Error cargando lista.</td></tr>';
+    }
 }
 
 async function enviarCarrito() {

@@ -201,7 +201,6 @@ router.get("/jornada/:numero/public", async (req, res) => {
             FROM participaciones p
             JOIN usuarios u ON p.usuario_id = u.id
             WHERE p.jornada = $1
-            AND p.validada = 1
             AND p.activa = 1
             ORDER BY u.nombre ASC
         `, [numero]);
