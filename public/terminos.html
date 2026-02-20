@@ -12,9 +12,13 @@
         body {
             max-width: 900px;
             margin: auto;
-            padding: 25px;
+            padding: 25px 25px 0 25px;
+            /* Quitar padding bottom si tenía, se maneja con footer */
             line-height: 1.8;
             font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
 
         h1 {
