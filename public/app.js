@@ -700,7 +700,12 @@ async function cargarParticipantes() {
         data.participantes.forEach(p => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td style="text-align:center;"><strong style="color:#4ade80; font-size:1.2em; letter-spacing:1px;">${p.folio}</strong></td>
+                <td style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <strong style="color: #4ade80; letter-spacing: 1px;">${p.folio || '---'}</strong>
+                </td>
+                <td style="padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e2e8f0;">
+                    ${p.nombre}
+                </td>
              `;
             tbody.appendChild(tr);
         });

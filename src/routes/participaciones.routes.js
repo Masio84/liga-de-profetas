@@ -116,10 +116,11 @@ router.post("/", async (req, res) => {
                 return res.status(400).json({ error: "Datos incompletos en una de las participaciones" });
             }
 
-            // GENERAR FOLIO ÚNICO
-            const timestamp = Date.now().toString().slice(-6);
-            const random = Math.floor(1000 + Math.random() * 9000);
-            const folio = `LDP-${timestamp}-${random}`;
+            // GENERAR FOLIO ÚNICO (Secuencial DB)
+            // Obtenemos el siguiente valor de la secuencia
+            const { rows: seqRows } = await db.query("SELECT nextval('folios_seq') as next_val");
+            const nextVal = seqRows[0].next_val;
+            const folio = `LDP-${nextVal}`;
 
             const pronosticosArray = Array.isArray(pronosticos) ? pronosticos : [];
 

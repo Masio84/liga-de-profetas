@@ -370,6 +370,59 @@
     </div>
 
 
+    <!-- MODAL PARTICIPANTES -->
+    <div id="modalParticipantes" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close"
+                onclick="document.getElementById('modalParticipantes').style.display='none'">&times;</span>
+
+            <h2
+                style="color: var(--gold-primary); text-align: center; margin-bottom: 5px; font-family: 'Russo One', sans-serif;">
+                👥 LISTA DE PARTICIPANTES
+            </h2>
+            <p id="modalParticipantesSubtitle" style="text-align: center; color: #94a3b8; margin-bottom: 20px;">
+                Cargando...
+            </p>
+
+            <!-- BUSCADOR -->
+            <div style="margin-bottom: 15px; position: relative;">
+                <span
+                    style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); opacity: 0.5;">🔍</span>
+                <input type="text" id="filtroParticipantes" onkeyup="filtrarParticipantes()"
+                    placeholder="Buscar por Nombre o Folio..." style="
+                        width: 100%; 
+                        padding: 10px 10px 10px 35px; 
+                        background: #0f172a; 
+                        border: 1px solid #334155; 
+                        color: white; 
+                        border-radius: 6px;
+                    ">
+            </div>
+
+            <!-- TABLA -->
+            <div style="max-height: 400px; overflow-y: auto; border: 1px solid #334155; border-radius: 6px;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+                    <thead
+                        style="background: rgba(255, 255, 255, 0.05); color: var(--gold-primary); position: sticky; top: 0;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left;">Folio</th>
+                            <th style="padding: 10px; text-align: left;">Nombre</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaParticipantesBody">
+                        <!-- Llenado por JS -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button onclick="document.getElementById('modalParticipantes').style.display='none'" class="btn-action"
+                    style="padding: 10px 30px; background: #334155;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js?v=2"></script>
 

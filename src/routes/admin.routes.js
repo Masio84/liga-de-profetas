@@ -41,7 +41,8 @@ router.get("/auth/verify", (req, res) => {
 //
 router.get("/participaciones", async (req, res) => {
     try {
-        const { rows } = await db.query(`
+        const jornadaFilter = req.query.jornada;
+        let query = `
             SELECT 
                 p.id,
                 p.usuario_id,
@@ -57,8 +58,33 @@ router.get("/participaciones", async (req, res) => {
                 p.folio
             FROM participaciones p
             JOIN usuarios u ON p.usuario_id = u.id
-            ORDER BY p.fecha DESC
-        `);
+        `;
+
+        const params = [];
+
+        if (jornadaFilter) {
+            query += ` WHERE p.jornada = $1`;
+            params.push(jornadaFilter);
+        } else {
+            // Si no hay filtro, mostrar SOLO la jornada actual (o la última si no hay activa)
+            // Para simplificar y cumplir el requerimiento de "limpieza", 
+            // buscamos la jornada con el ID más alto registrada en participaciones o matches
+            // O mejor: mostrar todo PERO ordenado por jornada DESC, 
+            // o forzar que el frontend pida la jornada actual.
+            // Opción elegida: Obtener la última jornada con participaciones si no se especifica
+            /* 
+               query += ` WHERE p.jornada = (SELECT MAX(jornada) FROM participaciones) `;
+           */
+            // El usuario pidió "el admin panel debe limitarse a participaciones de la jornada abierta"
+            // Así que si no enviamos param, intentamos filtrar por la MAX jornada disponible o abierta.
+            /* Sin embargo, para mayor control, dejaremos que el frontend decida qué jornada pedir (la activa),
+               y si no pide nada, mostramos las de la jornada más reciente para no mostrar vacío. */
+            query += ` WHERE p.jornada = (SELECT MAX(round) FROM matches) `; // Default to latest round known
+        }
+
+        query += ` ORDER BY p.folio DESC, p.fecha DESC`;
+
+        const { rows } = await db.query(query, params);
 
         res.json({ participaciones: rows });
     } catch (error) {
