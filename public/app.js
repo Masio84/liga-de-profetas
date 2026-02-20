@@ -884,8 +884,6 @@ async function cargarParticipacionesUsuario() {
 //
 async function init() {
 
-    await initUsuario();
-
     await cargarTodosLosMatches();
 
     await cargarJornadaDisponible();
