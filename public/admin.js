@@ -17,41 +17,46 @@ function mostrarModalAuth() {
                 left: 0;
                 width: 100%;
                 height: 100%;
-                background: rgba(0, 0, 0, 0.8);
+                background: rgba(0, 0, 0, 0.95);
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 z-index: 10000;
+                backdrop-filter: blur(10px);
             `;
 
             modal.innerHTML = `
                 <div style="
                     background: #1e293b;
-                    padding: 30px;
+                    padding: 40px;
                     border-radius: 12px;
-                    border: 2px solid #00d4ff;
+                    border: 1px solid #334155;
                     max-width: 400px;
                     width: 90%;
-                    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+                    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+                    text-align: center;
                 ">
-                    <h2 style="color: #00d4ff; margin-top: 0;">Autenticación Requerida</h2>
-                    <p style="color: #94a3b8; margin-bottom: 20px;">
-                        Ingresa el token de administrador para continuar
+                    <img src="assets/logo-original.png" style="height: 60px; margin-bottom: 20px;">
+                    <h2 style="color: #fff; margin-top: 0; font-family: 'Russo One', sans-serif;">ACCESO RESTRINGIDO</h2>
+                    <p style="color: #94a3b8; margin-bottom: 25px; font-size: 14px;">
+                        Esta área es exclusiva para administradores.
                     </p>
                     <input 
                         type="password" 
                         id="tokenInput" 
-                        placeholder="Token de administrador"
+                        placeholder="Ingresa tu clave de acceso"
                         style="
                             width: 100%;
-                            padding: 12px;
-                            margin-bottom: 15px;
+                            padding: 15px;
+                            margin-bottom: 20px;
                             border-radius: 8px;
-                            border: 2px solid #334155;
+                            border: 1px solid #475569;
                             background: #0f172a;
                             color: white;
                             font-size: 16px;
                             box-sizing: border-box;
+                            text-align: center;
+                            letter-spacing: 2px;
                         "
                         autofocus
                     >
@@ -61,28 +66,33 @@ function mostrarModalAuth() {
                             style="
                                 flex: 1;
                                 padding: 12px;
-                                background: linear-gradient(135deg, #00d4ff, #0096ff);
-                                color: white;
+                                background: var(--gold-primary);
+                                color: black;
                                 border: none;
-                                border-radius: 8px;
+                                border-radius: 6px;
                                 font-weight: bold;
                                 cursor: pointer;
+                                text-transform: uppercase;
+                                font-family: 'Russo One', sans-serif;
                             "
-                        >Ingresar</button>
+                        >ENTRAR</button>
                         <button 
                             id="btnAuthCancel"
                             style="
                                 flex: 1;
                                 padding: 12px;
-                                background: #334155;
-                                color: white;
-                                border: none;
-                                border-radius: 8px;
+                                background: transparent;
+                                color: #ef4444;
+                                border: 1px solid #ef4444;
+                                border-radius: 6px;
                                 font-weight: bold;
                                 cursor: pointer;
+                                text-transform: uppercase;
+                                font-family: 'Russo One', sans-serif;
                             "
-                        >Cancelar</button>
+                        >SALIR</button>
                     </div>
+                    <div id="authError" style="color: #ef4444; margin-top: 15px; font-size: 13px; height: 20px;"></div>
                 </div>
             `;
 
@@ -91,6 +101,7 @@ function mostrarModalAuth() {
             const tokenInput = document.getElementById("tokenInput");
             const btnOk = document.getElementById("btnAuthOk");
             const btnCancel = document.getElementById("btnAuthCancel");
+            const errorMsg = document.getElementById("authError");
 
             // Enter para confirmar
             tokenInput.addEventListener("keypress", (e) => {
@@ -99,42 +110,71 @@ function mostrarModalAuth() {
                 }
             });
 
-            btnOk.addEventListener("click", () => {
+            btnOk.addEventListener("click", async () => {
                 const token = tokenInput.value.trim();
-                if (token) {
-                    adminToken = token;
-                    localStorage.setItem("adminToken", token);
-                    document.body.removeChild(modal);
-                    resolve(token);
-                } else {
-                    alert("Por favor ingresa un token válido");
+                errorMsg.innerText = "";
+
+                if (!token) return;
+
+                btnOk.disabled = true;
+                btnOk.innerText = "Verificando...";
+
+                try {
+                    const valid = await verificarTokenBackend(token);
+                    if (valid) {
+                        adminToken = token;
+                        localStorage.setItem("adminToken", token);
+                        document.body.removeChild(modal);
+                        mostrarContenidoAdmin(); // Mostrar dashboard
+                        resolve(token);
+                    } else {
+                        errorMsg.innerText = "⛔ Clave incorrecta";
+                        tokenInput.value = "";
+                        tokenInput.focus();
+                    }
+                } catch (e) {
+                    errorMsg.innerText = "Error de conexión";
+                } finally {
+                    btnOk.disabled = false;
+                    btnOk.innerText = "ENTRAR";
                 }
             });
 
             btnCancel.addEventListener("click", () => {
-                // Usar token por defecto si cancela
-                adminToken = "Daniel1325";
-                localStorage.setItem("adminToken", adminToken);
-                console.warn("Usando token por defecto. Configura ADMIN_TOKEN en .env");
-                document.body.removeChild(modal);
-                resolve(adminToken);
+                window.location.href = "index.html"; // REDIRECT STRICT
             });
+
         } else {
             // Si el modal ya existe, solo mostrarlo
             modal.style.display = "flex";
+            document.getElementById("tokenInput").value = "";
             document.getElementById("tokenInput").focus();
         }
     });
 }
 
+async function verificarTokenBackend(token) {
+    try {
+        const res = await fetch(`${API}/admin/auth/verify`, {
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+        return res.ok;
+    } catch (e) {
+        return false;
+    }
+}
+
+function mostrarContenidoAdmin() {
+    const container = document.querySelector(".admin-container");
+    if (container) container.style.display = "grid"; // O block segun CSS original
+}
+
 // Función para resetear el token
 function resetearToken() {
-    if (confirm("¿Estás seguro de que quieres cambiar el token de administrador?")) {
+    if (confirm("¿Cerrar sesión de administrador?")) {
         localStorage.removeItem("adminToken");
         adminToken = null;
-        mostrarModalAuth().then(() => {
-            location.reload();
-        });
+        location.reload();
     }
 }
 
@@ -142,23 +182,26 @@ function resetearToken() {
 window.resetearToken = resetearToken;
 
 // Si no hay token, mostrar modal (solo cuando el DOM esté listo)
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        if (!adminToken) {
-            mostrarModalAuth().then(() => {
-                // Recargar la página después de autenticar
-                location.reload();
-            });
-        }
-    });
-} else {
-    // DOM ya está listo
+async function initAdmin() {
     if (!adminToken) {
-        mostrarModalAuth().then(() => {
-            // Recargar la página después de autenticar
-            location.reload();
-        });
+        mostrarModalAuth();
+    } else {
+        // Verificar silenciosamente si el token guardado sigue siendo válido
+        const valid = await verificarTokenBackend(adminToken);
+        if (!valid) {
+            localStorage.removeItem("adminToken");
+            adminToken = null;
+            mostrarModalAuth();
+        } else {
+            mostrarContenidoAdmin();
+        }
     }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAdmin);
+} else {
+    initAdmin();
 }
 
 // Función helper para hacer peticiones autenticadas

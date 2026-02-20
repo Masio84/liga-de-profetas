@@ -30,6 +30,13 @@ router.post("/sync/resultados", async (req, res) => {
 });
 
 //
+// VERIFICAR TOKEN (Endpoint ligero)
+//
+router.get("/auth/verify", (req, res) => {
+    res.json({ ok: true });
+});
+
+//
 // OBTENER TODAS LAS PARTICIPACIONES
 //
 router.get("/participaciones", async (req, res) => {
