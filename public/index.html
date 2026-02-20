@@ -533,13 +533,11 @@
 
             for (let i = 0; i < tr.length; i++) {
                 const tdFolio = tr[i].getElementsByTagName("td")[0];
-                const tdNombre = tr[i].getElementsByTagName("td")[1];
 
-                if (tdFolio || tdNombre) {
+                if (tdFolio) {
                     const txtFolio = tdFolio.textContent || tdFolio.innerText;
-                    const txtNombre = tdNombre.textContent || tdNombre.innerText;
 
-                    if (txtFolio.toUpperCase().indexOf(filter) > -1 || txtNombre.toUpperCase().indexOf(filter) > -1) {
+                    if (txtFolio.toUpperCase().indexOf(filter) > -1) {
                         tr[i].style.display = "";
                     } else {
                         tr[i].style.display = "none";
