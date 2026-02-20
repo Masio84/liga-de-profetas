@@ -44,9 +44,14 @@ const initDB = async () => {
             CREATE TABLE IF NOT EXISTS usuarios (
                 id SERIAL PRIMARY KEY,
                 nombre TEXT NOT NULL,
-                celular TEXT NOT NULL UNIQUE,
+                celular TEXT NOT NULL,
                 fecha_registro TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
             );
+        `);
+
+    // MIGRATION: Remover constraint UNIQUE si existe
+    await query(`
+            ALTER TABLE usuarios DROP CONSTRAINT IF EXISTS usuarios_celular_key;
         `);
 
     // TABLA JORNADAS

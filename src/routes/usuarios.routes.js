@@ -44,6 +44,26 @@ router.post("/", async (req, res) => {
 });
 
 //
+// Obtener usuario por celular y nombre (Exact Match)
+//
+router.get("/buscar", async (req, res) => {
+    const { celular, nombre } = req.query;
+    try {
+        const { rows } = await db.query(
+            "SELECT id, nombre, celular, fecha_registro FROM usuarios WHERE celular = $1 AND nombre = $2 LIMIT 1",
+            [celular, nombre]
+        );
+        if (rows.length === 0) {
+            return res.status(404).json({ error: "Usuario no encontrado" });
+        }
+        const u = rows[0];
+        res.json({ id: u.id, nombre: u.nombre, celular: u.celular, fechaRegistro: u.fecha_registro });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+//
 // Obtener usuario por celular
 //
 router.get("/celular/:celular", async (req, res) => {

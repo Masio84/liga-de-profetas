@@ -82,7 +82,7 @@ async function generarTicketPDF(datos) {
         // 3. DETALLES (Quinielas)
         doc.setFontSize(8);
         doc.setFont("helvetica", "bold");
-        doc.text("DETALLE DE APUESTAS", 40, cursorY, { align: "center" });
+        doc.text("DETALLE DE QUINIELA", 40, cursorY, { align: "center" });
         cursorY += 5;
 
         doc.setFont("helvetica", "normal");
