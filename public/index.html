@@ -574,26 +574,26 @@
     </script>
 
 
-
     <!-- FOOTER GLOBAL -->
     <footer style="
         width: 100%;
-        background: #000;
-        border-top: 1px solid #334155;
-        padding: 40px 20px 100px; /* Extra padding bottom for sticky button */
-        margin-top: 60px;
+        /* background: #000;  <-- Eliminado fondo negro */
+        border-top: 1px solid rgba(255,255,255,0.1);
+        padding: 20px 20px 90px; /* 90px abajo para librar la barra fija */
+        margin-top: 40px;
         text-align: center;
         position: relative;
         left: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     ">
         <div style="max-width: 1200px; margin: 0 auto;">
             <!-- Copyright -->
-            <div style="margin-bottom: 20px; color: #94a3b8; font-size: 14px;">
+            <div style="margin-bottom: 10px; color: #94a3b8; font-size: 13px;">
                 &copy; 2026 Liga de Profetas. Todos los derechos reservados.
             </div>
 
             <!-- Navigation -->
-            <nav style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 13px;">
+            <nav style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; font-size: 12px;">
                 <a href="terminos.html" style="color: #64748b; text-decoration: none;">Términos y Condiciones</a>
                 <span style="color: #334155;">|</span>
                 <a href="privacidad.html" style="color: #64748b; text-decoration: none;">Aviso de Privacidad</a>
