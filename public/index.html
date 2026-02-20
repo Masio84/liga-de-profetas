@@ -575,25 +575,43 @@
 
 
 
-    <!-- FOOTER GLOBAL -->
+    <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
     <footer
         style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
         </div>
+
+        <!-- Disclaimer -->
+        <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
+            Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
+            participantes. No constituye un casino ni sistema de juegos de azar.
+        </p>
+
         <!-- Navigation -->
         <nav style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; font-size: 13px;">
-            <a href="terminos.html" style="color: #64748b;">Términos y Condiciones</a>
+            <a href="terminos.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Términos y
+                Condiciones</a>
             <span style="color: #334155;">|</span>
-            <a href="privacidad.html" style="color: #64748b;">Aviso de Privacidad</a>
+            <a href="privacidad.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Aviso de
+                Privacidad</a>
             <span style="color: #334155;">|</span>
-            <a href="reglamento.html" style="color: #64748b;">Reglamento</a>
+            <a href="reglamento.html"
+                style="color: #64748b; text-decoration: none; transition: color 0.2s;">Reglamento</a>
             <span style="color: #334155;">|</span>
-            <a href="marco-legal.html" style="color: #64748b;">Marco Legal</a>
+            <a href="marco-legal.html" style="color: #64748b; text-decoration: none; transition: color 0.2s;">Marco
+                Legal</a>
             <span style="color: #334155;">|</span>
-            <a href="admin.html" style="color: var(--gold-primary); font-weight: bold;">Panel Admin</a>
+            <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
+                Admin</a>
         </nav>
+        <style>
+            nav a:hover {
+                color: #fff !important;
+                text-decoration: underline !important;
+            }
+        </style>
     </footer>
 
 </body>

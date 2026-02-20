@@ -15,196 +15,200 @@
 
     <style>
         body {
-
-            max-width: 900px;
-            margin: auto;
-            padding: 25px 25px 0 25px;
+            margin: 0;
+            padding: 0;
             line-height: 1.8;
             font-size: 16px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: var(--bg-dark);
+        }
 
+        .content-wrapper {
+            max-width: 900px;
+            margin: auto;
+            padding: 25px;
+            flex: 1;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         h1 {
-
             text-align: center;
             color: #C5A059;
             margin-bottom: 30px;
             font-family: 'Russo One', sans-serif;
             text-transform: uppercase;
-
         }
 
         .seccion {
-
             margin-bottom: 20px;
             padding: 15px;
             background: rgba(255, 255, 255, 0.03);
             border-radius: 8px;
-
         }
 
         .titulo {
-
             font-weight: bold;
             color: #22c55e;
-
+            display: block;
+            margin-bottom: 10px;
         }
-
-        /* Removed .volver css */
     </style>
-
 </head>
 
 <body>
 
-    <h1>
-        Reglamento Oficial Quinielas
-        “Liga de Profetas”
-    </h1>
+    <div class="content-wrapper">
+        <h1>
+            Reglamento Oficial Quinielas
+            “Liga de Profetas”
+        </h1>
 
-
-    <div class="seccion">
-        <span class="titulo">COSTO Y PAGO.</span>
-        El costo de la quiniela es de $10 MXN por participación.
-        <br><br>
-        Para validar tu participación:
-        <ol>
-            <li>Realiza una transferencia de $10 MXN a la cuenta CLABE: <strong>728969000159916895</strong> (Banco: Spin
-                by Oxxo).</li>
-            <li>En tu aplicación bancaria, usa el campo "Concepto" o "Referencia" para escribir un código único (ej. tu
-                nombre, celular o folio).</li>
-            <li>Al llenar tu quiniela, escribe ese mismo código en el campo "Referencia de Pago".</li>
-        </ol>
-    </div>
-
-    <div class="seccion">
-        <span class="titulo">GANADORES Y EMPATES.</span>
-        El <strong>GANADOR</strong> será el participante con mayor cantidad de aciertos.
-        <br><br>
-        <strong>En caso de Empate:</strong><br>
-        Si dos o más participantes obtienen el mismo número de aciertos en el 1er o 2do lugar, <strong>el premio
-            correspondiente se dividirá equitativamente</strong> entre todos los ganadores de esa categoría.
-    </div>
-
-
-    <div class="seccion">
-        <span class="titulo">PARTIDO SUSPENDIDO O APLAZADO.</span>
-        Si el partido es suspendido o aplazado antes de comenzar, será nulo para efectos de la quiniela. Si se suspende
-        ya iniciado el partido y no se reanuda antes de terminar la quiniela, se tomará en cuenta el resultado al
-        momento de la suspensión. Para que el partido aplazado sea válido deberá de jugarse antes de que termine el
-        último partido de nuestra quiniela.
-    </div>
-
-
-    <div class="seccion">
-        <span class="titulo">QUINIELAS MÚLTIPLES.</span>
-        Las quinielas múltiples incrementan tus posibilidades de ganar.
-    </div>
-
-
-    <div class="seccion">
-
-        <span class="titulo">FORMAS DE PARTICIPAR EN QUINIELAS MÚLTIPLES:</span>
-        <br><br>
-        <div
-            style="background: rgba(34, 197, 94, 0.1); border-left: 4px solid #22c55e; padding: 10px; margin-bottom: 15px; font-style: italic;">
-            "Entre más opciones elijas, ¡más probabilidades tienes de ganar el premio mayor!"
+        <div class="seccion">
+            <span class="titulo">COSTO Y PAGO.</span>
+            El costo de la quiniela es de $10 MXN por participación.
+            <br><br>
+            Para validar tu participación:
+            <ol>
+                <li>Realiza una transferencia de $10 MXN a la cuenta CLABE: <strong>728969000159916895</strong> (Banco:
+                    Spin
+                    by Oxxo).</li>
+                <li>En tu aplicación bancaria, usa el campo "Concepto" o "Referencia" para escribir un código único (ej.
+                    tu
+                    nombre, celular o folio).</li>
+                <li>Al llenar tu quiniela, escribe ese mismo código en el campo "Referencia de Pago".</li>
+            </ol>
         </div>
-        Puedes seleccionar más de una opción por partido (Local y Empate, por ejemplo) para aumentar tus posibilidades
-        de ganar.
-        <br><br>
-        <strong>Costo de Combinaciones:</strong>
-        <br>
-        El costo se calcula multiplicando la base ($10) por el número de combinaciones jugadas.
-        <br><br>
-        <ul>
-            <li><strong>1 Doble:</strong> Equivale a 2 quinielas. Costo: $20.</li>
-            <li><strong>1 Triple:</strong> Equivale a 3 quinielas. Costo: $30.</li>
-            <li><strong>2 Dobles:</strong> Equivale a 4 quinielas (2 x 2). Costo: $40.</li>
-        </ul>
-        <br>
-        Fórmula: <em>$10 x (2 ^ Dobles) x (3 ^ Triples)</em>.
 
-    </div>
+        <div class="seccion">
+            <span class="titulo">GANADORES Y EMPATES.</span>
+            El <strong>GANADOR</strong> será el participante con mayor cantidad de aciertos.
+            <br><br>
+            <strong>En caso de Empate:</strong><br>
+            Si dos o más participantes obtienen el mismo número de aciertos en el 1er o 2do lugar, <strong>el premio
+                correspondiente se dividirá equitativamente</strong> entre todos los ganadores de esa categoría.
+        </div>
 
 
-    <div class="seccion">
-        <span class="titulo">LISTA PREVIA.</span>
-        Se publicará una lista previa a la oficial en donde podrás hacer correcciones sólo por mala captura de la
-        administración, al terminar el tiempo ya no hay reclamaciones.
-    </div>
+        <div class="seccion">
+            <span class="titulo">PARTIDO SUSPENDIDO O APLAZADO.</span>
+            Si el partido es suspendido o aplazado antes de comenzar, será nulo para efectos de la quiniela. Si se
+            suspende
+            ya iniciado el partido y no se reanuda antes de terminar la quiniela, se tomará en cuenta el resultado al
+            momento de la suspensión. Para que el partido aplazado sea válido deberá de jugarse antes de que termine el
+            último partido de nuestra quiniela.
+        </div>
 
 
-    <div class="seccion">
-        <span class="titulo">LISTA OFICIAL.</span>
-        Las quinielas participan tal como aparecen en el listado, si ya salió la lista oficial y está mal capturada,
-        podrá pedir la devolución de su dinero siempre y cuando sea antes de que comience el primer partido, si no
-        apareces en la lista oficial no estas participando.
-    </div>
+        <div class="seccion">
+            <span class="titulo">QUINIELAS MÚLTIPLES.</span>
+            Las quinielas múltiples incrementan tus posibilidades de ganar.
+        </div>
+
+
+        <div class="seccion">
+
+            <span class="titulo">FORMAS DE PARTICIPAR EN QUINIELAS MÚLTIPLES:</span>
+            <br><br>
+            <div
+                style="background: rgba(34, 197, 94, 0.1); border-left: 4px solid #22c55e; padding: 10px; margin-bottom: 15px; font-style: italic;">
+                "Entre más opciones elijas, ¡más probabilidades tienes de ganar el premio mayor!"
+            </div>
+            Puedes seleccionar más de una opción por partido (Local y Empate, por ejemplo) para aumentar tus
+            posibilidades
+            de ganar.
+            <br><br>
+            <strong>Costo de Combinaciones:</strong>
+            <br>
+            El costo se calcula multiplicando la base ($10) por el número de combinaciones jugadas.
+            <br><br>
+            <ul>
+                <li><strong>1 Doble:</strong> Equivale a 2 quinielas. Costo: $20.</li>
+                <li><strong>1 Triple:</strong> Equivale a 3 quinielas. Costo: $30.</li>
+                <li><strong>2 Dobles:</strong> Equivale a 4 quinielas (2 x 2). Costo: $40.</li>
+            </ul>
+            <br>
+            Fórmula: <em>$10 x (2 ^ Dobles) x (3 ^ Triples)</em>.
+
+        </div>
+
+
+        <div class="seccion">
+            <span class="titulo">LISTA PREVIA.</span>
+            Se publicará una lista previa a la oficial en donde podrás hacer correcciones sólo por mala captura de la
+            administración, al terminar el tiempo ya no hay reclamaciones.
+        </div>
+
+
+        <div class="seccion">
+            <span class="titulo">LISTA OFICIAL.</span>
+            Las quinielas participan tal como aparecen en el listado, si ya salió la lista oficial y está mal capturada,
+            podrá pedir la devolución de su dinero siempre y cuando sea antes de que comience el primer partido, si no
+            apareces en la lista oficial no estas participando.
+        </div>
 
 
 
 
-    <div class="seccion">
-        <span class="titulo">RESULTADOS OFICIALES.</span>
-        Se tomará en cuenta el resultado del partido sólo el tiempo reglamentario, 90 minutos más el agregado excluyendo
-        tiempos extras o penales.
-    </div>
+        <div class="seccion">
+            <span class="titulo">RESULTADOS OFICIALES.</span>
+            Se tomará en cuenta el resultado del partido sólo el tiempo reglamentario, 90 minutos más el agregado
+            excluyendo
+            tiempos extras o penales.
+        </div>
 
 
-    <div class="seccion">
-        <span class="titulo">REPARTO DE PREMIOS.</span>
-        Se entregará el 70% de lo recabado, el resto es destinado para pago de comisiones, publicidad y gastos
-        administrativos.
-    </div>
+        <div class="seccion">
+            <span class="titulo">REPARTO DE PREMIOS.</span>
+            Se entregará el 70% de lo recabado, el resto es destinado para pago de comisiones, publicidad y gastos
+            administrativos.
+        </div>
 
 
-    <div class="seccion">
-        <span class="titulo">PREMIO DE 1er LUGAR.</span>
-        Se destinará el 80% de la bolsa total para el primer lugar.
-    </div>
+        <div class="seccion">
+            <span class="titulo">PREMIO DE 1er LUGAR.</span>
+            Se destinará el 80% de la bolsa total para el primer lugar.
+        </div>
 
 
-    <div class="seccion">
-        <span class="titulo">PREMIO DE 2do LUGAR.</span>
-        Se destinará el 20% de la bolsa total al premio del segundo lugar. Si resultan más de 10 ganadores del segundo
-        lugar, éste premio se acumulará para la próxima semana en la bolsa del segundo lugar. A la Tercer semana
-        acumulada, se repartirá el premio sin importar el número de ganadores del segundo lugar.
-    </div>
+        <div class="seccion">
+            <span class="titulo">PREMIO DE 2do LUGAR.</span>
+            Se destinará el 20% de la bolsa total al premio del segundo lugar. Si resultan más de 10 ganadores del
+            segundo
+            lugar, éste premio se acumulará para la próxima semana en la bolsa del segundo lugar. A la Tercer semana
+            acumulada, se repartirá el premio sin importar el número de ganadores del segundo lugar.
+        </div>
 
 
-    <div class="seccion">
-        <span class="titulo">PAGO A GANADORES.</span>
-        Los pagos se realizarán un día después de terminados los partidos por medio de transferencia o depósito
-        bancario. Si el ganador no tiene efectuado su respectivo pago sin importar el motivo, no será acreedor al
-        premio.
-    </div>
+        <div class="seccion">
+            <span class="titulo">PAGO A GANADORES.</span>
+            Los pagos se realizarán un día después de terminados los partidos por medio de transferencia o depósito
+            bancario. Si el ganador no tiene efectuado su respectivo pago sin importar el motivo, no será acreedor al
+            premio.
+        </div>
 
 
-    <div style="text-align: center; margin-top: 40px;">
-        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
-            <span>← Volver al Inicio</span>
-        </a>
-    </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+                <span>← Volver al Inicio</span>
+            </a>
+        </div>
+    </div> <!-- FIN CONTENT WRAPPER -->
 
-
-    <!-- FOOTER GLOBAL -->
+    <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
     <footer
         style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
-
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
         </div>
 
-        <!-- Disclaimer -->
+        <!-- Disclaimer (Si la página es Legal, lo incluye. Si no, podemos o no dejarlo. El User pidio pegarlo tal cual en index) -->
         <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
             Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
-            participantes.
-            No constituye un casino ni sistema de juegos de azar.
+            participantes. No constituye un casino ni sistema de juegos de azar.
         </p>
 
         <!-- Navigation -->
@@ -224,7 +228,6 @@
             <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
                 Admin</a>
         </nav>
-
         <style>
             nav a:hover {
                 color: #fff !important;

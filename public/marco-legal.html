@@ -10,14 +10,25 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            max-width: 900px;
-            margin: auto;
-            padding: 25px 25px 0 25px;
+            margin: 0;
+            padding: 0;
             line-height: 1.8;
             font-size: 16px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: var(--bg-dark);
+            /* Heredado de style.css si aplica */
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: auto;
+            padding: 25px;
+            flex: 1;
+            /* Permite que el contenido empuje el footer hacia abajo */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -46,53 +57,54 @@
 
 <body>
 
-    <h1>Marco Legal y Clasificación</h1>
+    <div class="content-wrapper">
+        <h1>Marco Legal y Clasificación</h1>
 
-    <div class="seccion">
-        <span class="titulo">1. CONCURSO DE HABILIDAD</span>
-        Conforme a la legislación vigente en México, "Liga de Profetas" opera bajo el esquema de <strong>Concurso de
-            Habilidad y Destreza</strong>.
-        A diferencia de los juegos de azar, donde el resultado depende preponderantemente de la suerte o casualidad, en
-        nuestros concursos el resultado depende preponderantemente de la habilildad, conocimiento y capacidad de
-        análisis del participante sobre eventos deportivos.
-    </div>
+        <div class="seccion">
+            <span class="titulo">1. CONCURSO DE HABILIDAD</span>
+            Conforme a la legislación vigente en México, "Liga de Profetas" opera bajo el esquema de <strong>Concurso de
+                Habilidad y Destreza</strong>.
+            A diferencia de los juegos de azar, donde el resultado depende preponderantemente de la suerte o casualidad,
+            en
+            nuestros concursos el resultado depende preponderantemente de la habilildad, conocimiento y capacidad de
+            análisis del participante sobre eventos deportivos.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">2. CLASIFICACIÓN DE PLATAFORMA</span>
-        Esta plataforma <strong>NO ES UN CASINO</strong>. No se aceptan pronósticos contra la casa ni se ofrecen
-        momios o cuotas fijas.
-        Operamos bajo un modelo de <strong>Pozo Común (Pool)</strong>, donde los participantes compiten entre sí
-        demostrando quién tiene mayor conocimiento deportivo. La plataforma actúa únicamente como organizador y
-        administrador del concurso.
-    </div>
+        <div class="seccion">
+            <span class="titulo">2. CLASIFICACIÓN DE PLATAFORMA</span>
+            Esta plataforma <strong>NO ES UN CASINO</strong>. No se aceptan pronósticos contra la casa ni se ofrecen
+            momios o cuotas fijas.
+            Operamos bajo un modelo de <strong>Pozo Común (Pool)</strong>, donde los participantes compiten entre sí
+            demostrando quién tiene mayor conocimiento deportivo. La plataforma actúa únicamente como organizador y
+            administrador del concurso.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">3. CUMPLIMIENTO NORMATIVO</span>
-        Cumplimos con las disposiciones aplicables en materia civil y mercantil para la celebración de concursos y
-        certámenes.
-        Promovemos el entretenimiento seguro y responsable.
-    </div>
+        <div class="seccion">
+            <span class="titulo">3. CUMPLIMIENTO NORMATIVO</span>
+            Cumplimos con las disposiciones aplicables en materia civil y mercantil para la celebración de concursos y
+            certámenes.
+            Promovemos el entretenimiento seguro y responsable.
+        </div>
 
-    <div style="text-align: center; margin-top: 40px;">
-        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
-            <span>← Volver al Inicio</span>
-        </a>
-    </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+                <span>← Volver al Inicio</span>
+            </a>
+        </div>
+    </div> <!-- FIN CONTENT WRAPPER -->
 
-    <!-- FOOTER GLOBAL -->
+    <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
     <footer
         style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
-
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
         </div>
 
-        <!-- Disclaimer -->
+        <!-- Disclaimer (Si la página es Legal, lo incluye. Si no, podemos o no dejarlo. El User pidio pegarlo tal cual en index) -->
         <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
             Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
-            participantes.
-            No constituye un casino ni sistema de juegos de azar.
+            participantes. No constituye un casino ni sistema de juegos de azar.
         </p>
 
         <!-- Navigation -->
@@ -112,7 +124,6 @@
             <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
                 Admin</a>
         </nav>
-
         <style>
             nav a:hover {
                 color: #fff !important;

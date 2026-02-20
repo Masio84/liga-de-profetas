@@ -10,14 +10,25 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            max-width: 900px;
-            margin: auto;
-            padding: 25px 25px 0 25px;
+            margin: 0;
+            padding: 0;
             line-height: 1.8;
             font-size: 16px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: var(--bg-dark);
+            /* Heredado de style.css si aplica */
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: auto;
+            padding: 25px;
+            flex: 1;
+            /* Permite que el contenido empuje el footer hacia abajo */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -41,93 +52,86 @@
             display: block;
             margin-bottom: 10px;
         }
-
-        .titulo {
-            font-weight: bold;
-            color: #22c55e;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        /* Removed .volver css */
     </style>
 </head>
 
 <body>
 
-    <h1>Aviso de Privacidad</h1>
+    <div class="content-wrapper">
+        <h1>Aviso de Privacidad</h1>
 
-    <!-- ... content ... -->
+        <!-- ... content ... -->
 
-    <div class="seccion">
-        <span class="titulo">1. SOBRE LA ADMINISTRACIÓN</span>
-        La administración de "Liga de Profetas" es responsable del tratamiento de los datos personales.
-        <br>
-        Puede contactarnos para cualquier duda relacionada con su privacidad a través de los canales oficiales de la
-        plataforma.
-    </div>
+        <div class="seccion">
+            <span class="titulo">1. SOBRE LA ADMINISTRACIÓN</span>
+            La administración de "Liga de Profetas" es responsable del tratamiento de los datos personales.
+            <br>
+            Puede contactarnos para cualquier duda relacionada con su privacidad a través de los canales oficiales de la
+            plataforma.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">2. DATOS QUE RECABAMOS</span>
-        Para la participación en los concursos, recabamos los siguientes datos personales:
-        <ul>
-            <li>Nombre completo</li>
-            <li>Número de teléfono celular (para validación por WhatsApp)</li>
-            <li>Información de pago y referencias bancarias (para validación de depósitos)</li>
-        </ul>
-        No recabamos datos sensibles.
-    </div>
+        <div class="seccion">
+            <span class="titulo">2. DATOS QUE RECABAMOS</span>
+            Para la participación en los concursos, recabamos los siguientes datos personales:
+            <ul>
+                <li>Nombre completo</li>
+                <li>Número de teléfono celular (para validación por WhatsApp)</li>
+                <li>Información de pago y referencias bancarias (para validación de depósitos)</li>
+            </ul>
+            No recabamos datos sensibles.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">3. FINALIDAD DEL TRATAMIENTO</span>
-        Sus datos serán utilizados exclusivamente para:
-        <ul>
-            <li>Gestionar su participación en los concursos de predicción deportiva.</li>
-            <li>Validar sus pagos y aportaciones.</li>
-            <li>Contactarlo en caso de resultar ganador para la entrega de premios.</li>
-            <li>Enviar información relevante sobre nuevas jornadas o cambios en el servicio.</li>
-        </ul>
-    </div>
+        <div class="seccion">
+            <span class="titulo">3. FINALIDAD DEL TRATAMIENTO</span>
+            Sus datos serán utilizados exclusivamente para:
+            <ul>
+                <li>Gestionar su participación en los concursos de predicción deportiva.</li>
+                <li>Validar sus pagos y aportaciones.</li>
+                <li>Contactarlo en caso de resultar ganador para la entrega de premios.</li>
+                <li>Enviar información relevante sobre nuevas jornadas o cambios en el servicio.</li>
+            </ul>
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">4. DERECHOS ARCO</span>
-        Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales.
-        Para ejercer estos derechos, puede contactar a la administración a través de los canales oficiales de la
-        plataforma o enviando un correo a contacto@ligadeprofetas.com.
-    </div>
+        <div class="seccion">
+            <span class="titulo">4. DERECHOS ARCO</span>
+            Usted tiene derecho a Acceder, Rectificar, Cancelar u Oponerse al tratamiento de sus datos personales.
+            Para ejercer estos derechos, puede contactar a la administración a través de los canales oficiales de la
+            plataforma o enviando un correo a contacto@ligadeprofetas.com.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">5. TRANSFERENCIA DE DATOS</span>
-        Sus datos personales no serán transferidos a terceros, salvo por requerimiento de autoridad competente o para el
-        cumplimiento de obligaciones legales.
-    </div>
+        <div class="seccion">
+            <span class="titulo">5. TRANSFERENCIA DE DATOS</span>
+            Sus datos personales no serán transferidos a terceros, salvo por requerimiento de autoridad competente o
+            para el
+            cumplimiento de obligaciones legales.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">6. CAMBIOS AL AVISO DE PRIVACIDAD</span>
-        Nos reservamos el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente aviso de
-        privacidad. Estas modificaciones estarán disponibles al público a través de este sitio web.
-    </div>
+        <div class="seccion">
+            <span class="titulo">6. CAMBIOS AL AVISO DE PRIVACIDAD</span>
+            Nos reservamos el derecho de efectuar en cualquier momento modificaciones o actualizaciones al presente
+            aviso de
+            privacidad. Estas modificaciones estarán disponibles al público a través de este sitio web.
+        </div>
 
-    <div style="text-align: center; margin-top: 40px;">
-        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
-            <span>← Volver al Inicio</span>
-        </a>
-    </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+                <span>← Volver al Inicio</span>
+            </a>
+        </div>
+    </div> <!-- FIN CONTENT WRAPPER -->
 
-    <!-- FOOTER GLOBAL -->
+    <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
     <footer
         style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
-
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
         </div>
 
-        <!-- Disclaimer -->
+        <!-- Disclaimer (Si la página es Legal, lo incluye. Si no, podemos o no dejarlo. El User pidio pegarlo tal cual en index) -->
         <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
             Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
-            participantes.
-            No constituye un casino ni sistema de juegos de azar.
+            participantes. No constituye un casino ni sistema de juegos de azar.
         </p>
 
         <!-- Navigation -->
@@ -147,7 +151,6 @@
             <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
                 Admin</a>
         </nav>
-
         <style>
             nav a:hover {
                 color: #fff !important;

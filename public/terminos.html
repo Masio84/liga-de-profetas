@@ -10,15 +10,25 @@
     <link rel="stylesheet" href="style.css">
     <style>
         body {
-            max-width: 900px;
-            margin: auto;
-            padding: 25px 25px 0 25px;
-            /* Quitar padding bottom si tenía, se maneja con footer */
+            margin: 0;
+            padding: 0;
             line-height: 1.8;
             font-size: 16px;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: var(--bg-dark);
+            /* Heredado de style.css si aplica */
+        }
+
+        .content-wrapper {
+            max-width: 900px;
+            margin: auto;
+            padding: 25px;
+            flex: 1;
+            /* Permite que el contenido empuje el footer hacia abajo */
+            width: 100%;
+            box-sizing: border-box;
         }
 
         h1 {
@@ -42,88 +52,93 @@
             display: block;
             margin-bottom: 10px;
         }
-
-        /* Removed .volver css to use style.css .btn-secondary */
     </style>
 </head>
 
 <body>
 
-    <h1>Términos y Condiciones</h1>
+    <div class="content-wrapper">
+        <h1>Términos y Condiciones</h1>
 
-    <div style="text-align: center; color: #94a3b8; font-size: 0.9em; margin-bottom: 20px;">
-        Versión: 1.0<br>
-        Fecha de vigencia: 17 febrero 2026
-    </div>
+        <div style="text-align: center; color: #94a3b8; font-size: 0.9em; margin-bottom: 20px;">
+            Versión: 1.0<br>
+            Fecha de vigencia: 17 febrero 2026
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">1. NATURALEZA DEL SERVICIO</span>
-        "Liga de Profetas" es una <strong>plataforma de concursos de habilidad de predicción deportiva</strong>.
-        El usuario reconoce y acepta que su participación depende exclusivamente de su conocimiento deportivo, análisis
-        estadístico y habilidad para predecir resultados.
-        <br><br>
-        <strong>NO ES UN CASINO.</strong> No operamos como casino ni ofrecemos juegos de
-        azar. Los resultados no dependen de la suerte, sino de la destreza del participante al analizar los encuentros
-        deportivos.
-    </div>
+        <div class="seccion">
+            <span class="titulo">1. NATURALEZA DEL SERVICIO</span>
+            "Liga de Profetas" es una <strong>plataforma de concursos de habilidad de predicción deportiva</strong>.
+            El usuario reconoce y acepta que su participación depende exclusivamente de su conocimiento deportivo,
+            análisis
+            estadístico y habilidad para predecir resultados.
+            <br><br>
+            <strong>NO ES UN CASINO.</strong> No operamos como casino ni ofrecemos juegos de
+            azar. Los resultados no dependen de la suerte, sino de la destreza del participante al analizar los
+            encuentros
+            deportivos.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">2. PARTICIPACIÓN VOLUNTARIA Y EDAD MÍNIMA</span>
-        La participación en los concursos es totalmente voluntaria. <strong>El servicio está restringido exclusivamente
-            a mayores de 18 años.</strong> Al utilizar la plataforma, el usuario declara bajo protesta de decir verdad
-        que cumple con este requisito de edad.
-    </div>
+        <div class="seccion">
+            <span class="titulo">2. PARTICIPACIÓN VOLUNTARIA Y EDAD MÍNIMA</span>
+            La participación en los concursos es totalmente voluntaria. <strong>El servicio está restringido
+                exclusivamente
+                a mayores de 18 años.</strong> Al utilizar la plataforma, el usuario declara bajo protesta de decir
+            verdad
+            que cumple con este requisito de edad.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">3. INTERMEDIARIO TECNOLÓGICO</span>
-        "Liga de Profetas" actúa únicamente como <strong>intermediario tecnológico</strong> para la gestión,
-        administración y cálculo de resultados del concurso. No tenemos control sobre el desarrollo de los eventos
-        deportivos reales.
-    </div>
+        <div class="seccion">
+            <span class="titulo">3. INTERMEDIARIO TECNOLÓGICO</span>
+            "Liga de Profetas" actúa únicamente como <strong>intermediario tecnológico</strong> para la gestión,
+            administración y cálculo de resultados del concurso. No tenemos control sobre el desarrollo de los eventos
+            deportivos reales.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">4. NO ES UN CASINO</span>
-        Se reitera que esta plataforma <strong>NO OFRECE JUEGOS DE AZAR</strong>. No operamos como
-        casino. Los resultados se basan estrictamente en la habilidad de predicción deportiva. No existen momios, líneas
-        ni contrapartida de la casa.
-    </div>
+        <div class="seccion">
+            <span class="titulo">4. NO ES UN CASINO</span>
+            Se reitera que esta plataforma <strong>NO OFRECE JUEGOS DE AZAR</strong>. No operamos como
+            casino. Los resultados se basan estrictamente en la habilidad de predicción deportiva. No existen momios,
+            líneas
+            ni contrapartida de la casa.
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">5. CUOTA DE INSCRIPCIÓN Y PREMIOS</span>
-        Existe una cuota de recuperación para la organización del concurso. Los premios se constituyen a partir de una
-        bolsa acumulada (Pool) de las aportaciones de los participantes, descontando gastos operativos y
-        administrativos.
-        <br><br>
-        La distribución de premios es transparente y basada en reglas matemáticas preestablecidas (mayor número de
-        aciertos).
-    </div>
+        <div class="seccion">
+            <span class="titulo">5. CUOTA DE INSCRIPCIÓN Y PREMIOS</span>
+            Existe una cuota de recuperación para la organización del concurso. Los premios se constituyen a partir de
+            una
+            bolsa acumulada (Pool) de las aportaciones de los participantes, descontando gastos operativos y
+            administrativos.
+            <br><br>
+            La distribución de premios es transparente y basada en reglas matemáticas preestablecidas (mayor número de
+            aciertos).
+        </div>
 
-    <div class="seccion">
-        <span class="titulo">6. USO RESPONSABLE</span>
-        La plataforma está destinada exclusivamente para entretenimiento y competencia de habilidad. Se prohíbe su uso
-        para fines ilícitos o de lavado de dinero.
-    </div>
+        <div class="seccion">
+            <span class="titulo">6. USO RESPONSABLE</span>
+            La plataforma está destinada exclusivamente para entretenimiento y competencia de habilidad. Se prohíbe su
+            uso
+            para fines ilícitos o de lavado de dinero.
+        </div>
 
-    <div style="text-align: center; margin-top: 40px;">
-        <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
-            <span>← Volver al Inicio</span>
-        </a>
-    </div>
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="index.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+                <span>← Volver al Inicio</span>
+            </a>
+        </div>
+    </div> <!-- FIN CONTENT WRAPPER -->
 
-    <!-- FOOTER GLOBAL -->
+    <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
     <footer
         style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
-
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
         </div>
 
-        <!-- Disclaimer -->
+        <!-- Disclaimer (Si la página es Legal, lo incluye. Si no, podemos o no dejarlo. El User pidio pegarlo tal cual en index) -->
         <p style="font-size: 12px; color: #475569; max-width: 800px; margin: 0 auto 20px auto; line-height: 1.5;">
             Liga de Profetas es una plataforma de concursos de predicción deportiva basada en la habilidad de los
-            participantes.
-            No constituye un casino ni sistema de juegos de azar.
+            participantes. No constituye un casino ni sistema de juegos de azar.
         </p>
 
         <!-- Navigation -->
@@ -143,7 +158,6 @@
             <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
                 Admin</a>
         </nav>
-
         <style>
             nav a:hover {
                 color: #fff !important;
