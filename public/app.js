@@ -682,7 +682,7 @@ async function cargarParticipantes() {
 
     // Actualizar Subtitulo con Jornada
     const sub = document.getElementById("modalParticipantesSubtitle");
-    if (sub) sub.innerText = `Participantes Jornada ${jornadaSeleccionada}`;
+    if (sub) sub.innerText = `JORNADA ${jornadaSeleccionada}`;
 
     tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px;">Cargando...</td></tr>';
 
