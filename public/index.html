@@ -576,22 +576,34 @@
 
 
     <!-- FOOTER GLOBAL -->
-    <footer
-        style="text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; margin-top: 50px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
-        <!-- Copyright -->
-        <div style="margin-bottom: 15px; color: #94a3b8;">
-            &copy; 2026 Liga de Profetas. Todos los derechos reservados.
+    <footer style="
+        width: 100%;
+        background: #000;
+        border-top: 1px solid #334155;
+        padding: 40px 20px 100px; /* Extra padding bottom for sticky button */
+        margin-top: 60px;
+        text-align: center;
+        position: relative;
+        left: 0;
+    ">
+        <div style="max-width: 1200px; margin: 0 auto;">
+            <!-- Copyright -->
+            <div style="margin-bottom: 20px; color: #94a3b8; font-size: 14px;">
+                &copy; 2026 Liga de Profetas. Todos los derechos reservados.
+            </div>
+
+            <!-- Navigation -->
+            <nav style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 13px;">
+                <a href="terminos.html" style="color: #64748b; text-decoration: none;">Términos y Condiciones</a>
+                <span style="color: #334155;">|</span>
+                <a href="privacidad.html" style="color: #64748b; text-decoration: none;">Aviso de Privacidad</a>
+                <span style="color: #334155;">|</span>
+                <a href="reglamento.html" style="color: #64748b; text-decoration: none;">Reglamento</a>
+                <span style="color: #334155;">|</span>
+                <a href="admin.html" style="color: var(--gold-primary); font-weight: bold; text-decoration: none;">Panel
+                    Admin</a>
+            </nav>
         </div>
-        <!-- Navigation -->
-        <nav style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; font-size: 13px;">
-            <a href="terminos.html" style="color: #64748b;">Términos y Condiciones</a>
-            <span style="color: #334155;">|</span>
-            <a href="privacidad.html" style="color: #64748b;">Aviso de Privacidad</a>
-            <span style="color: #334155;">|</span>
-            <a href="reglamento.html" style="color: #64748b;">Reglamento</a>
-            <span style="color: #334155;">|</span>
-            <a href="admin.html" style="color: var(--gold-primary); font-weight: bold;">Panel Admin</a>
-        </nav>
     </footer>
 
 </body>
