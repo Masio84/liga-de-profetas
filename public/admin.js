@@ -166,7 +166,14 @@ async function verificarTokenBackend(token) {
 
 function mostrarContenidoAdmin() {
     const container = document.querySelector(".admin-container");
-    if (container) container.style.display = "grid"; // O block segun CSS original
+    if (container) {
+        container.style.display = "grid"; // O block segun CSS original
+        // Cargar datos una vez autenticado
+        cargarEstadoSync();
+        cargarPozoActual();
+        cargarParticipacionesAdmin();
+        cargarResultadosAdmin();
+    }
 }
 
 // Función para resetear el token
@@ -1093,17 +1100,4 @@ async function cancelarParticipacion(id) {
 }
 
 
-// INIT
-async function initAdmin() {
-
-    await cargarEstadoSync();
-
-    await cargarPozoActual();
-
-    await cargarParticipacionesAdmin();
-
-    await cargarResultadosAdmin();
-
-}
-
-initAdmin();
+// FIN DEL ARCHIVO
