@@ -23,6 +23,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="scripts/pdf_ticket.js"></script>
 
+    <style>
+        /* Override global body padding so empty space doesn't show under footer */
+        body {
+            padding-bottom: 0 !important;
+        }
+    </style>
 
 </head>
 
@@ -577,7 +583,7 @@
 
     <!-- FOOTER GLOBAL UNIFICADO (Idéntico para todas las vistas) -->
     <footer
-        style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
+        style="width: 100%; margin-top: auto; text-align: center; padding: 30px 20px 180px 20px; color: #64748b; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.4);">
         <!-- Copyright -->
         <div style="margin-bottom: 15px; color: #94a3b8;">
             &copy; 2026 Liga de Profetas. Todos los derechos reservados.
