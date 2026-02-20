@@ -36,6 +36,9 @@ const initDB = async () => {
   try {
     console.log("Verificando/Creando tablas en PostgreSQL...");
 
+    // SECUENCIA FOLIOS (Nuevo)
+    await query(`CREATE SEQUENCE IF NOT EXISTS folios_seq START 1000;`);
+
     // TABLA USUARIOS
     await query(`
             CREATE TABLE IF NOT EXISTS usuarios (
