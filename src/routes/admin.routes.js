@@ -79,7 +79,7 @@ router.get("/participaciones", async (req, res) => {
             // Así que si no enviamos param, intentamos filtrar por la MAX jornada disponible o abierta.
             /* Sin embargo, para mayor control, dejaremos que el frontend decida qué jornada pedir (la activa),
                y si no pide nada, mostramos las de la jornada más reciente para no mostrar vacío. */
-            query += ` WHERE p.jornada = (SELECT MAX(round) FROM matches) `; // Default to latest round known
+            query += ` WHERE p.jornada = (SELECT MAX(jornada) FROM participaciones) `; // Default to latest participation round
         }
 
         query += ` ORDER BY p.folio DESC, p.fecha DESC`;
