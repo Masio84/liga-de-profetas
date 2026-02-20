@@ -10,43 +10,6 @@ let pronosticosSeleccionados = {};
 let matchesGlobal = {};
 
 
-//
-// INIT USUARIO
-//
-async function initUsuario() {
-
-    if (!celularGuardado) return;
-
-    try {
-
-        const res =
-            await fetch(
-                API + "/usuarios/celular/" +
-                celularGuardado
-            );
-
-        if (res.ok) {
-
-            const usuario =
-                await res.json();
-
-            usuarioId =
-                usuario.id;
-
-            document.getElementById("nombre").value =
-                usuario.nombre;
-
-            document.getElementById("celular").value =
-                usuario.celular;
-
-        }
-
-    }
-    catch (error) {
-        console.error("Error en initUsuario:", error);
-    }
-
-}
 
 
 //
@@ -760,49 +723,45 @@ async function confirmarPagoYEnviar() {
         return;
     }
 
-    // 1. Asegurar usuario
-    let uId = usuarioId;
-    if (!uId) {
-        // Crear o buscar usuario
-        try {
-            console.log("DEBUG: Buscando usuario por celular y nombre:", celular, nombre);
-            if (!celular || celular === "undefined") throw new Error("Celular inválido: " + celular);
-            const buscar = await fetch(`${API}/usuarios/buscar?celular=${celular}&nombre=${encodeURIComponent(nombre)}`);
+    // 1. Asegurar usuario (SIEMPRE validar contra la BD, no usar caché local)
+    let uId = null;
 
-            console.log("DEBUG: GET Status:", buscar.status, "OK:", buscar.ok); // CHECKPOINT 1
+    try {
+        console.log("DEBUG: Buscando usuario por celular y nombre:", celular, nombre);
+        if (!celular || celular === "undefined") throw new Error("Celular inválido: " + celular);
 
-            if (buscar.ok) {
-                const u = await buscar.json();
-                console.log("DEBUG: Usuario encontrado:", u); // CHECKPOINT 2
-                uId = u.id;
-            } else {
-                console.log("DEBUG: Entrando a ELSE (Usuario no encontrado)"); // CHECKPOINT 3
-                const crear = await fetch(API + "/usuarios", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ nombre, celular })
-                });
+        const buscar = await fetch(`${API}/usuarios/buscar?celular=${celular}&nombre=${encodeURIComponent(nombre)}`);
 
-                console.log("DEBUG: Respuesta creación usuario:", crear.status, crear.statusText);
+        if (buscar.ok) {
+            const u = await buscar.json();
+            console.log("DEBUG: Usuario encontrado:", u);
+            uId = u.id;
+        } else {
+            console.log("DEBUG: Usuario no encontrado, creando nuevo...");
+            const crear = await fetch(API + "/usuarios", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ nombre, celular })
+            });
 
-                if (!crear.ok) {
-                    const errBody = await crear.text();
-                    throw new Error(`Error creando usuario: ${crear.status} - ${errBody}`);
-                }
-
-                const nuevo = await crear.json();
-                console.log("DEBUG: Usuario creado con ID:", nuevo.id);
-                uId = nuevo.id;
+            if (!crear.ok) {
+                const errBody = await crear.text();
+                throw new Error(`Error creando usuario: ${crear.status} - ${errBody}`);
             }
-            usuarioId = uId;
-            // localStorage.setItem("celular", celular); // Persistence removed
-        } catch (e) {
-            alert("Error conectando con el servidor (Usuario).");
-            console.error(e);
-            btnConfirmar.innerText = txtOriginal;
-            btnConfirmar.disabled = false;
-            return;
+
+            const nuevo = await crear.json();
+            console.log("DEBUG: Usuario creado con ID:", nuevo.id);
+            uId = nuevo.id;
         }
+
+        // Opcional: actualizar el estado global si se requiere futuramente, pero NO depender de él para saltar el IF.
+        usuarioId = uId;
+    } catch (e) {
+        alert("Error conectando con el servidor (Usuario).");
+        console.error(e);
+        btnConfirmar.innerText = txtOriginal;
+        btnConfirmar.disabled = false;
+        return;
     }
 
     // 2. REGISTRAR ACEPTACION LEGAL (Una vez por envío)
