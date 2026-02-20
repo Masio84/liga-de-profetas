@@ -689,23 +689,21 @@ async function cargarParticipantes() {
         tbody.innerHTML = "";
 
         if (!data.participantes || data.participantes.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; padding:20px; color:#94a3b8;">Aún no hay participantes confirmados.</td></tr>';
+            tbody.innerHTML = '<tr><td style="text-align:center; padding:20px; color:#94a3b8;">Aún no hay participantes confirmados.</td></tr>';
             return;
         }
 
         data.participantes.forEach(p => {
             const tr = document.createElement("tr");
             tr.innerHTML = `
-                <td><strong style="color:#4ade80;">${p.folio}</strong></td>
-                <td>${p.nombre}</td>
-                <td><span style="background:rgba(34, 197, 94, 0.2); color:#4ade80; padding:2px 6px; border-radius:4px; font-size:11px;">CONFIRMADO</span></td>
+                <td style="text-align:center;"><strong style="color:#4ade80; font-size:1.2em; letter-spacing:1px;">${p.folio}</strong></td>
              `;
             tbody.appendChild(tr);
         });
 
     } catch (error) {
         console.error("Error cargando participantes:", error);
-        tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color:#ef4444;">Error cargando lista.</td></tr>';
+        tbody.innerHTML = '<tr><td style="text-align:center; color:#ef4444;">Error cargando lista.</td></tr>';
     }
 }
 

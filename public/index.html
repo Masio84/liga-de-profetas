@@ -233,7 +233,9 @@
 
             <div class="modal-header">
                 <h2 class="modal-title">👥 Participantes Confirmados</h2>
-                <p style="color: #94a3b8; margin: 0 0 15px;">Listado oficial de la jornada actual.</p>
+                <h3 id="modalParticipantesSubtitle" style="color: #94a3b8; margin: 5px 0 15px; font-size: 16px;">
+                    Jornada --
+                </h3>
             </div>
 
             <input type="text" id="filtroParticipantes" placeholder="🔍 Buscar por nombre o folio..."
@@ -243,9 +245,7 @@
                 <table class="admin-table">
                     <thead>
                         <tr>
-                            <th>Folio</th>
-                            <th>Nombre</th>
-                            <th>Estatus</th>
+                            <th style="text-align: center;">Folio</th>
                         </tr>
                     </thead>
                     <tbody id="tablaParticipantesBody">
