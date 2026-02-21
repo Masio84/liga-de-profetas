@@ -109,7 +109,7 @@ router.post("/", async (req, res) => {
         const fechaActual = new Date().toISOString();
 
         for (const item of items) {
-            const { usuarioId, jornada, monto, pronosticos, referenciaPago } = item;
+            const { usuarioId, jornada, monto, pronosticos } = item;
 
             if (!usuarioId || !jornada || !monto || !pronosticos) {
                 // Si falta dato, fallamos esta petición
@@ -123,9 +123,7 @@ router.post("/", async (req, res) => {
             const folio = `LDP-${nextVal}`;
 
             const pronosticosArray = Array.isArray(pronosticos) ? pronosticos : [];
-            const referenciaFinal = (typeof referenciaPago === "string" && referenciaPago.trim())
-                ? referenciaPago.trim()
-                : folio;
+            const referenciaFinal = folio;
 
             // Insertar sin transacción explícita
             const { rows: nueva } = await db.query(
