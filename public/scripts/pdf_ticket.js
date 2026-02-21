@@ -166,6 +166,14 @@ async function generarTicketPDF(datos) {
 
         cursorY += 12;
 
+        doc.setFontSize(6);
+        doc.setFont("helvetica", "bold");
+        doc.text("IMPORTANTE: La referencia de tu transferencia", 40, cursorY, { align: "center" });
+        cursorY += 3;
+        doc.text("debe coincidir con tu número de folio asignado.", 40, cursorY, { align: "center" });
+
+        cursorY += 5;
+
         // 6. PIE
         doc.setFontSize(6);
         doc.setFont("helvetica", "italic");
