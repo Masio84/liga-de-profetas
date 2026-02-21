@@ -123,6 +123,9 @@ router.post("/", async (req, res) => {
             const folio = `LDP-${nextVal}`;
 
             const pronosticosArray = Array.isArray(pronosticos) ? pronosticos : [];
+            const referenciaFinal = (typeof referenciaPago === "string" && referenciaPago.trim())
+                ? referenciaPago.trim()
+                : folio;
 
             // Insertar sin transacción explícita
             const { rows: nueva } = await db.query(
@@ -136,7 +139,7 @@ router.post("/", async (req, res) => {
                     monto,
                     JSON.stringify(pronosticosArray),
                     fechaActual,
-                    referenciaPago || null,
+                    referenciaFinal,
                     folio
                 ]
             );
