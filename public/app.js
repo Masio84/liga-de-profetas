@@ -712,7 +712,6 @@ async function confirmarPagoYEnviar() {
 
     const nombre = document.getElementById("nombre").value.trim();
     const celular = document.getElementById("celular").value.trim();
-    const referenciaPago = document.getElementById("referencia").value.trim();
 
     // VALIDACION CHECKBOX LEGAL
     const checkLegal = document.getElementById("checkLegal");
@@ -786,7 +785,6 @@ async function confirmarPagoYEnviar() {
             jornada: q.jornada,
             monto: q.monto,
             pronosticos: q.pronosticosFormatoApi,
-            referenciaPago
         }));
 
         const res = await fetch(`${API}/participaciones`, {
@@ -842,7 +840,7 @@ async function confirmarPagoYEnviar() {
                 quinielas: [...carrito],
                 total: document.getElementById("carritoTotal").innerText,
                 clabe: "728969000159916895", // CLABE actualizada (Spin by Oxxo)
-                referencia: referenciaPago || "Tu Nombre/Celular"
+                referencia: mainFolio
             };
             generarTicketPDF(datosPDF);
         } catch (errPDF) {
