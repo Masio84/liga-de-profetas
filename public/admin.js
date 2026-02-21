@@ -168,10 +168,11 @@ function mostrarContenidoAdmin() {
     const container = document.querySelector(".admin-container");
     if (container) {
         container.style.display = "grid"; // O block segun CSS original
+        registrarEventosFiltrosAdmin();
         // Cargar datos una vez autenticado
         cargarEstadoSync();
         cargarPozoActual();
-        cargarParticipacionesAdmin();
+        cargarJornadaActualAdmin().finally(() => cargarParticipacionesAdmin());
         cargarResultadosAdmin();
     }
 }
@@ -366,113 +367,6 @@ async function cargarPozoActual() {
 
 
 //
-// CARGAR PARTICIPACIONES ADMIN
-//
-async function cargarParticipacionesAdmin() {
-    try {
-        const res = await fetch(API + "/participaciones");
-
-        if (!res.ok) {
-            throw new Error(`Error ${res.status}: ${res.statusText}`);
-        }
-
-        const data = await res.json();
-
-        if (!data.participaciones || data.participaciones.length === 0) {
-            document.getElementById("adminParticipaciones").innerHTML =
-                "<div class='participacion-card'>No hay participaciones registradas</div>";
-            return;
-        }
-
-        let html = "";
-
-        data.participaciones.forEach(p => {
-
-            let estadoTexto = "";
-            let color = "";
-            let botones = "";
-
-            if (p.activa === 0) {
-
-                estadoTexto = "DESACTIVADA";
-                color = "#ef4444";
-
-                botones += `
-                <button onclick="reactivarParticipacion(${p.id})">
-                Reactivar
-                </button>
-            `;
-
-            }
-            else if (p.validada === 0) {
-
-                estadoTexto = "PENDIENTE";
-                color = "#f59e0b";
-
-                botones += `
-                <button onclick="validarParticipacion(${p.id})">
-                Validar
-                </button>
-            `;
-
-                botones += `
-                <button onclick="desactivarParticipacion(${p.id})">
-                Desactivar
-                </button>
-            `;
-
-            }
-            else {
-
-                estadoTexto = "VALIDADA";
-                color = "#22c55e";
-
-                botones += `
-                <button onclick="invalidarParticipacion(${p.id})">
-                Invalidar
-                </button>
-            `;
-
-                botones += `
-                <button onclick="desactivarParticipacion(${p.id})">
-                Desactivar
-                </button>
-            `;
-
-            }
-
-            html += `
-        <div class="participacion-card">
-
-            Usuario: ${p.usuario}<br>
-            Jornada: ${p.jornada}<br>
-            Monto: $${p.monto}<br>
-            Referencia: <strong>${p.referenciaPago || "N/A"}</strong><br>
-
-            Estado:
-            <span style="color:${color}">
-                ${estadoTexto}
-            </span>
-
-            <div>
-                ${botones}
-            </div>
-
-        </div>
-        `;
-
-        });
-
-        document.getElementById("adminParticipaciones").innerHTML = html;
-    } catch (error) {
-        console.error("Error cargando participaciones:", error);
-        document.getElementById("adminParticipaciones").innerHTML =
-            `<div class='participacion-card' style='color: #ef4444;'>Error cargando participaciones: ${error.message}</div>`;
-    }
-}
-
-
-//
 // CARGAR RESULTADO DE JORNADAS
 //
 //
@@ -624,6 +518,83 @@ async function cargarGanadoresRecientes(jornada) {
 
 // VALIDAR
 let participacionesCache = []; // Cache local para filtrado
+let jornadaActualAdmin = null;
+let filtrosAdminEventosRegistrados = false;
+
+function normalizarJornada(valor) {
+    const numero = Number(valor);
+    return Number.isInteger(numero) ? numero : null;
+}
+
+function aplicarFiltrosParticipaciones() {
+    const texto = document.getElementById("adminSearchInput")?.value.toLowerCase().trim() || "";
+    const estado = document.getElementById("adminStatusFilter")?.value || "TODAS";
+    const jornada = document.getElementById("adminJornadaFilter")?.value || "TODAS";
+    const jornadaNumero = normalizarJornada(jornada);
+
+    return participacionesCache.filter(p => {
+        const matchTexto =
+            (p.usuario && p.usuario.toLowerCase().includes(texto)) ||
+            (p.celular && p.celular.includes(texto)) ||
+            (p.folio && p.folio.toLowerCase().includes(texto)) ||
+            (p.referenciaPago && p.referenciaPago.toLowerCase().includes(texto));
+
+        let matchEstado = true;
+        if (estado === "VALIDADA") matchEstado = (p.validada === 1 && p.activa === 1);
+        if (estado === "PENDIENTE") matchEstado = (p.validada === 0 && p.activa === 1);
+        if (estado === "DESACTIVADA") matchEstado = (p.activa === 0);
+
+        const matchJornada = jornadaNumero === null ? true : Number(p.jornada) === jornadaNumero;
+
+        return matchTexto && matchEstado && matchJornada;
+    });
+}
+
+function poblarFiltroJornada() {
+    const select = document.getElementById("adminJornadaFilter");
+    if (!select) return;
+
+    const jornadas = [...new Set(participacionesCache
+        .map(p => Number(p.jornada))
+        .filter(Number.isFinite))].sort((a, b) => b - a);
+
+    const options = ['<option value="TODAS">Jornada: Todas</option>']
+        .concat(jornadas.map(j => `<option value="${j}">Jornada ${j}</option>`));
+
+    select.innerHTML = options.join("");
+
+    if (jornadaActualAdmin !== null && jornadas.includes(jornadaActualAdmin)) {
+        select.value = String(jornadaActualAdmin);
+    } else {
+        select.value = "TODAS";
+    }
+}
+
+async function cargarJornadaActualAdmin() {
+    try {
+        const res = await fetch(`${API}/jornadas`);
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const disponibles = (data.jornadas || []).filter(j => j.estado === "DISPONIBLE");
+
+        if (disponibles.length > 0) {
+            jornadaActualAdmin = Number(disponibles[0].numero);
+        }
+    } catch (error) {
+        console.warn("No se pudo cargar jornada actual para filtro admin", error);
+    }
+}
+
+function registrarEventosFiltrosAdmin() {
+    if (filtrosAdminEventosRegistrados) return;
+
+    document.getElementById("adminSearchInput")?.addEventListener("input", filtrarAdmin);
+    document.getElementById("adminStatusFilter")?.addEventListener("change", filtrarAdmin);
+    document.getElementById("adminJornadaFilter")?.addEventListener("change", filtrarAdmin);
+
+    filtrosAdminEventosRegistrados = true;
+}
 
 async function cargarParticipacionesAdmin() {
     try {
@@ -632,8 +603,9 @@ async function cargarParticipacionesAdmin() {
 
         const data = await res.json();
         participacionesCache = data.participaciones; // Guardar en cache
+        poblarFiltroJornada();
 
-        renderizarParticipacionesAdmin(participacionesCache); // Render inicial
+        renderizarParticipacionesAdmin(aplicarFiltrosParticipaciones()); // Render inicial
 
     } catch (error) {
         console.error(error);
@@ -643,26 +615,7 @@ async function cargarParticipacionesAdmin() {
 }
 
 function filtrarAdmin() {
-    const texto = document.getElementById("adminSearchInput").value.toLowerCase().trim();
-    const estado = document.getElementById("adminStatusFilter").value;
-
-    const filtradas = participacionesCache.filter(p => {
-        // Filtro Texto (Nombre, Celular, Folio)
-        const matchTexto =
-            (p.usuario && p.usuario.toLowerCase().includes(texto)) ||
-            (p.celular && p.celular.includes(texto)) ||
-            (p.folio && p.folio.toLowerCase().includes(texto)) ||
-            (p.referenciaPago && p.referenciaPago.toLowerCase().includes(texto));
-
-        // Filtro Estado
-        let matchEstado = true;
-        if (estado === "VALIDADA") matchEstado = (p.validada === 1 && p.activa === 1);
-        if (estado === "PENDIENTE") matchEstado = (p.validada === 0 && p.activa === 1);
-        if (estado === "DESACTIVADA") matchEstado = (p.activa === 0);
-
-        return matchTexto && matchEstado;
-    });
-
+    const filtradas = aplicarFiltrosParticipaciones();
     renderizarParticipacionesAdmin(filtradas);
 }
 
@@ -710,21 +663,14 @@ async function generarReportePDF() {
     const fecha = new Date().toLocaleString();
     const filtroTexto = document.getElementById("adminSearchInput").value || "Ninguno";
     const filtroEstado = document.getElementById("adminStatusFilter").options[document.getElementById("adminStatusFilter").selectedIndex].text;
+    const jornadaSelect = document.getElementById("adminJornadaFilter");
+    const filtroJornada = jornadaSelect
+        ? jornadaSelect.options[jornadaSelect.selectedIndex].text
+        : "Jornada: Todas";
 
     // 4. Obtener Datos Filtrados
-    const texto = document.getElementById("adminSearchInput").value.toLowerCase().trim();
-    const estado = document.getElementById("adminStatusFilter").value;
-    const dataToPrint = participacionesCache.filter(p => {
-        const matchTexto = (p.usuario && p.usuario.toLowerCase().includes(texto)) ||
-            (p.celular && p.celular.includes(texto)) ||
-            (p.folio && p.folio.toLowerCase().includes(texto)) ||
-            (p.referenciaPago && p.referenciaPago.toLowerCase().includes(texto));
-        let matchEstado = true;
-        if (estado === "VALIDADA") matchEstado = (p.validada === 1 && p.activa === 1);
-        if (estado === "PENDIENTE") matchEstado = (p.validada === 0 && p.activa === 1);
-        if (estado === "DESACTIVADA") matchEstado = (p.activa === 0);
-        return matchTexto && matchEstado;
-    }).sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // Ordenar por fecha desc
+    const dataToPrint = aplicarFiltrosParticipaciones()
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha)); // Ordenar por fecha desc
 
     // 5. Tabla
     const tableBody = dataToPrint.map((p, index) => [
@@ -758,7 +704,7 @@ async function generarReportePDF() {
             if (data.pageNumber === 1) {
                 doc.setFontSize(8);
                 doc.setTextColor(50);
-                doc.text(`Fecha: ${fecha} | Filtro: ${filtroEstado} | Búsqueda: "${filtroTexto}"`, 14, 33);
+                doc.text(`Fecha: ${fecha} | ${filtroJornada} | Filtro: ${filtroEstado} | Búsqueda: "${filtroTexto}"`, 14, 33);
             }
 
             // Footer (Copyright & Page Number)
@@ -916,75 +862,6 @@ function renderizarParticipacionesAdmin(lista) {
 
     contenedor.innerHTML = html;
 }
-// INVALIDAR
-async function invalidarParticipacion(id) {
-    try {
-        const res = await fetchAuth(
-            `${API}/admin/participaciones/${id}/invalidar`,
-            { method: "POST" }
-        );
-
-        if (!res.ok) {
-            const error = await res.json();
-            alert(`Error: ${error.error || "No se pudo invalidar la participación"}`);
-            return;
-        }
-
-        await cargarParticipacionesAdmin();
-        await cargarPozoActual();
-    } catch (error) {
-        console.error("Error invalidando participación:", error);
-        alert("Error al invalidar la participación");
-    }
-}
-
-
-// DESACTIVAR
-async function desactivarParticipacion(id) {
-    try {
-        const res = await fetchAuth(
-            `${API}/admin/participaciones/${id}/desactivar`,
-            { method: "POST" }
-        );
-
-        if (!res.ok) {
-            const error = await res.json();
-            alert(`Error: ${error.error || "No se pudo desactivar la participación"}`);
-            return;
-        }
-
-        await cargarParticipacionesAdmin();
-        await cargarPozoActual();
-    } catch (error) {
-        console.error("Error desactivando participación:", error);
-        alert("Error al desactivar la participación");
-    }
-}
-
-
-// REACTIVAR
-async function reactivarParticipacion(id) {
-    try {
-        const res = await fetchAuth(
-            `${API}/admin/participaciones/${id}/reactivar`,
-            { method: "POST" }
-        );
-
-        if (!res.ok) {
-            const error = await res.json();
-            alert(`Error: ${error.error || "No se pudo reactivar la participación"}`);
-            return;
-        }
-
-        await cargarParticipacionesAdmin();
-        await cargarPozoActual();
-    } catch (error) {
-        console.error("Error reactivando participación:", error);
-        alert("Error al reactivar la participación");
-    }
-}
-
-
 // SYNC RESULTADOS
 async function syncResultados() {
     try {
