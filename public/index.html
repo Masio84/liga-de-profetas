@@ -68,7 +68,7 @@
 
     <!-- BOLSA DE PREMIOS -->
     <div class="pozo-container">
-        <div class="pozo-box">
+        <div class="pozo-box" style="display:none;">
             <div class="pozo-title">
                 🥇 Premio 1er Lugar
             </div>
@@ -76,7 +76,7 @@
                 $0
             </div>
         </div>
-        <div class="pozo-box">
+        <div class="pozo-box" style="display:none;">
             <div class="pozo-title">
                 🥈 Premio 2do Lugar
             </div>
@@ -533,6 +533,13 @@
                         function actualizarTimer() {
                             const ahora = new Date().getTime();
                             const distancia = primerPartido - ahora;
+        // Show prize boxes when 12 hours or less remain
+        if (distancia <= 12 * 60 * 60 * 1000) {
+          const premio1 = document.getElementById('premioPrimero');
+          const premio2 = document.getElementById('premioSegundo');
+          if (premio1 && premio1.parentElement) premio1.parentElement.style.display = 'block';
+          if (premio2 && premio2.parentElement) premio2.parentElement.style.display = 'block';
+        }
 
                             if (distancia < 0) {
                                 if (timerDiv) {
